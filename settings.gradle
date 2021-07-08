@@ -1,0 +1,10 @@
+rootProject.name = 'm7r-backend'
+
+includeBuild('../m7r-persistence-rdbms')
+includeBuild('../m7r-persistence-mongo')
+includeBuild('../m7r-backend-proc')
+includeBuild('../m7r-backend-config')
+includeBuild('../m7r-service-objects')
+includeBuild('../m7r-content-manager')
+
+

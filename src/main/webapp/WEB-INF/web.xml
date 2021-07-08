@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+                            http://java.sun.com/xml/ns/javaee/web-app_3_1.xsd"
+         metadata-complete="false"
+         version="3.1">
+    <display-name>mentalizr</display-name>
+
+    <servlet>
+        <servlet-name>restService</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>org.mentalizr.backend.rest.MentalizrRestApplication</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>frontController</servlet-name>
+        <servlet-class>org.mentalizr.backend.front.FrontControllerServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>frontControllerVoucherLogin</servlet-name>
+        <servlet-class>org.mentalizr.backend.front.FrontControllerServletVoucherLogin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>frontControllerLogin</servlet-name>
+        <servlet-class>org.mentalizr.backend.front.FrontControllerServletLogin</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>restService</servlet-name>
+        <url-pattern>/service/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>frontController</servlet-name>
+        <url-pattern>/app/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>frontControllerVoucherLogin</servlet-name>
+        <url-pattern>/voucher/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>frontControllerLogin</servlet-name>
+        <url-pattern>/login/*</url-pattern>
+    </servlet-mapping>
+
+    <resource-ref>
+        <description>DB Connection</description>
+        <res-ref-name>jdbc/MentalizrUserDb</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
+
+    <listener>
+        <listener-class>org.mentalizr.backend.servletContext.EventProcessorContextListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>org.mentalizr.backend.servletContext.ApplicationContextListener</listener-class>
+    </listener>
+
+</web-app>
+
