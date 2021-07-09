@@ -2,9 +2,11 @@ package org.mentalizr.backend.rest.endpoints;
 
 import org.bson.Document;
 import org.mentalizr.backend.auth.AuthorizationService;
+import org.mentalizr.backend.mock.PatientsOverviewSOMock;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackData;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataConverter;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
+import org.mentalizr.serviceObjects.frontend.therapist.PatientsOverviewSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +27,7 @@ public class EndpointTherapist {
     @Path("sendFeedbackData")
     @Consumes(MediaType.APPLICATION_JSON)
     public void sendFeedbackData(FeedbackData feedbackData, @Context HttpServletRequest httpServletRequest) {
-        logger.debug("[sendFeedbackData]");
+        logger.debug("[therapist:sendFeedbackData]");
 
         AuthorizationService.assertIsLoggedInAsTherapist(httpServletRequest);
 
@@ -35,6 +37,17 @@ public class EndpointTherapist {
         logger.debug(document.toJson());
 
         // TODO Event Feedback Submitted Event
+    }
+
+    @POST
+    @Path("therapist/getPatientsOverview")
+    public PatientsOverviewSO getPatientsOverview(@Context HttpServletRequest httpServletRequest) {
+        logger.debug("[therapist:getPatientsOverview]");
+
+        AuthorizationService.assertIsLoggedInAsTherapist(httpServletRequest);
+
+        // TODO mocked
+        return PatientsOverviewSOMock.createPatientsOverviewSO();
     }
 
 }

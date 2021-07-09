@@ -37,8 +37,15 @@ public class HtmlChunkManager {
         Authorization authorization = new Authorization(authentication);
 
         if (htmlChunk == HtmlChunk.PATIENT) {
-            if (!authorization.isPatient()) throw new UnauthorizedException("UserLogin not in required role PATIENT.");
+            if (!authorization.isPatient())
+                throw new UnauthorizedException("UserLogin not in required role PATIENT.");
             return getPatientChunk();
+        }
+
+        if (htmlChunk == HtmlChunk.THERAPIST) {
+            if (!authorization.isTherapist())
+                throw new UnauthorizedException("UserLogin not in required role THERAPIST.");
+            return getTherapistChunk();
         }
 
         throw new RuntimeException("Implementation missing for HtmlChunk: " + htmlChunk.name());
@@ -51,6 +58,10 @@ public class HtmlChunkManager {
 
     private InputStream getPatientChunk() throws IOException {
         return this.htmlChunkCache.getChunk(HtmlChunk.PATIENT);
+    }
+
+    private InputStream getTherapistChunk() throws IOException {
+        return this.htmlChunkCache.getChunk(HtmlChunk.THERAPIST);
     }
 
     private InputStream getLoginChunk() throws IOException {

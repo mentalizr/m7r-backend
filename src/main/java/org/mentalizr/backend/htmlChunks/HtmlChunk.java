@@ -5,7 +5,8 @@ public enum HtmlChunk {
     INIT("/WEB-INF/init.html"),
     LOGIN("/WEB-INF/login.chunk.html"),
     LOGIN_VOUCHER("WEB-INF/loginVoucher.chunk.html"),
-    PATIENT("/WEB-INF/patient.chunk.html");
+    PATIENT("/WEB-INF/patient.chunk.html"),
+    THERAPIST("/WEB-INF/therapist.chunk.html");
 
     private final String fileName;
 

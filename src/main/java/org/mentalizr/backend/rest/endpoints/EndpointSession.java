@@ -122,7 +122,7 @@ public class EndpointSession {
     public SessionStatusSO sessionStatus(@Context HttpServletRequest httpServletRequest) {
         logger.debug("[sessionStatus]");
 
-        Authentication authentication = null;
+        Authentication authentication;
         try {
             authentication = new Authentication(httpServletRequest);
         } catch (UnauthorizedException e) {
