@@ -13,20 +13,20 @@ public class AuthorizationService {
 
     private static final Logger authLogger = LoggerFactory.getLogger("m7r-auth");
 
-    public static PatientHttpSessionAttribute assertIsLoggedInAsPatient(HttpServletRequest httpServletRequest) {
+    public static AdminHttpSessionAttribute assertIsLoggedInAsAdmin(HttpServletRequest httpServletRequest) {
         AssertMethodPrecondition.parameterNotNull("httpServletRequest", httpServletRequest);
         try {
-            return checkAsPatient(httpServletRequest);
+            return checkAsAdmin(httpServletRequest);
         } catch (UnauthorizedException e) {
             authLogger.warn(e.getMessage());
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
     }
 
-    public static AdminHttpSessionAttribute assertIsLoggedInAsAdmin(HttpServletRequest httpServletRequest) {
+    public static PatientHttpSessionAttribute assertIsLoggedInAsPatient(HttpServletRequest httpServletRequest) {
         AssertMethodPrecondition.parameterNotNull("httpServletRequest", httpServletRequest);
         try {
-            return checkAsAdmin(httpServletRequest);
+            return checkAsPatient(httpServletRequest);
         } catch (UnauthorizedException e) {
             authLogger.warn(e.getMessage());
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
@@ -53,6 +53,17 @@ public class AuthorizationService {
         }
     }
 
+    public static TherapistHttpSessionAttribute assertIsLoggedInAsTherapist(HttpServletRequest httpServletRequest) {
+        AssertMethodPrecondition.parameterNotNull("httpServletRequest", httpServletRequest);
+        try {
+            return checkAsTherapist(httpServletRequest);
+        } catch (UnauthorizedException e) {
+            authLogger.warn(e.getMessage());
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        }
+    }
+
+
     private static PatientHttpSessionAttribute checkAsPatient(HttpServletRequest httpServletRequest) throws UnauthorizedException {
         Authorization authorization = new Authorization(httpServletRequest);
         if (!authorization.isPatient())
@@ -65,6 +76,13 @@ public class AuthorizationService {
         if (!authorization.isAdmin())
             throw new UnauthorizedException("User not in role ADMIN.");
         return authorization.getAdminHttpSessionAttribute();
+    }
+
+    private static TherapistHttpSessionAttribute checkAsTherapist(HttpServletRequest httpServletRequest) throws UnauthorizedException {
+        Authorization authorization = new Authorization(httpServletRequest);
+        if (!authorization.isTherapist())
+            throw new UnauthorizedException("User not in role THERAPIST.");
+        return authorization.getTherapistHttpSessionAttribute();
     }
 
 }

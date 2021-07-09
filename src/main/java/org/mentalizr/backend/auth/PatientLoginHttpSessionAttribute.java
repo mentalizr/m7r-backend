@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 public class PatientLoginHttpSessionAttribute extends PatientHttpSessionAttribute implements Serializable {
 
-    private UserLoginCompositeVO userLoginCompositeVO;
+    private final UserLoginCompositeVO userLoginCompositeVO;
 
     public PatientLoginHttpSessionAttribute(UserLoginCompositeVO userLoginCompositeVO, RolePatientVO rolePatientVO, UserLoginCompositeVO therapistUserLoginCompositeVO, RoleTherapistVO roleTherapistVO) {
         super(userLoginCompositeVO.getUserVO(), rolePatientVO, therapistUserLoginCompositeVO, roleTherapistVO);

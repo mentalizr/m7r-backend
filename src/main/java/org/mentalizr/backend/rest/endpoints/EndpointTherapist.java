@@ -1,6 +1,7 @@
 package org.mentalizr.backend.rest.endpoints;
 
 import org.bson.Document;
+import org.mentalizr.backend.auth.AuthorizationService;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackData;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataConverter;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
@@ -24,10 +25,9 @@ public class EndpointTherapist {
     @Path("sendFeedbackData")
     @Consumes(MediaType.APPLICATION_JSON)
     public void sendFeedbackData(FeedbackData feedbackData, @Context HttpServletRequest httpServletRequest) {
-
         logger.debug("[sendFeedbackData]");
 
-        // TODO Authentication Role: Therapist
+        AuthorizationService.assertIsLoggedInAsTherapist(httpServletRequest);
 
         Document document = FeedbackDataConverter.convert(feedbackData);
         FeedbackDataMongoHandler.createOrUpdate(document);
@@ -35,7 +35,6 @@ public class EndpointTherapist {
         logger.debug(document.toJson());
 
         // TODO Event Feedback Submitted Event
-
     }
 
 }
