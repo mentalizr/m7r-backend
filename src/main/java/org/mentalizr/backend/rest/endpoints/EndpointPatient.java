@@ -35,6 +35,9 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedIn;
+import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsPatient;
+
 @Path("v1")
 public class EndpointPatient {
 
@@ -47,7 +50,7 @@ public class EndpointPatient {
     public ApplicationConfigSO appConfig(@Context HttpServletRequest httpServletRequest) {
         logger.debug("[appConfig]");
 
-        PatientHttpSessionAttribute patientHttpSessionAttribute = AuthorizationService.assertIsLoggedInAsPatient(httpServletRequest);
+        PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
 
         ProjectConfiguration projectConfiguration = ApplicationContext.getProjectConfiguration();
         String projectId = patientHttpSessionAttribute.getRolePatientVO().getProgramId();
@@ -60,7 +63,7 @@ public class EndpointPatient {
     public Therapeut therapeut(@Context HttpServletRequest httpServletRequest) {
         logger.debug("[therapeut]");
 
-        PatientHttpSessionAttribute patientHttpSessionAttribute = AuthorizationService.assertIsLoggedInAsPatient(httpServletRequest);
+        PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
 
         return patientHttpSessionAttribute.getTherapeut();
     }
@@ -71,7 +74,7 @@ public class EndpointPatient {
     public ProgramSO program(@Context HttpServletRequest httpServletRequest) {
         logger.debug("[program]");
 
-        PatientHttpSessionAttribute patientHttpSessionAttribute = AuthorizationService.assertIsLoggedInAsPatient(httpServletRequest);
+        PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
 
         RolePatientVO rolePatientVO = patientHttpSessionAttribute.getRolePatientVO();
         String programId = rolePatientVO.getProgramId();
@@ -90,7 +93,7 @@ public class EndpointPatient {
     public Patient patient(@Context HttpServletRequest httpServletRequest) {
         logger.debug("[patient]");
 
-        PatientHttpSessionAttribute patientHttpSessionAttribute = AuthorizationService.assertIsLoggedInAsPatient(httpServletRequest);
+        PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
 
         return patientHttpSessionAttribute.getPatient();
     }
@@ -102,7 +105,7 @@ public class EndpointPatient {
             @Context HttpServletRequest httpServletRequest) {
         logger.debug("[therapeutImgThumbnail]");
 
-        AuthorizationService.assertIsLoggedInAsPatient(httpServletRequest);
+        assertIsLoggedInAsPatient(httpServletRequest);
 
         File image = new File(Configuration.getDirImageRoot(), "dummies/DummyAvatar.png");
         try {
@@ -115,13 +118,13 @@ public class EndpointPatient {
     }
 
     @GET
-    @Path("patientImgThumbnail")
+    @Path("userImgThumbnail")
     @Produces("image/png")
     public Response patientThumbnailImage(
             @Context HttpServletRequest httpServletRequest) {
-        logger.debug("[patientImgThumbnail]");
+        logger.debug("[userImgThumbnail]");
 
-        AuthorizationService.assertIsLoggedInAsPatient(httpServletRequest);
+        assertIsLoggedIn(httpServletRequest);
 
         File imageFile = new File(Configuration.getDirImageRoot(), "dummies/DummyAvatar.png");
         try {
@@ -146,7 +149,7 @@ public class EndpointPatient {
             @Context HttpServletRequest httpServletRequest) {
         logger.debug("[mediaImg] [" + img + "]");
 
-        PatientHttpSessionAttribute patientHttpSessionAttribute = AuthorizationService.assertIsLoggedInAsPatient(httpServletRequest);
+        PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
 
         RolePatientVO rolePatientVO = patientHttpSessionAttribute.getRolePatientVO();
         String programId = rolePatientVO.getProgramId();
@@ -161,7 +164,7 @@ public class EndpointPatient {
             @Context HttpServletRequest httpServletRequest) {
         logger.debug("[mediaVideo] [" + audioVideo + "]");
 
-        PatientHttpSessionAttribute patientHttpSessionAttribute = AuthorizationService.assertIsLoggedInAsPatient(httpServletRequest);
+        PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
 
         RolePatientVO rolePatientVO = patientHttpSessionAttribute.getRolePatientVO();
         String programId = rolePatientVO.getProgramId();
@@ -188,7 +191,7 @@ public class EndpointPatient {
             @Context HttpServletRequest httpServletRequest) {
         logger.debug("[programContent] [" + contentId + "]");
 
-        AuthorizationService.assertIsLoggedInAsPatient(httpServletRequest);
+        assertIsLoggedInAsPatient(httpServletRequest);
 
         return getProgramContent(contentId);
     }
@@ -204,7 +207,7 @@ public class EndpointPatient {
 
         logger.debug("[programInfoContent] [" + contentId + "]");
 
-        AuthorizationService.assertIsLoggedInAsPatient(httpServletRequest);
+        assertIsLoggedInAsPatient(httpServletRequest);
 
         return getProgramContent(contentId);
     }
@@ -238,7 +241,7 @@ public class EndpointPatient {
 
         logger.debug("[formData] [" + contentId + "]");
 
-        PatientHttpSessionAttribute patientHttpSessionAttribute = AuthorizationService.assertIsLoggedInAsPatient(httpServletRequest);
+        PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
         UserVO userVO = patientHttpSessionAttribute.getUserVO();
 
         Document document = FormDataMongoHandler.fetch(userVO.getUserId(), contentId);
@@ -344,7 +347,7 @@ public class EndpointPatient {
         logger.debug("[feedbackData]");
 
 
-        PatientHttpSessionAttribute patientHttpSessionAttribute = AuthorizationService.assertIsLoggedInAsPatient(httpServletRequest);
+        PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
         UserVO userVO = patientHttpSessionAttribute.getUserVO();
 
         Document document = FeedbackDataMongoHandler.fetch(userVO.getUserId(), contentId);
