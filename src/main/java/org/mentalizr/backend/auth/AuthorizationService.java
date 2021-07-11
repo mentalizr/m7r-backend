@@ -13,10 +13,10 @@ public class AuthorizationService {
 
     private static final Logger authLogger = LoggerFactory.getLogger("m7r-auth");
 
-    public static void assertIsLoggedIn(HttpServletRequest httpServletRequest) {
+    public static UserHttpSessionAttribute assertIsLoggedIn(HttpServletRequest httpServletRequest) {
         AssertMethodPrecondition.parameterNotNull("httpServletRequest", httpServletRequest);
         try {
-            checkAsUser(httpServletRequest);
+            return checkAsUser(httpServletRequest);
         } catch (UnauthorizedException e) {
             authLogger.warn(e.getMessage());
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
@@ -73,8 +73,9 @@ public class AuthorizationService {
         }
     }
 
-    private static void checkAsUser(HttpServletRequest httpServletRequest) throws UnauthorizedException {
-        new Authorization(httpServletRequest);
+    private static UserHttpSessionAttribute checkAsUser(HttpServletRequest httpServletRequest) throws UnauthorizedException {
+        Authorization authorization = new Authorization(httpServletRequest);
+        return authorization.getUserHttpSessionAttribute();
     }
 
     private static PatientHttpSessionAttribute checkAsPatient(HttpServletRequest httpServletRequest) throws UnauthorizedException {

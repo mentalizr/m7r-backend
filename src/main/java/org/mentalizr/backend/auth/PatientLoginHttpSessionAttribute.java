@@ -1,9 +1,9 @@
 package org.mentalizr.backend.auth;
 
-import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.RoleTherapistVO;
 import org.mentalizr.backend.rest.entities.Patient;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
+import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
+import org.mentalizr.persistence.rdbms.barnacle.vo.RoleTherapistVO;
 
 import java.io.Serializable;
 
@@ -16,14 +16,17 @@ public class PatientLoginHttpSessionAttribute extends PatientHttpSessionAttribut
         this.userLoginCompositeVO = userLoginCompositeVO;
     }
 
-    @Override
     public String getFirstName() {
         return this.userLoginCompositeVO.getFirstName();
     }
 
-    @Override
     public String getLastName() {
         return this.userLoginCompositeVO.getLastName();
+    }
+
+    @Override
+    public String getDisplayName() {
+        return DisplayName.obtain(this.userLoginCompositeVO.getUserLoginVO());
     }
 
     @Override

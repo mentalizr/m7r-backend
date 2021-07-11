@@ -15,13 +15,8 @@ public class PatientAnonymousHttpSessionAttribute extends PatientHttpSessionAttr
     }
 
     @Override
-    public String getFirstName() {
-        return "N.";
-    }
-
-    @Override
-    public String getLastName() {
-        return "N.";
+    public String getDisplayName() {
+        return "N.N.";
     }
 
     @Override

@@ -28,6 +28,10 @@ public class Authorization {
         return this.authentication.getUserHttpSessionAttribute() instanceof AdminHttpSessionAttribute;
     }
 
+    public UserHttpSessionAttribute getUserHttpSessionAttribute() {
+        return (UserHttpSessionAttribute) this.authentication.getUserHttpSessionAttribute();
+    }
+
     public PatientHttpSessionAttribute getPatientHttpSessionAttribute() {
         if (!isPatient()) throw new IllegalStateException("UserLogin not in role PATIENT.");
         return (PatientHttpSessionAttribute) this.authentication.getUserHttpSessionAttribute();

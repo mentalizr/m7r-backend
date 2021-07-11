@@ -87,16 +87,16 @@ public class EndpointPatient {
         }
     }
 
-    @GET
-    @Path("patient")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Patient patient(@Context HttpServletRequest httpServletRequest) {
-        logger.debug("[patient]");
-
-        PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
-
-        return patientHttpSessionAttribute.getPatient();
-    }
+//    @GET
+//    @Path("patient")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Patient patient(@Context HttpServletRequest httpServletRequest) {
+//        logger.debug("[patient]");
+//
+//        PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
+//
+//        return patientHttpSessionAttribute.getPatient();
+//    }
 
     @GET
     @Path("therapeutImgThumbnail")
@@ -113,25 +113,6 @@ public class EndpointPatient {
             return Response.ok(fileInputStream).build();
         } catch (FileNotFoundException e) {
             logger.error("[therapeutImgThumbnail] Image file not found: " + image.getAbsolutePath());
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GET
-    @Path("userImgThumbnail")
-    @Produces("image/png")
-    public Response patientThumbnailImage(
-            @Context HttpServletRequest httpServletRequest) {
-        logger.debug("[userImgThumbnail]");
-
-        assertIsLoggedIn(httpServletRequest);
-
-        File imageFile = new File(Configuration.getDirImageRoot(), "dummies/DummyAvatar.png");
-        try {
-            FileInputStream fileInputStream = new FileInputStream(imageFile);
-            return Response.ok(fileInputStream).build();
-        } catch (FileNotFoundException e) {
-            logger.error("[patientImgThumbnail] Image file not found: " + imageFile.getAbsolutePath());
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
     }

@@ -140,10 +140,10 @@ public class AuthenticationService {
                 return new PatientLoginHttpSessionAttribute(userLoginCompositeVO, rolePatientVO, userLoginCompositeVOTherapist, roleTherapistVO);
 
             } else if (userLoginCompositeVO.isInRoleTherapist()) {
-                return new TherapistHttpSessionAttribute(userLoginCompositeVO.getUserVO());
+                return new TherapistHttpSessionAttribute(userLoginCompositeVO.getUserVO(), userLoginCompositeVO.getUserLoginVO(), userLoginCompositeVO.getRoleTherapistVO());
 
             } else if (userLoginCompositeVO.isInRoleAdmin()) {
-                return new AdminHttpSessionAttribute(userLoginCompositeVO.getUserVO());
+                return new AdminHttpSessionAttribute(userLoginCompositeVO);
 
             } else {
                 throw new IllegalStateException("[" + userLoginCompositeVO.getUsername() + "] Unknown role.");

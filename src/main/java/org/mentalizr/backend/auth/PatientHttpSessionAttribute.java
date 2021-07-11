@@ -36,12 +36,6 @@ public abstract class PatientHttpSessionAttribute extends UserHttpSessionAttribu
         return UserRole.PATIENT;
     }
 
-    public abstract String getFirstName();
-
-    public abstract String getLastName();
-
-    public abstract int getGender();
-
     public abstract Patient getPatient();
 
 }

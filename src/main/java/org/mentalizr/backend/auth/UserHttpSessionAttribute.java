@@ -22,4 +22,9 @@ public abstract class UserHttpSessionAttribute implements Serializable {
 
     public abstract UserRole getUserRole();
 
+    public abstract String getDisplayName();
+
+    public abstract int getGender();
+
+
 }
