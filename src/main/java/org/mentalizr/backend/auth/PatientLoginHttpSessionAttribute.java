@@ -1,9 +1,8 @@
 package org.mentalizr.backend.auth;
 
 import org.mentalizr.backend.rest.entities.Patient;
+import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.RoleTherapistVO;
 
 import java.io.Serializable;
 
@@ -11,17 +10,9 @@ public class PatientLoginHttpSessionAttribute extends PatientHttpSessionAttribut
 
     private final UserLoginCompositeVO userLoginCompositeVO;
 
-    public PatientLoginHttpSessionAttribute(UserLoginCompositeVO userLoginCompositeVO, RolePatientVO rolePatientVO, UserLoginCompositeVO therapistUserLoginCompositeVO, RoleTherapistVO roleTherapistVO) {
-        super(userLoginCompositeVO.getUserVO(), rolePatientVO, therapistUserLoginCompositeVO, roleTherapistVO);
+    public PatientLoginHttpSessionAttribute(UserLoginCompositeVO userLoginCompositeVO) throws DataSourceException {
+        super(userLoginCompositeVO);
         this.userLoginCompositeVO = userLoginCompositeVO;
-    }
-
-    public String getFirstName() {
-        return this.userLoginCompositeVO.getFirstName();
-    }
-
-    public String getLastName() {
-        return this.userLoginCompositeVO.getLastName();
     }
 
     @Override

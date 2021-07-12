@@ -9,6 +9,7 @@ import org.mentalizr.backend.config.ProjectConfiguration;
 import org.mentalizr.backend.proc.event.ExerciseSubmittedEvent;
 import org.mentalizr.backend.rest.entities.Patient;
 import org.mentalizr.backend.rest.entities.Therapeut;
+import org.mentalizr.backend.rest.entities.UserFactory;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManager.fileHierarchy.exceptions.ContentNotFoundException;
@@ -20,6 +21,7 @@ import org.mentalizr.persistence.mongo.formData.*;
 import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.serviceObjects.frontend.application.ApplicationConfigSO;
+import org.mentalizr.serviceObjects.frontend.application.UserSO;
 import org.mentalizr.serviceObjects.frontend.program.ProgramSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,14 +60,13 @@ public class EndpointPatient {
     }
 
     @GET
-    @Path("therapeut")
+    @Path("patient/therapist")
     @Produces(MediaType.APPLICATION_JSON)
-    public Therapeut therapeut(@Context HttpServletRequest httpServletRequest) {
-        logger.debug("[therapeut]");
+    public UserSO therapist(@Context HttpServletRequest httpServletRequest) {
+        logger.debug("[patient:therapist]");
 
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
-
-        return patientHttpSessionAttribute.getTherapeut();
+        return UserFactory.getInstanceForRelatedTherapist(patientHttpSessionAttribute);
     }
 
     @GET

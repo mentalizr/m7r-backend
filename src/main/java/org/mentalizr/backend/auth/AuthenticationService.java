@@ -133,40 +133,23 @@ public class AuthenticationService {
         try {
 
             if (userLoginCompositeVO.isInRolePatient()) {
-                RolePatientVO rolePatientVO = userLoginCompositeVO.getRolePatientVO();
-                RoleTherapistVO roleTherapistVO = rolePatientVO.getRoleTherapistVO();
-                UserLoginCompositeVO userLoginCompositeVOTherapist = UserLoginCompositeDAO.load(roleTherapistVO.getId());
-
-                return new PatientLoginHttpSessionAttribute(userLoginCompositeVO, rolePatientVO, userLoginCompositeVOTherapist, roleTherapistVO);
-
+                return new PatientLoginHttpSessionAttribute(userLoginCompositeVO);
             } else if (userLoginCompositeVO.isInRoleTherapist()) {
-                return new TherapistHttpSessionAttribute(userLoginCompositeVO.getUserVO(), userLoginCompositeVO.getUserLoginVO(), userLoginCompositeVO.getRoleTherapistVO());
-
+                return new TherapistHttpSessionAttribute(userLoginCompositeVO);
             } else if (userLoginCompositeVO.isInRoleAdmin()) {
                 return new AdminHttpSessionAttribute(userLoginCompositeVO);
-
             } else {
                 throw new IllegalStateException("[" + userLoginCompositeVO.getUsername() + "] Unknown role.");
 
             }
         } catch (DataSourceException e) {
             throw new InfrastructureException(e);
-        } catch (EntityNotFoundException e) {
-            throw new IllegalStateException(e);
         }
     }
 
     private static UserHttpSessionAttribute createUserSessionAttributeForAccessKeyUser(UserAccessKeyCompositeVO userAccessKeyCompositeVO) throws InfrastructureException {
-
         try {
-            RolePatientVO rolePatientVO = userAccessKeyCompositeVO.getRolePatientVO();
-            try {
-                RoleTherapistVO roleTherapistVO = rolePatientVO.getRoleTherapistVO();
-                UserLoginCompositeVO userLoginCompositeVOTherapist = UserLoginCompositeDAO.load(roleTherapistVO.getId());
-                return new PatientAnonymousHttpSessionAttribute(userAccessKeyCompositeVO, rolePatientVO, userLoginCompositeVOTherapist, roleTherapistVO);
-            } catch (EntityNotFoundException e) {
-                throw new IllegalStateException("therapist not found for access key user.");
-            }
+            return new PatientAnonymousHttpSessionAttribute(userAccessKeyCompositeVO);
         } catch (DataSourceException e) {
             throw new InfrastructureException(e);
         }

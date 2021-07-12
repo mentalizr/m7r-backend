@@ -1,7 +1,7 @@
 package org.mentalizr.backend.rest.entities;
 
+import org.mentalizr.backend.auth.PatientHttpSessionAttribute;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
-import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.serviceObjects.frontend.application.UserSO;
 
 public class UserFactory {
@@ -14,11 +14,12 @@ public class UserFactory {
         return new UserSO(userId, displayName, gender);
     }
 
-    public static UserSO getInstanceForAnonymous(UserVO userVO) {
-        String userId = userVO.getUserId();
-        String displayName = "N.N.";
-        int gender = 0;
-        return new UserSO(userId, displayName, 0);
+    public static UserSO getInstanceForRelatedTherapist(PatientHttpSessionAttribute patientHttpSessionAttribute) {
+        String userId = patientHttpSessionAttribute.getRoleTherapistVO().getId();
+        String displayName = patientHttpSessionAttribute.getTherapistDisplayName();
+        int gender = patientHttpSessionAttribute.getUserLoginVOTherapist().getGender();
+
+        return new UserSO(userId, displayName, gender);
     }
 
 }
