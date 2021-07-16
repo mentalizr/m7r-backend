@@ -7,8 +7,6 @@ import org.mentalizr.backend.auth.PatientHttpSessionAttribute;
 import org.mentalizr.backend.config.Configuration;
 import org.mentalizr.backend.config.ProjectConfiguration;
 import org.mentalizr.backend.proc.event.ExerciseSubmittedEvent;
-import org.mentalizr.backend.rest.entities.Patient;
-import org.mentalizr.backend.rest.entities.Therapeut;
 import org.mentalizr.backend.rest.entities.UserFactory;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
@@ -20,7 +18,7 @@ import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
 import org.mentalizr.persistence.mongo.formData.*;
 import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
-import org.mentalizr.serviceObjects.frontend.application.ApplicationConfigSO;
+import org.mentalizr.serviceObjects.frontend.patient.ApplicationConfigPatientSO;
 import org.mentalizr.serviceObjects.frontend.application.UserSO;
 import org.mentalizr.serviceObjects.frontend.program.ProgramSO;
 import org.slf4j.Logger;
@@ -37,7 +35,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedIn;
 import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsPatient;
 
 @Path("v1")
@@ -47,16 +44,16 @@ public class EndpointPatient {
     private static final int DELAY_ON_NEXT_CONTENT = 0;
 
     @GET
-    @Path("appConfig")
+    @Path("patient/appConfig")
     @Produces(MediaType.APPLICATION_JSON)
-    public ApplicationConfigSO appConfig(@Context HttpServletRequest httpServletRequest) {
-        logger.debug("[appConfig]");
+    public ApplicationConfigPatientSO appConfig(@Context HttpServletRequest httpServletRequest) {
+        logger.debug("[patient:appConfig]");
 
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
 
         ProjectConfiguration projectConfiguration = ApplicationContext.getProjectConfiguration();
         String projectId = patientHttpSessionAttribute.getRolePatientVO().getProgramId();
-        return projectConfiguration.getApplicationConfigSO(projectId);
+        return projectConfiguration.getApplicationConfigPatientSO(projectId);
     }
 
     @GET
