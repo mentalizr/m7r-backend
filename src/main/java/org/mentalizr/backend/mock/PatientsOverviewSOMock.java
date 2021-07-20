@@ -15,7 +15,9 @@ public class PatientsOverviewSOMock {
         PatientOverviewSO patientOverviewSO
                 = new PatientOverviewSO(
                 "mock-id-1",
-                "Sonja Sonnenschein", true,
+                "Sonja Sonnenschein",
+                "SS",
+                true,
                 "Eine Nachrichtenzeile",
                 "2021-07-08T06:30:00"
         );
@@ -24,7 +26,9 @@ public class PatientsOverviewSOMock {
         patientOverviewSO
                 = new PatientOverviewSO(
                 "mock-id-1",
-                "Max Mustermann", false,
+                "Max Mustermann",
+                "MM",
+                false,
                 "Die erste Zeile einer Nachricht",
                 "2021-07-07T20:30:00",
                 true
@@ -34,7 +38,9 @@ public class PatientsOverviewSOMock {
         patientOverviewSO
                 = new PatientOverviewSO(
                 "mock-id-3",
-                "Mina Musterfrau", false,
+                "Mina Musterfrau",
+                "MM",
+                false,
                 "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.",
                 "2021-07-07T20:30:00",
                 true

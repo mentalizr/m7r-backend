@@ -59,15 +59,22 @@ public class EndpointTherapist {
         // TODO Event Feedback Submitted Event
     }
 
-    @POST
-    @Path("therapist/getPatientsOverview")
+    @GET
+    @Path("therapist/patientsOverview")
+    @Produces(MediaType.APPLICATION_JSON)
     public PatientsOverviewSO getPatientsOverview(@Context HttpServletRequest httpServletRequest) {
         logger.debug("[therapist:getPatientsOverview]");
 
         AuthorizationService.assertIsLoggedInAsTherapist(httpServletRequest);
 
+        logger.debug("Create PatientsOverviewSOMock...");
+
         // TODO mocked
-        return PatientsOverviewSOMock.createPatientsOverviewSO();
+        PatientsOverviewSO patientsOverviewSO = PatientsOverviewSOMock.createPatientsOverviewSO();
+
+        logger.debug("PatientsOverviewSOMock created.");
+
+        return patientsOverviewSO;
     }
 
 }
