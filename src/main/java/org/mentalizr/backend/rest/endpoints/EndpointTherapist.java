@@ -13,6 +13,7 @@ import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
 import org.mentalizr.serviceObjects.frontend.patient.ApplicationConfigPatientSO;
 import org.mentalizr.serviceObjects.frontend.therapist.ApplicationConfigTherapistSO;
 import org.mentalizr.serviceObjects.frontend.therapist.PatientsOverviewSO;
+import org.mentalizr.serviceObjects.frontend.therapist.patientMessage.PatientMessagesSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +76,23 @@ public class EndpointTherapist {
         logger.debug("PatientsOverviewSOMock created.");
 
         return patientsOverviewSO;
+    }
+
+    @GET
+    @Path("therapist/patientMessages/{patientId}")
+    public PatientMessagesSO getPatientMessages(
+            @PathParam("patientId") String patientId,
+            @Context HttpServletRequest httpServletRequest) {
+        logger.debug("[therapist:getPatientMessages]");
+
+        AuthorizationService.assertIsLoggedInAsTherapist(httpServletRequest);
+
+        // TODO mocked
+        PatientMessagesSO patientMessagesSO = new PatientMessagesSO();
+
+        logger.debug("PatientMessagesSO created.");
+
+        return patientMessagesSO;
     }
 
 }
