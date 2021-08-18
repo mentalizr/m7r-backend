@@ -6,6 +6,7 @@ import org.mentalizr.backend.auth.AuthorizationService;
 import org.mentalizr.backend.auth.PatientHttpSessionAttribute;
 import org.mentalizr.backend.auth.TherapistHttpSessionAttribute;
 import org.mentalizr.backend.config.ProjectConfiguration;
+import org.mentalizr.backend.mock.PatientMessagesSOMock;
 import org.mentalizr.backend.mock.PatientsOverviewSOMock;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackData;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataConverter;
@@ -80,15 +81,18 @@ public class EndpointTherapist {
 
     @GET
     @Path("therapist/patientMessages/{patientId}")
+    @Produces(MediaType.APPLICATION_JSON)
     public PatientMessagesSO getPatientMessages(
             @PathParam("patientId") String patientId,
             @Context HttpServletRequest httpServletRequest) {
         logger.debug("[therapist:getPatientMessages]");
 
-        AuthorizationService.assertIsLoggedInAsTherapist(httpServletRequest);
+        TherapistHttpSessionAttribute therapistHttpSessionAttribute
+                = AuthorizationService.assertIsLoggedInAsTherapist(httpServletRequest);
+        String therapistId = therapistHttpSessionAttribute.getUserVO().getUserId();
 
         // TODO mocked
-        PatientMessagesSO patientMessagesSO = new PatientMessagesSO();
+        PatientMessagesSO patientMessagesSO = PatientMessagesSOMock.createPatientMessagesSO(therapistId, patientId);
 
         logger.debug("PatientMessagesSO created.");
 
