@@ -45,27 +45,27 @@ public class PatientMessagesSOMock {
         patientMessageSOList.add(patientMessageSO);
 
 
-//        PatientMessageExerciseSO patientMessageExerciseSO = new PatientMessageExerciseSO();
-//        patientMessageExerciseSO.setSenderId(patientId);
-//        patientMessageExerciseSO.setExerciseId("my-exercise-id-1");
-//        patientMessageExerciseSO.setHasFeedback(true);
-//        patientMessageExerciseSO.setDate("2021-08-01");
-//        patientMessageExerciseSO.setNew(false);
-//
-//        patientMessageSO = new PatientMessageSO();
-//        patientMessageSO.setPatientMessageExercise(patientMessageExerciseSO);
-//        patientMessageSOList.add(patientMessageSO);
-//
-//        patientMessageExerciseSO = new PatientMessageExerciseSO();
-//        patientMessageExerciseSO.setSenderId(patientId);
-//        patientMessageExerciseSO.setExerciseId("my-exercise-id-2");
-//        patientMessageExerciseSO.setHasFeedback(false);
-//        patientMessageExerciseSO.setDate("2021-08-02");
-//        patientMessageExerciseSO.setNew(true);
-//
-//        patientMessageSO = new PatientMessageSO();
-//        patientMessageSO.setPatientMessageExercise(patientMessageExerciseSO);
-//        patientMessageSOList.add(patientMessageSO);
+        PatientMessageExerciseSO patientMessageExerciseSO = new PatientMessageExerciseSO();
+        patientMessageExerciseSO.setSenderId(patientId);
+        patientMessageExerciseSO.setExerciseId("my-exercise-id-1");
+        patientMessageExerciseSO.setHasFeedback(true);
+        patientMessageExerciseSO.setDate("01.08.2021 09:17");
+        patientMessageExerciseSO.setNew(false);
+
+        patientMessageSO = new PatientMessageSO();
+        patientMessageSO.setPatientMessageExercise(patientMessageExerciseSO);
+        patientMessageSOList.add(patientMessageSO);
+
+        patientMessageExerciseSO = new PatientMessageExerciseSO();
+        patientMessageExerciseSO.setSenderId(patientId);
+        patientMessageExerciseSO.setExerciseId("my-exercise-id-2");
+        patientMessageExerciseSO.setHasFeedback(false);
+        patientMessageExerciseSO.setDate("02.08.2021 11:44");
+        patientMessageExerciseSO.setNew(true);
+
+        patientMessageSO = new PatientMessageSO();
+        patientMessageSO.setPatientMessageExercise(patientMessageExerciseSO);
+        patientMessageSOList.add(patientMessageSO);
 
         PatientMessageFeedbackSO patientMessageFeedbackSO = new PatientMessageFeedbackSO();
         patientMessageFeedbackSO.setSenderId(therapistId);
