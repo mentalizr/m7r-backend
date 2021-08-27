@@ -1,6 +1,7 @@
 package org.mentalizr.backend.rest.endpoints;
 
 import org.bson.Document;
+import org.mentalizr.backend.adapter.ProgramAdapter;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.auth.AuthorizationService;
 import org.mentalizr.backend.auth.PatientHttpSessionAttribute;
@@ -12,6 +13,7 @@ import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManager.fileHierarchy.exceptions.ContentNotFoundException;
 import org.mentalizr.contentManager.fileHierarchy.exceptions.ProgramNotFoundException;
+import org.mentalizr.contentManager.programStructure.ProgramStructure;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackData;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataConverter;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
@@ -78,7 +80,8 @@ public class EndpointPatient {
         String programId = rolePatientVO.getProgramId();
         ContentManager contentManager = ApplicationContext.getContentManager();
         try {
-            return contentManager.getProgramSO(programId);
+            ProgramStructure programStructure = contentManager.getProgramStructure(programId);
+            return ProgramAdapter.getProgramSO(programStructure);
         } catch (ProgramNotFoundException e) {
             logger.error("Program not found. Cause: " + e.getMessage());
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
