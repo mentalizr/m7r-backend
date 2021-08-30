@@ -4,9 +4,7 @@ import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceExce
 import org.mentalizr.persistence.rdbms.barnacle.dao.UserAccessKeyDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserAccessKeyPatientCompositeDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyPatientCompositeVO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.UserAccessKeyVO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
+import org.mentalizr.persistence.rdbms.barnacle.vo.*;
 import org.mentalizr.persistence.rdbms.utils.PasswordGenerator;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyCollectionSO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyCreateSO;
@@ -82,25 +80,26 @@ public class PatientAccessKeyCreate {
     }
 
     public static void createUserAccessKeyPatientComposite(
-            String uuid,
+            String userId,
             boolean active,
             String accessKey,
             String programId,
             String therapistId
     ) throws DataSourceException {
 
-        UserVO userVO = new UserVO(uuid);
+        UserVO userVO = new UserVO(userId);
         userVO.setActive(active);
 
-        UserAccessKeyVO userAccessKeyVO = new UserAccessKeyVO(uuid);
+        UserAccessKeyVO userAccessKeyVO = new UserAccessKeyVO(userId);
         userAccessKeyVO.setAccessKey(accessKey);
 
-        RolePatientVO rolePatientVO = new RolePatientVO(uuid);
-        rolePatientVO.setProgramId(programId);
+        RolePatientVO rolePatientVO = new RolePatientVO(userId);
         rolePatientVO.setTherapistId(therapistId);
 
+        PatientProgramVO patientProgramVO = new PatientProgramVO(new PatientProgramPK(userId, programId));
+
         UserAccessKeyPatientCompositeVO userAccessKeyPatientCompositeVO =
-                new UserAccessKeyPatientCompositeVO(userVO, userAccessKeyVO, rolePatientVO);
+                new UserAccessKeyPatientCompositeVO(userVO, userAccessKeyVO, rolePatientVO, patientProgramVO);
         UserAccessKeyPatientCompositeDAO.create(userAccessKeyPatientCompositeVO);
     }
 

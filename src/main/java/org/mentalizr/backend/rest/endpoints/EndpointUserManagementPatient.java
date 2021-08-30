@@ -10,11 +10,14 @@ import org.mentalizr.backend.rest.service.assertPrecondition.AssertUserLogin;
 import org.mentalizr.backend.rest.service.userManagement.loginPatient.LoginPatientGetAllService;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
+import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
 import org.mentalizr.persistence.rdbms.barnacle.dao.RolePatientDAO;
 import org.mentalizr.persistence.rdbms.barnacle.dao.UserDAO;
 import org.mentalizr.persistence.rdbms.barnacle.dao.UserLoginDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserLoginCompositeDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
+import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramPK;
+import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserLoginVO;
 import org.mentalizr.persistence.rdbms.userAdmin.UserLogin;
@@ -76,9 +79,12 @@ public class EndpointUserManagementPatient {
             String userUUID = userLoginCompositeVO.getUserId();
 
             RolePatientVO rolePatientVO = new RolePatientVO(userUUID);
-            rolePatientVO.setProgramId(patientAddSO.getProgramId());
             rolePatientVO.setTherapistId(patientAddSO.getTherapistId());
             RolePatientDAO.create(rolePatientVO);
+
+            PatientProgramVO patientProgramVO =
+                    new PatientProgramVO(new PatientProgramPK(userUUID, patientAddSO.getProgramId()));
+            PatientProgramDAO.create(patientProgramVO);
 
             patientAddSO.setUuid(userUUID);
 
@@ -136,9 +142,13 @@ public class EndpointUserManagementPatient {
             );
 
             RolePatientVO rolePatientVO = new RolePatientVO(patientRestoreSO.getUuid());
-            rolePatientVO.setProgramId(patientRestoreSO.getProgramId());
             rolePatientVO.setTherapistId(patientRestoreSO.getTherapistId());
             RolePatientDAO.create(rolePatientVO);
+
+            PatientProgramPK patientProgramPK
+                    = new PatientProgramPK(patientRestoreSO.getUuid(), patientRestoreSO.getProgramId());
+            PatientProgramVO patientProgramVO = new PatientProgramVO(patientProgramPK);
+            PatientProgramDAO.create(patientProgramVO);
 
             return ResponseFactory.ok();
 
@@ -165,7 +175,9 @@ public class EndpointUserManagementPatient {
 
         try {
             UserLoginCompositeVO userLoginCompositeVO = UserLoginCompositeDAO.findByUk_username(username);
-            RolePatientVO rolePatientVO = RolePatientDAO.load(userLoginCompositeVO.getUserId());
+            String userId = userLoginCompositeVO.getUserId();
+            RolePatientVO rolePatientVO = RolePatientDAO.load(userId);
+            PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userId);
 
             PatientRestoreSO patientRestoreSO = new PatientRestoreSO();
             patientRestoreSO.setUuid(userLoginCompositeVO.getUserId());
@@ -181,7 +193,7 @@ public class EndpointUserManagementPatient {
             patientRestoreSO.setLastname(userLoginCompositeVO.getLastName());
             patientRestoreSO.setGender(userLoginCompositeVO.getGender());
 
-            patientRestoreSO.setProgramId(rolePatientVO.getProgramId());
+            patientRestoreSO.setProgramId(patientProgramVO.getProgramId());
             patientRestoreSO.setTherapistId(rolePatientVO.getTherapistId());
 
             return ResponseFactory.ok(patientRestoreSO);
@@ -219,7 +231,9 @@ public class EndpointUserManagementPatient {
 
         try {
             UserLoginVO userLoginVO = UserLoginDAO.findByUk_username(username);
+            PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userLoginVO.getUserId());
 
+            PatientProgramDAO.delete(patientProgramVO.getPK());
             RolePatientDAO.delete(userLoginVO.getUserId());
             UserLoginDAO.delete(userLoginVO.getUserId());
             UserDAO.delete(userLoginVO.getUserId());

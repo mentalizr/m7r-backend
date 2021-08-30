@@ -18,10 +18,10 @@ import org.mentalizr.persistence.mongo.feedbackData.FeedbackData;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataConverter;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
 import org.mentalizr.persistence.mongo.formData.*;
-import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
+import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
-import org.mentalizr.serviceObjects.frontend.patient.ApplicationConfigPatientSO;
 import org.mentalizr.serviceObjects.frontend.application.UserSO;
+import org.mentalizr.serviceObjects.frontend.patient.ApplicationConfigPatientSO;
 import org.mentalizr.serviceObjects.frontend.program.ProgramSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ public class EndpointPatient {
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
 
         ProjectConfiguration projectConfiguration = ApplicationContext.getProjectConfiguration();
-        String projectId = patientHttpSessionAttribute.getRolePatientVO().getProgramId();
+        String projectId = patientHttpSessionAttribute.getPatientProgramVO().getProgramId();
         return projectConfiguration.getApplicationConfigPatientSO(projectId);
     }
 
@@ -76,8 +76,8 @@ public class EndpointPatient {
 
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
 
-        RolePatientVO rolePatientVO = patientHttpSessionAttribute.getRolePatientVO();
-        String programId = rolePatientVO.getProgramId();
+        PatientProgramVO patientProgramVO = patientHttpSessionAttribute.getPatientProgramVO();
+        String programId = patientProgramVO.getProgramId();
         ContentManager contentManager = ApplicationContext.getContentManager();
         try {
             ProgramStructure programStructure = contentManager.getProgramStructure(programId);
@@ -87,17 +87,6 @@ public class EndpointPatient {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
-
-//    @GET
-//    @Path("patient")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Patient patient(@Context HttpServletRequest httpServletRequest) {
-//        logger.debug("[patient]");
-//
-//        PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
-//
-//        return patientHttpSessionAttribute.getPatient();
-//    }
 
     @GET
     @Path("therapeutImgThumbnail")
@@ -133,8 +122,8 @@ public class EndpointPatient {
 
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
 
-        RolePatientVO rolePatientVO = patientHttpSessionAttribute.getRolePatientVO();
-        String programId = rolePatientVO.getProgramId();
+        PatientProgramVO patientProgramVO = patientHttpSessionAttribute.getPatientProgramVO();
+        String programId = patientProgramVO.getProgramId();
         return getMediaResource(programId, img);
     }
 
@@ -148,8 +137,8 @@ public class EndpointPatient {
 
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
 
-        RolePatientVO rolePatientVO = patientHttpSessionAttribute.getRolePatientVO();
-        String programId = rolePatientVO.getProgramId();
+        PatientProgramVO patientProgramVO = patientHttpSessionAttribute.getPatientProgramVO();
+        String programId = patientProgramVO.getProgramId();
         return getMediaResource(programId, audioVideo);
     }
 
