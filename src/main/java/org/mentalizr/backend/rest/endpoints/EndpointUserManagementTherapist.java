@@ -17,6 +17,7 @@ import org.mentalizr.persistence.rdbms.barnacle.vo.UserLoginVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.persistence.rdbms.userAdmin.UserLogin;
 import org.mentalizr.serviceObjects.userManagement.TherapistAddSO;
+import org.mentalizr.serviceObjects.userManagement.TherapistAddSOX;
 import org.mentalizr.serviceObjects.userManagement.TherapistRestoreCollectionSO;
 import org.mentalizr.serviceObjects.userManagement.TherapistRestoreSO;
 import org.slf4j.Logger;
@@ -47,6 +48,8 @@ public class EndpointUserManagementTherapist {
 
         logger.info("[userManagement:therapist:add] username: [" + therapistAddSO.getUsername() + "]");
 
+        logger.debug("therapist title: " + therapistAddSO.getTitle());
+
         try {
             AssertUserLogin.existsNotWithUsername(
                     therapistAddSO.getUsername(),
@@ -66,9 +69,11 @@ public class EndpointUserManagementTherapist {
             String userUUID = userLoginCompositeVO.getUserId();
 
             RoleTherapistVO roleTherapistVO = new RoleTherapistVO(userUUID);
+            roleTherapistVO.setTitle(therapistAddSO.getTitle());
             RoleTherapistDAO.create(roleTherapistVO);
 
             therapistAddSO.setUuid(userUUID);
+            therapistAddSO.setPasswordHash(userLoginCompositeVO.getPasswordHash());
 
             return ResponseFactory.ok(therapistAddSO);
 
