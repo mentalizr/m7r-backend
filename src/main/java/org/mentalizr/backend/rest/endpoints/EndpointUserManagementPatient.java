@@ -87,6 +87,7 @@ public class EndpointUserManagementPatient {
             PatientProgramDAO.create(patientProgramVO);
 
             patientAddSO.setUuid(userUUID);
+            patientAddSO.setPasswordHash(userLoginCompositeVO.getPasswordHash());
 
             return ResponseFactory.ok(patientAddSO);
 
