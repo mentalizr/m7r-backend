@@ -40,7 +40,7 @@ public class ProgramAdapter {
         for (Module module : moduleList) {
             ModuleSO moduleSO = new ModuleSO();
             moduleSO.setId(module.getId());
-            moduleSO.setName(moduleSO.getName());
+            moduleSO.setName(module.getName());
             moduleSO.setSubmodules(getSubmoduleSOList(module.getSubmodules()));
             moduleSOList.add(moduleSO);
         }
