@@ -81,7 +81,9 @@ public class EndpointPatient {
         ContentManager contentManager = ApplicationContext.getContentManager();
         try {
             ProgramStructure programStructure = contentManager.getProgramStructure(programId);
-            return ProgramAdapter.getProgramSO(programStructure);
+            ProgramSO programSO = ProgramAdapter.getProgramSO(programStructure);
+            programSO.setBlocking(patientProgramVO.getBlocking());
+            return programSO;
         } catch (ProgramNotFoundException e) {
             logger.error("Program not found. Cause: " + e.getMessage());
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
