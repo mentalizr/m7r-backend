@@ -33,7 +33,7 @@ public class Patient {
     }
 
     public Patient(UserVO userVO) {
-        this.userId = userVO.getUserId();
+        this.userId = userVO.getId();
         this.name = "N.N.";
     }
 

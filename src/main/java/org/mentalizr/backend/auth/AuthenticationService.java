@@ -1,8 +1,8 @@
 package org.mentalizr.backend.auth;
 
+import de.arthurpicht.utils.core.assertion.AssertMethodPrecondition;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
-import de.arthurpicht.utils.core.assertion.AssertMethodPrecondition;
 import org.mentalizr.backend.exceptions.InfrastructureException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
@@ -10,8 +10,6 @@ import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserAccessKeyComposit
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserLoginCompositeDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.RoleTherapistVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +74,7 @@ public class AuthenticationService {
             httpSession.invalidate();
 
             if (userHttpSessionAttribute != null) {
-                authLogger.info("[" + userHttpSessionAttribute.getUserVO().getUserId() + "] logout");
+                authLogger.info("[" + userHttpSessionAttribute.getUserVO().getId() + "] logout");
             } else {
                 logger.error("Session inconsistent: session found valid without session attribute. Unknown user logged out.");
             }

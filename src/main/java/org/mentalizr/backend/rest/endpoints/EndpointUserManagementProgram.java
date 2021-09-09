@@ -72,7 +72,7 @@ public class EndpointUserManagementProgram {
 
             for (ProgramVO programVO : programVOList) {
                 ProgramSO programSO = new ProgramSO();
-                programSO.setProgramId(programVO.getProgramId());
+                programSO.setProgramId(programVO.getId());
 
                 collection.add(programSO);
             }

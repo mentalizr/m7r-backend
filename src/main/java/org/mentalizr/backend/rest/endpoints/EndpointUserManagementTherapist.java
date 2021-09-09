@@ -17,7 +17,6 @@ import org.mentalizr.persistence.rdbms.barnacle.vo.UserLoginVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.persistence.rdbms.userAdmin.UserLogin;
 import org.mentalizr.serviceObjects.userManagement.TherapistAddSO;
-import org.mentalizr.serviceObjects.userManagement.TherapistAddSOX;
 import org.mentalizr.serviceObjects.userManagement.TherapistRestoreCollectionSO;
 import org.mentalizr.serviceObjects.userManagement.TherapistRestoreSO;
 import org.slf4j.Logger;
@@ -189,11 +188,11 @@ public class EndpointUserManagementTherapist {
             List<RoleTherapistVO> roleTherapistVOList = RoleTherapistDAO.findAll();
 
             for (RoleTherapistVO roleTherapistVO : roleTherapistVOList) {
-                UserVO userVO = UserDAO.load(roleTherapistVO.getId());
-                UserLoginVO userLoginVO = UserLoginDAO.load(roleTherapistVO.getId());
+                UserVO userVO = UserDAO.load(roleTherapistVO.getUserId());
+                UserLoginVO userLoginVO = UserLoginDAO.load(roleTherapistVO.getUserId());
 
                 TherapistRestoreSO therapistRestoreSO = new TherapistRestoreSO();
-                therapistRestoreSO.setUuid(roleTherapistVO.getId());
+                therapistRestoreSO.setUuid(roleTherapistVO.getUserId());
                 therapistRestoreSO.setActive(userVO.getActive());
                 Date firstActive = userVO.getFirstActive();
                 therapistRestoreSO.setFirstActive(firstActive != null ? firstActive.toString() : null);

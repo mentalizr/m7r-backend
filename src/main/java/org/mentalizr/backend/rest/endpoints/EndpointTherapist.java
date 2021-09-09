@@ -89,7 +89,7 @@ public class EndpointTherapist {
 
         TherapistHttpSessionAttribute therapistHttpSessionAttribute
                 = AuthorizationService.assertIsLoggedInAsTherapist(httpServletRequest);
-        String therapistId = therapistHttpSessionAttribute.getUserVO().getUserId();
+        String therapistId = therapistHttpSessionAttribute.getUserVO().getId();
 
         // TODO mocked
         PatientMessagesSO patientMessagesSO = PatientMessagesSOMock.createPatientMessagesSO(therapistId, patientId);

@@ -215,7 +215,7 @@ public class EndpointPatient {
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
         UserVO userVO = patientHttpSessionAttribute.getUserVO();
 
-        Document document = FormDataMongoHandler.fetch(userVO.getUserId(), contentId);
+        Document document = FormDataMongoHandler.fetch(userVO.getId(), contentId);
         if (document == null) return new FormData();
 
         FormData formData = FormDataConverter.convert(document);
@@ -245,7 +245,7 @@ public class EndpointPatient {
         UserVO userVO = patientHttpSessionAttribute.getUserVO();
         String contentId = formData.getContentId();
 
-        Document documentPreexisting = FormDataMongoHandler.fetch(userVO.getUserId(), contentId);
+        Document documentPreexisting = FormDataMongoHandler.fetch(userVO.getId(), contentId);
         FormData formDataPreexisting = documentPreexisting == null ? new FormData() : FormDataConverter.convert(documentPreexisting);
 
         logger.debug("formDataPreexisting: " + formDataPreexisting);
@@ -321,7 +321,7 @@ public class EndpointPatient {
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
         UserVO userVO = patientHttpSessionAttribute.getUserVO();
 
-        Document document = FeedbackDataMongoHandler.fetch(userVO.getUserId(), contentId);
+        Document document = FeedbackDataMongoHandler.fetch(userVO.getId(), contentId);
         if (document == null) return new FeedbackData();
 
         FeedbackData feedbackData = FeedbackDataConverter.convert(document);
