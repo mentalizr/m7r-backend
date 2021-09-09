@@ -69,10 +69,10 @@ public class EndpointPatient {
     }
 
     @GET
-    @Path("program")
+    @Path("patient/program")
     @Produces(MediaType.APPLICATION_JSON)
     public ProgramSO program(@Context HttpServletRequest httpServletRequest) {
-        logger.debug("[program]");
+        logger.debug("[patient:program]");
 
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
 
@@ -89,7 +89,7 @@ public class EndpointPatient {
     }
 
     @GET
-    @Path("therapeutImgThumbnail")
+    @Path("patient/therapeutImgThumbnail")
     @Produces("image/png")
     public Response therapeutThumbnailImage(
             @Context HttpServletRequest httpServletRequest) {
