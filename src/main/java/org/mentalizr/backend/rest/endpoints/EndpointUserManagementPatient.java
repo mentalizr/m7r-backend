@@ -84,6 +84,7 @@ public class EndpointUserManagementPatient {
 
             PatientProgramVO patientProgramVO =
                     new PatientProgramVO(new PatientProgramPK(userUUID, patientAddSO.getProgramId()));
+            patientProgramVO.setBlocking(patientAddSO.isBlocking());
             PatientProgramDAO.create(patientProgramVO);
 
             patientAddSO.setUuid(userUUID);
@@ -149,6 +150,7 @@ public class EndpointUserManagementPatient {
             PatientProgramPK patientProgramPK
                     = new PatientProgramPK(patientRestoreSO.getUuid(), patientRestoreSO.getProgramId());
             PatientProgramVO patientProgramVO = new PatientProgramVO(patientProgramPK);
+            patientProgramVO.setBlocking(patientRestoreSO.isBlocking());
             PatientProgramDAO.create(patientProgramVO);
 
             return ResponseFactory.ok();
@@ -195,6 +197,7 @@ public class EndpointUserManagementPatient {
             patientRestoreSO.setGender(userLoginCompositeVO.getGender());
 
             patientRestoreSO.setProgramId(patientProgramVO.getProgramId());
+            patientRestoreSO.setBlocking(patientProgramVO.getBlocking());
             patientRestoreSO.setTherapistId(rolePatientVO.getTherapistId());
 
             return ResponseFactory.ok(patientRestoreSO);

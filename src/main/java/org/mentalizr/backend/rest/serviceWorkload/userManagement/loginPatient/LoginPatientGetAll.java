@@ -42,6 +42,7 @@ public class LoginPatientGetAll {
             patientRestoreSO.setLastname(userLoginCompositeVO.getLastName());
             patientRestoreSO.setGender(userLoginCompositeVO.getGender());
             patientRestoreSO.setProgramId(patientProgramVO.getProgramId());
+            patientRestoreSO.setBlocking(patientProgramVO.getBlocking());
             patientRestoreSO.setTherapistId(rolePatientVO.getTherapistId());
 
             patientRestoreCollectionSO.getCollection().add(patientRestoreSO);
