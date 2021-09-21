@@ -51,8 +51,8 @@ public class AuthorizationService {
             PatientHttpSessionAttribute patientHttpSessionAttribute = checkAsPatient(httpServletRequest);
 
             UserVO userVO = patientHttpSessionAttribute.getUserVO();
-            if (!userVO.getUserId().equals(actualUserId)) {
-                throw new UnauthorizedException("[checkAsPatientWithUserId] failed: Expected UserId: " + userVO.getUserId() + " Actual UserId: " +  actualUserId);
+            if (!userVO.getId().equals(actualUserId)) {
+                throw new UnauthorizedException("[checkAsPatientWithUserId] failed: Expected UserId: " + userVO.getId() + " Actual UserId: " +  actualUserId);
             }
 
             return patientHttpSessionAttribute;

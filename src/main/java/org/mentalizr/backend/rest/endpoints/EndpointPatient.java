@@ -74,10 +74,10 @@ public class EndpointPatient {
     }
 
     @GET
-    @Path("program")
+    @Path("patient/program")
     @Produces(MediaType.APPLICATION_JSON)
     public ProgramSO program(@Context HttpServletRequest httpServletRequest) {
-        logger.debug("[program]");
+        logger.debug("[patient:program]");
 
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
 
@@ -86,7 +86,9 @@ public class EndpointPatient {
         ContentManager contentManager = ApplicationContext.getContentManager();
         try {
             ProgramStructure programStructure = contentManager.getProgramStructure(programId);
-            return ProgramAdapter.getProgramSO(programStructure);
+            ProgramSO programSO = ProgramAdapter.getProgramSO(programStructure);
+            programSO.setBlocking(patientProgramVO.getBlocking());
+            return programSO;
         } catch (ProgramNotFoundException e) {
             logger.error("Program not found. Cause: " + e.getMessage());
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
@@ -94,7 +96,7 @@ public class EndpointPatient {
     }
 
     @GET
-    @Path("therapeutImgThumbnail")
+    @Path("patient/therapeutImgThumbnail")
     @Produces("image/png")
     public Response therapeutThumbnailImage(
             @Context HttpServletRequest httpServletRequest) {
@@ -220,7 +222,7 @@ public class EndpointPatient {
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
         UserVO userVO = patientHttpSessionAttribute.getUserVO();
 
-        Document document = FormDataMongoHandler.fetch(userVO.getUserId(), contentId);
+        Document document = FormDataMongoHandler.fetch(userVO.getId(), contentId);
         if (document == null) return new FormDataSO();
 
         FormDataSO formDataSO = FormDataConverter.convert(document);
@@ -250,7 +252,7 @@ public class EndpointPatient {
         UserVO userVO = patientHttpSessionAttribute.getUserVO();
         String contentId = formDataSO.getContentId();
 
-        Document documentPreexisting = FormDataMongoHandler.fetch(userVO.getUserId(), contentId);
+        Document documentPreexisting = FormDataMongoHandler.fetch(userVO.getId(), contentId);
         FormDataSO formDataSOPreexisting = documentPreexisting == null ? new FormDataSO() : FormDataConverter.convert(documentPreexisting);
 
         logger.debug("formDataSOPreexisting: " + formDataSOPreexisting);
@@ -327,7 +329,7 @@ public class EndpointPatient {
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
         UserVO userVO = patientHttpSessionAttribute.getUserVO();
 
-        Document document = FeedbackDataMongoHandler.fetch(userVO.getUserId(), contentId);
+        Document document = FeedbackDataMongoHandler.fetch(userVO.getId(), contentId);
         if (document == null) return new FeedbackData();
 
         FeedbackData feedbackData = FeedbackDataConverter.convert(document);
