@@ -8,6 +8,7 @@ import org.mentalizr.backend.auth.PatientHttpSessionAttribute;
 import org.mentalizr.backend.config.Configuration;
 import org.mentalizr.backend.config.ProjectConfiguration;
 import org.mentalizr.backend.proc.event.ExerciseSubmittedEvent;
+import org.mentalizr.backend.rest.ResponseFactory;
 import org.mentalizr.backend.rest.entities.UserFactory;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
@@ -17,11 +18,15 @@ import org.mentalizr.contentManager.programStructure.ProgramStructure;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackData;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataConverter;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
-import org.mentalizr.persistence.mongo.formData.*;
+import org.mentalizr.persistence.mongo.formData.FormDataConverter;
+import org.mentalizr.persistence.mongo.formData.FormDataMongoHandler;
+import org.mentalizr.persistence.mongo.formData.FormElementDataMap;
 import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.serviceObjects.frontend.application.UserSO;
 import org.mentalizr.serviceObjects.frontend.patient.ApplicationConfigPatientSO;
+import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
+import org.mentalizr.serviceObjects.frontend.patient.formData.FormElementDataSO;
 import org.mentalizr.serviceObjects.frontend.program.ProgramSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -206,106 +211,108 @@ public class EndpointPatient {
     @GET
     @Path("formData/{contentId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public FormData getFormData(
+    public FormDataSO getFormData(
             @PathParam("contentId") String contentId,
             @Context HttpServletRequest httpServletRequest) {
 
-        logger.debug("[formData] [" + contentId + "]");
+        logger.debug("[formDataSO] [" + contentId + "]");
 
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
         UserVO userVO = patientHttpSessionAttribute.getUserVO();
 
         Document document = FormDataMongoHandler.fetch(userVO.getUserId(), contentId);
-        if (document == null) return new FormData();
+        if (document == null) return new FormDataSO();
 
-        FormData formData = FormDataConverter.convert(document);
+        FormDataSO formDataSO = FormDataConverter.convert(document);
 
         logger.debug(document.toJson());
 
-        return formData;
+        return formDataSO;
     }
 
     @POST
     @Path("saveFormData")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void saveFormData(FormData formData,
+    public Response saveFormData(FormDataSO formDataSO,
                              @Context HttpServletRequest httpServletRequest) {
 
-        logger.debug("[saveFormData] new");
+        logger.debug("[saveFormData]");
 
         // TODO DEBUG
-        logger.debug("FormData: " + formData.toString());
+        logger.debug("FormDataSO: " + formDataSO.toString());
 
         PatientHttpSessionAttribute patientHttpSessionAttribute;
 
-        patientHttpSessionAttribute = AuthorizationService.assertIsLoggedInAsPatientWithUserId(httpServletRequest, formData.getUserId());
+        patientHttpSessionAttribute = AuthorizationService.assertIsLoggedInAsPatientWithUserId(httpServletRequest, formDataSO.getUserId());
 
-        FormElementDataMap formElementDataMapUpdate = new FormElementDataMap(formData);
+        FormElementDataMap formElementDataMapUpdate = new FormElementDataMap(formDataSO);
 
         UserVO userVO = patientHttpSessionAttribute.getUserVO();
-        String contentId = formData.getContentId();
+        String contentId = formDataSO.getContentId();
 
         Document documentPreexisting = FormDataMongoHandler.fetch(userVO.getUserId(), contentId);
-        FormData formDataPreexisting = documentPreexisting == null ? new FormData() : FormDataConverter.convert(documentPreexisting);
+        FormDataSO formDataSOPreexisting = documentPreexisting == null ? new FormDataSO() : FormDataConverter.convert(documentPreexisting);
 
-        logger.debug("formDataPreexisting: " + formDataPreexisting);
+        logger.debug("formDataSOPreexisting: " + formDataSOPreexisting);
 
-        List<FormElementData> formElementDataListPreexisting = formDataPreexisting.getFormElementDataList();
-        List<FormElementData> formElementDataListPost = new ArrayList<>();
+        List<FormElementDataSO> formElementDataSOListPreexisting = formDataSOPreexisting.getFormElementDataList();
+        List<FormElementDataSO> formElementDataSOListPost = new ArrayList<>();
 
-        for (FormElementData formElementDataPreexisting : formElementDataListPreexisting) {
+        for (FormElementDataSO formElementDataSOPreexisting : formElementDataSOListPreexisting) {
 
-            String formElementId = formElementDataPreexisting.getFormElementId();
+            String formElementId = formElementDataSOPreexisting.getFormElementId();
             boolean updateFormElementData = formElementDataMapUpdate.containsFormElementId(formElementId);
 
             if (updateFormElementData) {
-                formElementDataListPost.add(formElementDataMapUpdate.getFormElementData(formElementId));
+                formElementDataSOListPost.add(formElementDataMapUpdate.getFormElementData(formElementId));
             } else {
-                formElementDataListPost.add(formElementDataPreexisting);
+                formElementDataSOListPost.add(formElementDataSOPreexisting);
             }
         }
 
-        List<FormElementData> formElementDataListUpdate = formData.getFormElementDataList();
-        FormElementDataMap formElementDataMapPreexisting = new FormElementDataMap(formDataPreexisting);
-        for (FormElementData formElementDataUpdate : formElementDataListUpdate) {
+        List<FormElementDataSO> formElementDataSOListUpdate = formDataSO.getFormElementDataList();
+        FormElementDataMap formElementDataMapPreexisting = new FormElementDataMap(formDataSOPreexisting);
+        for (FormElementDataSO formElementDataSOUpdate : formElementDataSOListUpdate) {
 
-            String formElementId = formElementDataUpdate.getFormElementId();
+            String formElementId = formElementDataSOUpdate.getFormElementId();
             boolean takeOver = !formElementDataMapPreexisting.containsFormElementId(formElementId);
 
             if (takeOver) {
-                formElementDataListPost.add(formElementDataUpdate);
+                formElementDataSOListPost.add(formElementDataSOUpdate);
             }
         }
 
-        FormData formDataPost = new FormData(
-                formData.getUserId(),
-                formData.getContentId(),
-                formData.isEditable(),
-                formElementDataListPost
+        FormDataSO formDataSOPost = new FormDataSO(
+                formDataSO.getUserId(),
+                formDataSO.getContentId(),
+                formDataSO.isEditable(),
+                formElementDataSOListPost
         );
 
-        Document document = FormDataConverter.convert(formDataPost);
+        Document document = FormDataConverter.convert(formDataSOPost);
         FormDataMongoHandler.createOrUpdate(document);
 
         logger.debug(document.toJson());
+
+        return ResponseFactory.ok();
     }
 
     @POST
     @Path("sendFormData")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void sendFormData(FormData formData,
+    public void sendFormData(FormDataSO formDataSO,
                              @Context HttpServletRequest httpServletRequest) {
 
         logger.debug("[sendFormData]");
 
-        AuthorizationService.assertIsLoggedInAsPatientWithUserId(httpServletRequest, formData.getUserId());
+        AuthorizationService.assertIsLoggedInAsPatientWithUserId(httpServletRequest, formDataSO.getUserId());
 
-        Document document = FormDataConverter.convert(formData);
+        Document document = FormDataConverter.convert(formDataSO);
         FormDataMongoHandler.createOrUpdate(document);
 
         logger.debug(document.toJson());
 
-        new ExerciseSubmittedEvent(formData).fire();
+        new ExerciseSubmittedEvent(formDataSO).fire();
     }
 
     @GET
@@ -316,7 +323,6 @@ public class EndpointPatient {
             @Context HttpServletRequest httpServletRequest) {
 
         logger.debug("[feedbackData]");
-
 
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
         UserVO userVO = patientHttpSessionAttribute.getUserVO();
