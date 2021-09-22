@@ -19,14 +19,13 @@ import org.mentalizr.persistence.mongo.feedbackData.FeedbackData;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataConverter;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
 import org.mentalizr.persistence.mongo.formData.FormDataConverter;
+import org.mentalizr.persistence.mongo.formData.FormDataMerger;
 import org.mentalizr.persistence.mongo.formData.FormDataMongoHandler;
-import org.mentalizr.persistence.mongo.formData.FormElementDataMap;
 import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.serviceObjects.frontend.application.UserSO;
 import org.mentalizr.serviceObjects.frontend.patient.ApplicationConfigPatientSO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
-import org.mentalizr.serviceObjects.frontend.patient.formData.FormElementDataSO;
 import org.mentalizr.serviceObjects.frontend.program.ProgramSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +38,6 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsPatient;
 
@@ -243,58 +240,9 @@ public class EndpointPatient {
         // TODO DEBUG
         logger.debug("FormDataSO: " + formDataSO.toString());
 
-        PatientHttpSessionAttribute patientHttpSessionAttribute;
+        AuthorizationService.assertIsLoggedInAsPatientWithUserId(httpServletRequest, formDataSO.getUserId());
 
-        patientHttpSessionAttribute = AuthorizationService.assertIsLoggedInAsPatientWithUserId(httpServletRequest, formDataSO.getUserId());
-
-        FormElementDataMap formElementDataMapUpdate = new FormElementDataMap(formDataSO);
-
-        UserVO userVO = patientHttpSessionAttribute.getUserVO();
-        String contentId = formDataSO.getContentId();
-
-        Document documentPreexisting = FormDataMongoHandler.fetch(userVO.getId(), contentId);
-        FormDataSO formDataSOPreexisting = documentPreexisting == null ? new FormDataSO() : FormDataConverter.convert(documentPreexisting);
-
-        logger.debug("formDataSOPreexisting: " + formDataSOPreexisting);
-
-        List<FormElementDataSO> formElementDataSOListPreexisting = formDataSOPreexisting.getFormElementDataList();
-        List<FormElementDataSO> formElementDataSOListPost = new ArrayList<>();
-
-        for (FormElementDataSO formElementDataSOPreexisting : formElementDataSOListPreexisting) {
-
-            String formElementId = formElementDataSOPreexisting.getFormElementId();
-            boolean updateFormElementData = formElementDataMapUpdate.containsFormElementId(formElementId);
-
-            if (updateFormElementData) {
-                formElementDataSOListPost.add(formElementDataMapUpdate.getFormElementData(formElementId));
-            } else {
-                formElementDataSOListPost.add(formElementDataSOPreexisting);
-            }
-        }
-
-        List<FormElementDataSO> formElementDataSOListUpdate = formDataSO.getFormElementDataList();
-        FormElementDataMap formElementDataMapPreexisting = new FormElementDataMap(formDataSOPreexisting);
-        for (FormElementDataSO formElementDataSOUpdate : formElementDataSOListUpdate) {
-
-            String formElementId = formElementDataSOUpdate.getFormElementId();
-            boolean takeOver = !formElementDataMapPreexisting.containsFormElementId(formElementId);
-
-            if (takeOver) {
-                formElementDataSOListPost.add(formElementDataSOUpdate);
-            }
-        }
-
-        FormDataSO formDataSOPost = new FormDataSO(
-                formDataSO.getUserId(),
-                formDataSO.getContentId(),
-                formDataSO.isEditable(),
-                formElementDataSOListPost
-        );
-
-        Document document = FormDataConverter.convert(formDataSOPost);
-        FormDataMongoHandler.createOrUpdate(document);
-
-        logger.debug(document.toJson());
+        FormDataMongoHandler.mergeWithPreexisting(formDataSO);
 
         return ResponseFactory.ok();
     }
