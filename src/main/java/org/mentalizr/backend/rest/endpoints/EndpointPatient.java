@@ -15,17 +15,19 @@ import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManager.fileHierarchy.exceptions.ContentNotFoundException;
 import org.mentalizr.contentManager.fileHierarchy.exceptions.ProgramNotFoundException;
 import org.mentalizr.contentManager.programStructure.ProgramStructure;
+import org.mentalizr.persistence.mongo.MongoDates;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackData;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataConverter;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
 import org.mentalizr.persistence.mongo.formData.FormDataConverter;
-import org.mentalizr.persistence.mongo.formData.FormDataMerger;
 import org.mentalizr.persistence.mongo.formData.FormDataMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.serviceObjects.frontend.application.UserSO;
 import org.mentalizr.serviceObjects.frontend.patient.ApplicationConfigPatientSO;
+import org.mentalizr.serviceObjects.frontend.patient.formData.ExerciseSO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
+import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSOs;
 import org.mentalizr.serviceObjects.frontend.program.ProgramSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -250,19 +252,36 @@ public class EndpointPatient {
     @POST
     @Path("sendFormData")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void sendFormData(FormDataSO formDataSO,
+    public Response sendFormData(FormDataSO formDataSO,
                              @Context HttpServletRequest httpServletRequest) {
 
         logger.debug("[sendFormData]");
 
         AuthorizationService.assertIsLoggedInAsPatientWithUserId(httpServletRequest, formDataSO.getUserId());
 
+        if (FormDataSOs.isSent(formDataSO)) {
+            logger.error("Inconsistency check failed on calling [sendFormData]: FormData is already sent.");
+            return ResponseFactory.preconditionFailed("FormData is already sent.");
+        }
+
+        if (!FormDataSOs.isExercise(formDataSO)) {
+            logger.error("Inconsistency check failed on calling [sendFormData]: FormData that is no exercise can not be sent.");
+            return ResponseFactory.preconditionFailed("FormData is no exercise.");
+        }
+
+        ExerciseSO exerciseSO = formDataSO.getExerciseSO();
+        exerciseSO.setSent(true);
+        exerciseSO.setLastModifiedTimestamp(MongoDates.currentTimestampAsISO());
+
         Document document = FormDataConverter.convert(formDataSO);
         FormDataMongoHandler.createOrUpdate(document);
 
         logger.debug(document.toJson());
 
+        // TODO
         new ExerciseSubmittedEvent(formDataSO).fire();
+
+        return ResponseFactory.ok();
     }
 
     @GET
