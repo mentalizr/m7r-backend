@@ -15,11 +15,13 @@ import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManager.fileHierarchy.exceptions.ContentNotFoundException;
 import org.mentalizr.contentManager.fileHierarchy.exceptions.ProgramNotFoundException;
 import org.mentalizr.contentManager.programStructure.ProgramStructure;
+import org.mentalizr.persistence.mongo.DocumentNotFoundException;
 import org.mentalizr.persistence.mongo.MongoDates;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackData;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataConverter;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
 import org.mentalizr.persistence.mongo.formData.FormDataConverter;
+import org.mentalizr.persistence.mongo.formData.FormDataDAO;
 import org.mentalizr.persistence.mongo.formData.FormDataMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
@@ -27,6 +29,7 @@ import org.mentalizr.serviceObjects.frontend.application.UserSO;
 import org.mentalizr.serviceObjects.frontend.patient.ApplicationConfigPatientSO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.ExerciseSO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
+import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSOX;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSOs;
 import org.mentalizr.serviceObjects.frontend.program.ProgramSO;
 import org.slf4j.Logger;
@@ -221,13 +224,8 @@ public class EndpointPatient {
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
         UserVO userVO = patientHttpSessionAttribute.getUserVO();
 
-        Document document = FormDataMongoHandler.fetch(userVO.getId(), contentId);
-        if (document == null) return new FormDataSO();
-
-        FormDataSO formDataSO = FormDataConverter.convert(document);
-
-        logger.debug(document.toJson());
-
+        FormDataSO formDataSO = FormDataDAO.obtain(userVO.getId(), contentId);
+        logger.debug(FormDataSOX.toJsonWithFormatting(formDataSO));
         return formDataSO;
     }
 

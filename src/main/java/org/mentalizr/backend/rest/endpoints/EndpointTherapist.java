@@ -3,17 +3,23 @@ package org.mentalizr.backend.rest.endpoints;
 import org.bson.Document;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.auth.AuthorizationService;
-import org.mentalizr.backend.auth.PatientHttpSessionAttribute;
 import org.mentalizr.backend.auth.TherapistHttpSessionAttribute;
 import org.mentalizr.backend.config.ProjectConfiguration;
 import org.mentalizr.backend.mock.PatientMessagesSOMock;
 import org.mentalizr.backend.mock.PatientsOverviewSOMock;
+import org.mentalizr.backend.rest.ResponseFactory;
+import org.mentalizr.persistence.mongo.DocumentNotFoundException;
+import org.mentalizr.persistence.mongo.MongoDates;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackData;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataConverter;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
-import org.mentalizr.serviceObjects.frontend.patient.ApplicationConfigPatientSO;
+import org.mentalizr.persistence.mongo.formData.FormDataDAO;
+import org.mentalizr.serviceObjects.frontend.patient.formData.FeedbackSO;
+import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
+import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSOs;
 import org.mentalizr.serviceObjects.frontend.therapist.ApplicationConfigTherapistSO;
 import org.mentalizr.serviceObjects.frontend.therapist.PatientsOverviewSO;
+import org.mentalizr.serviceObjects.frontend.therapist.feedbackSubmission.FeedbackSubmissionSO;
 import org.mentalizr.serviceObjects.frontend.therapist.patientMessage.PatientMessagesSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsPatient;
 import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsTherapist;
 
 @Path("v1")
@@ -97,6 +103,49 @@ public class EndpointTherapist {
         logger.debug("PatientMessagesSO created.");
 
         return patientMessagesSO;
+    }
+
+    @POST
+    @Path("therapist/submitFeedback")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response submitFeedback(FeedbackSubmissionSO feedbackSubmissionSO,
+                                 @Context HttpServletRequest httpServletRequest) {
+
+        logger.debug("[therapist/submitFeedback]");
+
+        TherapistHttpSessionAttribute therapistHttpSessionAttribute
+                = AuthorizationService.assertIsLoggedInAsTherapist(httpServletRequest);
+        String therapistId = therapistHttpSessionAttribute.getUserVO().getId();
+        String userId = feedbackSubmissionSO.getUserId();
+        String contentId = feedbackSubmissionSO.getContentId();
+
+        FormDataSO formDataSO;
+        try {
+            formDataSO = FormDataDAO.fetch(userId, contentId);
+        } catch (DocumentNotFoundException e) {
+            throw new WebApplicationException("Inconsistency check failed: No FormData found for submitted feedback.",
+                    Response.Status.INTERNAL_SERVER_ERROR);
+        }
+
+        if (!FormDataSOs.isExercise(formDataSO))
+            throw new WebApplicationException("Inconsistency check failed: Content is not exercise.",
+                    Response.Status.INTERNAL_SERVER_ERROR);
+
+        if (FormDataSOs.hasFeedback(formDataSO))
+            throw new WebApplicationException("Inconsistency check failed: Feedback already submitted.",
+                    Response.Status.INTERNAL_SERVER_ERROR);
+
+        FeedbackSO feedbackSO = new FeedbackSO();
+        feedbackSO.setText(feedbackSubmissionSO.getFeedback());
+        feedbackSO.setCreatedTimestamp(MongoDates.currentTimestampAsISO());
+        feedbackSO.setTherapistId(therapistId);
+        feedbackSO.setSeenByPatient(false);
+        feedbackSO.setSeenByPatientTimestamp(MongoDates.epochAsISO());
+        formDataSO.setFeedbackSO(feedbackSO);
+
+        FormDataDAO.createOrUpdate(formDataSO);
+
+        return ResponseFactory.ok();
     }
 
 }
