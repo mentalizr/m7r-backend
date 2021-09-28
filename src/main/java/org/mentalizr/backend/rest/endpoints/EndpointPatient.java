@@ -239,7 +239,6 @@ public class EndpointPatient {
 
         logger.debug("[saveFormData]");
 
-        // TODO DEBUG
         logger.debug("FormDataSO: " + formDataSO.toString());
 
         AuthorizationService.assertIsLoggedInAsPatientWithUserId(httpServletRequest, formDataSO.getUserId());
@@ -265,9 +264,11 @@ public class EndpointPatient {
         }
 
         if (!FormDataSOs.isExercise(formDataSO)) {
-            logger.error("Inconsistency check failed on calling [sendFormData]: FormData that is no exercise can not be sent.");
+            logger.error("Inconsistency check failed on calling [sendFormData]: FormData that is no exercise.");
             return ResponseFactory.preconditionFailed("FormData is no exercise.");
         }
+
+        // TODO: Check if contentId is consistent and exercise
 
         ExerciseSO exerciseSO = formDataSO.getExerciseSO();
         exerciseSO.setSent(true);
