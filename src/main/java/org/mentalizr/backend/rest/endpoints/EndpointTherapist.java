@@ -8,6 +8,7 @@ import org.mentalizr.backend.config.ProjectConfiguration;
 import org.mentalizr.backend.mock.PatientMessagesSOMock;
 import org.mentalizr.backend.mock.PatientsOverviewSOMock;
 import org.mentalizr.backend.rest.ResponseFactory;
+import org.mentalizr.commons.Dates;
 import org.mentalizr.persistence.mongo.DocumentNotFoundException;
 import org.mentalizr.persistence.mongo.MongoDates;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackData;
@@ -137,10 +138,10 @@ public class EndpointTherapist {
 
         FeedbackSO feedbackSO = new FeedbackSO();
         feedbackSO.setText(feedbackSubmissionSO.getFeedback());
-        feedbackSO.setCreatedTimestamp(MongoDates.currentTimestampAsISO());
+        feedbackSO.setCreatedTimestamp(Dates.currentTimestampAsISO());
         feedbackSO.setTherapistId(therapistId);
         feedbackSO.setSeenByPatient(false);
-        feedbackSO.setSeenByPatientTimestamp(MongoDates.epochAsISO());
+        feedbackSO.setSeenByPatientTimestamp(Dates.epochAsISO());
         formDataSO.setFeedbackSO(feedbackSO);
 
         FormDataDAO.createOrUpdate(formDataSO);

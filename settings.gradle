@@ -1,5 +1,6 @@
 rootProject.name = 'm7r-backend'
 
+includeBuild('../m7r-commons')
 includeBuild('../m7r-persistence-rdbms')
 includeBuild('../m7r-persistence-mongo')
 includeBuild('../m7r-backend-proc')

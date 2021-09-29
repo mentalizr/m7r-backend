@@ -21,6 +21,7 @@ repositories {
 dependencies {
     providedCompile 'jakarta.servlet:jakarta.servlet-api:4.0.2'
 
+    implementation 'org.mentalizr:m7r-commons:0.0.1-SNAPSHOT'
     implementation 'org.mentalizr:m7r-backend-proc:1.0-SNAPSHOT'
     implementation 'org.mentalizr:m7r-persistence-mongo:1.0-SNAPSHOT'
     implementation 'org.mentalizr:m7r-persistence-rdbms:1.0-SNAPSHOT'
@@ -40,10 +41,10 @@ dependencies {
 
     implementation 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.3'
 
-    implementation 'ch.qos.logback:logback-classic:1.2.3'
+    implementation 'ch.qos.logback:logback-classic:1.2.6'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.0'
 }
 
 test {

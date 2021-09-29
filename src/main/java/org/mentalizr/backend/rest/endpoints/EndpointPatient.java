@@ -10,13 +10,12 @@ import org.mentalizr.backend.config.ProjectConfiguration;
 import org.mentalizr.backend.proc.event.ExerciseSubmittedEvent;
 import org.mentalizr.backend.rest.ResponseFactory;
 import org.mentalizr.backend.rest.entities.UserFactory;
+import org.mentalizr.commons.Dates;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.contentManager.fileHierarchy.exceptions.ContentNotFoundException;
 import org.mentalizr.contentManager.fileHierarchy.exceptions.ProgramNotFoundException;
 import org.mentalizr.contentManager.programStructure.ProgramStructure;
-import org.mentalizr.persistence.mongo.DocumentNotFoundException;
-import org.mentalizr.persistence.mongo.MongoDates;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackData;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataConverter;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
@@ -270,7 +269,7 @@ public class EndpointPatient {
 
         ExerciseSO exerciseSO = formDataSO.getExerciseSO();
         exerciseSO.setSent(true);
-        exerciseSO.setLastModifiedTimestamp(MongoDates.currentTimestampAsISO());
+        exerciseSO.setLastModifiedTimestamp(Dates.currentTimestampAsISO());
 
         Document document = FormDataConverter.convert(formDataSO);
         FormDataMongoHandler.createOrUpdate(document);
