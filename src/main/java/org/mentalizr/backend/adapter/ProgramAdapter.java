@@ -65,6 +65,7 @@ public class ProgramAdapter {
             StepSO stepSO = new StepSO();
             stepSO.setId(step.getId());
             stepSO.setName(step.getName());
+            stepSO.setExercise(step.isExercise());
             stepSO.setFeedback(step.isFeedback());
             stepSOList.add(stepSO);
         }
