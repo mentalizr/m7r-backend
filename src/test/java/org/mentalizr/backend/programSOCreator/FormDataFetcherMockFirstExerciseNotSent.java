@@ -1,16 +1,17 @@
-package org.mentalizr.backend.adapter;
+package org.mentalizr.backend.programSOCreator;
 
+import org.mentalizr.persistence.mongo.DocumentNotFoundException;
 import org.mentalizr.serviceObjects.frontend.patient.formData.ExerciseSO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
 
 import java.util.ArrayList;
 
-public class FormDataFetcherMockFirstExerciseSentNoFeedback implements FormDataFetcher {
+public class FormDataFetcherMockFirstExerciseNotSent implements FormDataFetcher {
 
     @Override
-    public FormDataSO fetch(String userId, String contentId) {
+    public FormDataSO fetch(String userId, String contentId) throws DocumentNotFoundException {
         if (contentId.equals("m1_sm1_s2")) return build(userId);
-        return null;
+        throw new DocumentNotFoundException();
     }
 
     private static FormDataSO build(String userId) {
@@ -19,7 +20,7 @@ public class FormDataFetcherMockFirstExerciseSentNoFeedback implements FormDataF
         formDataSO.setContentId("m1_sm1_s2");
 
         ExerciseSO exerciseSO = new ExerciseSO();
-        exerciseSO.setSent(true);
+        exerciseSO.setSent(false);
         formDataSO.setExerciseSO(exerciseSO);
 
         formDataSO.setFormElementDataList(new ArrayList<>());

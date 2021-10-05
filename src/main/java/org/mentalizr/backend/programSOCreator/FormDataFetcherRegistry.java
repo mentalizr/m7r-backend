@@ -1,4 +1,4 @@
-package org.mentalizr.backend.adapter;
+package org.mentalizr.backend.programSOCreator;
 
 public class FormDataFetcherRegistry {
 

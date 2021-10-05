@@ -1,4 +1,4 @@
-package org.mentalizr.backend.adapter;
+package org.mentalizr.backend.programSOCreator;
 
 import org.mentalizr.contentManager.programStructure.Module;
 import org.mentalizr.contentManager.programStructure.ProgramStructure;

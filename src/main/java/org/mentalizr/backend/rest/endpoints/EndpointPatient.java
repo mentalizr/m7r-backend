@@ -1,7 +1,7 @@
 package org.mentalizr.backend.rest.endpoints;
 
 import org.bson.Document;
-import org.mentalizr.backend.adapter.ProgramAdapter;
+import org.mentalizr.backend.programSOCreator.ProgramAdapter;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.auth.AuthorizationService;
 import org.mentalizr.backend.auth.PatientHttpSessionAttribute;

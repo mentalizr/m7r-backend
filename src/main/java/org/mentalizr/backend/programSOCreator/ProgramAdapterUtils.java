@@ -1,4 +1,4 @@
-package org.mentalizr.backend.adapter;
+package org.mentalizr.backend.programSOCreator;
 
 import org.mentalizr.serviceObjects.frontend.program.ModuleSO;
 import org.mentalizr.serviceObjects.frontend.program.ProgramSO;
