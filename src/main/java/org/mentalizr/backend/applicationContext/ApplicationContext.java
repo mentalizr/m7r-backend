@@ -23,8 +23,13 @@ public class ApplicationContext {
     public static void initialize() {
         logger.info("Start ApplicationContext initialization.");
 
-        projectConfiguration = new ProjectConfiguration();
-        contentManager = initContentManager();
+        try {
+            projectConfiguration = new ProjectConfiguration();
+            contentManager = initContentManager();
+        } catch (RuntimeException e) {
+            logger.error("Initialization failed: " + e.getMessage());
+            throw e;
+        }
 
         isInitialized = true;
         logger.info("ApplicationContext initialized successfully.");
