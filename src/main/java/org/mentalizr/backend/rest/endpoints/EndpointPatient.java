@@ -1,6 +1,8 @@
 package org.mentalizr.backend.rest.endpoints;
 
 import org.bson.Document;
+import org.mentalizr.backend.programSOCreator.FormDataFetcher;
+import org.mentalizr.backend.programSOCreator.FormDataFetcherMongo;
 import org.mentalizr.backend.programSOCreator.ProgramAdapter;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.auth.AuthorizationService;
@@ -8,6 +10,7 @@ import org.mentalizr.backend.auth.PatientHttpSessionAttribute;
 import org.mentalizr.backend.config.Configuration;
 import org.mentalizr.backend.config.ProjectConfiguration;
 import org.mentalizr.backend.proc.event.ExerciseSubmittedEvent;
+import org.mentalizr.backend.programSOCreator.ProgramSOCreator;
 import org.mentalizr.backend.rest.ResponseFactory;
 import org.mentalizr.backend.rest.entities.UserFactory;
 import org.mentalizr.commons.Dates;
@@ -83,13 +86,21 @@ public class EndpointPatient {
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
 
         PatientProgramVO patientProgramVO = patientHttpSessionAttribute.getPatientProgramVO();
-        String programId = patientProgramVO.getProgramId();
+        ProgramStructure programStructure = obtainProgramStructure(patientProgramVO.getProgramId());
+        FormDataFetcher formDataFetcher = new FormDataFetcherMongo();
+        ProgramSOCreator programSOCreator = new ProgramSOCreator(
+                patientProgramVO.getUserId(),
+                patientProgramVO.getBlocking(),
+                programStructure,
+                formDataFetcher
+        );
+        return programSOCreator.create();
+    }
+
+    private ProgramStructure obtainProgramStructure(String programId) {
         ContentManager contentManager = ApplicationContext.getContentManager();
         try {
-            ProgramStructure programStructure = contentManager.getProgramStructure(programId);
-            ProgramSO programSO = ProgramAdapter.getProgramSO(programStructure);
-            programSO.setBlocking(patientProgramVO.getBlocking());
-            return programSO;
+            return contentManager.getProgramStructure(programId);
         } catch (ProgramNotFoundException e) {
             logger.error("Program not found. Cause: " + e.getMessage());
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
