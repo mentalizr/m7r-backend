@@ -51,11 +51,16 @@ public class EndpointAdminFormData {
 
         assertIsLoggedInAsAdmin(httpServletRequest);
 
+        logger.debug("restore ... credentials OK");
+
         Document document = FormDataConverter.convert(formDataSO);
+
+        logger.debug("document created by conversion");
         try {
             FormDataMongoHandler.restore(document);
             return ResponseFactory.ok();
         } catch (DocumentPreexistingException e) {
+            logger.warn("rest method admin/formData/restore: document cannot be restored as it is preexisting.");
             return ResponseFactory.preconditionFailed(e.getMessage());
         }
     }
