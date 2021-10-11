@@ -44,6 +44,7 @@ public class EndpointAdminFormData {
     @POST
     @Path("admin/formData/restore")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response restore(FormDataSO formDataSO,
                                  @Context HttpServletRequest httpServletRequest) {
 

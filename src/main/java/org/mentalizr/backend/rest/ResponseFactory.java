@@ -23,6 +23,7 @@ public class ResponseFactory {
     public static Response preconditionFailed(String message) {
         // TODO use official HTTP error code PRECONDITION_FAILED
         return Response.status(PRECONDITION_FAILED).entity(ErrorSO.withMessage(message)).build();
+//        return Response.status(PRECONDITION_FAILED).build();
     }
 
     public static Response preconditionFailed(ServicePreconditionFailedException e) {
