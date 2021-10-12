@@ -87,7 +87,7 @@ public class EndpointUserManagementPatient {
             patientProgramVO.setBlocking(patientAddSO.isBlocking());
             PatientProgramDAO.create(patientProgramVO);
 
-            patientAddSO.setUuid(userUUID);
+            patientAddSO.setUserId(userUUID);
             patientAddSO.setPasswordHash(userLoginCompositeVO.getPasswordHash());
 
             return ResponseFactory.ok(patientAddSO);
@@ -114,7 +114,7 @@ public class EndpointUserManagementPatient {
         try {
 
             AssertUser.existsNot(
-                    patientRestoreSO.getUuid(),
+                    patientRestoreSO.getUserId(),
                     "User with specified UUID [%s] is preexisting."
             );
 
@@ -133,7 +133,7 @@ public class EndpointUserManagementPatient {
 
 
             UserLogin.restore(
-                    patientRestoreSO.getUuid(),
+                    patientRestoreSO.getUserId(),
                     patientRestoreSO.isActive(),
                     patientRestoreSO.getUsername(),
                     patientRestoreSO.getPasswordHash(),
@@ -143,12 +143,12 @@ public class EndpointUserManagementPatient {
                     patientRestoreSO.getGender()
             );
 
-            RolePatientVO rolePatientVO = new RolePatientVO(patientRestoreSO.getUuid());
+            RolePatientVO rolePatientVO = new RolePatientVO(patientRestoreSO.getUserId());
             rolePatientVO.setTherapistId(patientRestoreSO.getTherapistId());
             RolePatientDAO.create(rolePatientVO);
 
             PatientProgramPK patientProgramPK
-                    = new PatientProgramPK(patientRestoreSO.getUuid(), patientRestoreSO.getProgramId());
+                    = new PatientProgramPK(patientRestoreSO.getUserId(), patientRestoreSO.getProgramId());
             PatientProgramVO patientProgramVO = new PatientProgramVO(patientProgramPK);
             patientProgramVO.setBlocking(patientRestoreSO.isBlocking());
             PatientProgramDAO.create(patientProgramVO);
@@ -183,7 +183,7 @@ public class EndpointUserManagementPatient {
             PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userId);
 
             PatientRestoreSO patientRestoreSO = new PatientRestoreSO();
-            patientRestoreSO.setUuid(userLoginCompositeVO.getUserId());
+            patientRestoreSO.setUserId(userLoginCompositeVO.getUserId());
             patientRestoreSO.setActive(userLoginCompositeVO.isActive());
             Date firstActive = userLoginCompositeVO.getFirstActive();
             patientRestoreSO.setFirstActive(firstActive != null ? firstActive.toString() : null);

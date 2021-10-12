@@ -71,7 +71,7 @@ public class EndpointUserManagementTherapist {
             roleTherapistVO.setTitle(therapistAddSO.getTitle());
             RoleTherapistDAO.create(roleTherapistVO);
 
-            therapistAddSO.setUuid(userUUID);
+            therapistAddSO.setUserId(userUUID);
             therapistAddSO.setPasswordHash(userLoginCompositeVO.getPasswordHash());
 
             return ResponseFactory.ok(therapistAddSO);
@@ -99,7 +99,7 @@ public class EndpointUserManagementTherapist {
         try {
             try {
                 AssertUser.existsNot(
-                        therapistRestoreSO.getUuid(),
+                        therapistRestoreSO.getUserId(),
                         "User with specified UUID [%s] is preexisting."
                 );
             } catch (ServicePreconditionFailedException e) {
@@ -107,7 +107,7 @@ public class EndpointUserManagementTherapist {
             }
 
             UserLogin.restore(
-                    therapistRestoreSO.getUuid(),
+                    therapistRestoreSO.getUserId(),
                     therapistRestoreSO.isActive(),
                     therapistRestoreSO.getUsername(),
                     therapistRestoreSO.getPasswordHash(),
@@ -117,7 +117,7 @@ public class EndpointUserManagementTherapist {
                     therapistRestoreSO.getGender()
             );
 
-            RoleTherapistVO roleTherapistVO = new RoleTherapistVO(therapistRestoreSO.getUuid());
+            RoleTherapistVO roleTherapistVO = new RoleTherapistVO(therapistRestoreSO.getUserId());
             RoleTherapistDAO.create(roleTherapistVO);
 
             return ResponseFactory.ok();
@@ -146,7 +146,7 @@ public class EndpointUserManagementTherapist {
             RoleTherapistVO roleTherapistVO = RoleTherapistDAO.load(userLoginCompositeVO.getUserId());
 
             TherapistRestoreSO therapistRestoreSO = new TherapistRestoreSO();
-            therapistRestoreSO.setUuid(userLoginCompositeVO.getUserId());
+            therapistRestoreSO.setUserId(userLoginCompositeVO.getUserId());
             therapistRestoreSO.setActive(userLoginCompositeVO.isActive());
             Date firstActive = userLoginCompositeVO.getFirstActive();
             therapistRestoreSO.setFirstActive(firstActive != null ? firstActive.toString() : null);
@@ -192,7 +192,7 @@ public class EndpointUserManagementTherapist {
                 UserLoginVO userLoginVO = UserLoginDAO.load(roleTherapistVO.getUserId());
 
                 TherapistRestoreSO therapistRestoreSO = new TherapistRestoreSO();
-                therapistRestoreSO.setUuid(roleTherapistVO.getUserId());
+                therapistRestoreSO.setUserId(roleTherapistVO.getUserId());
                 therapistRestoreSO.setActive(userVO.getActive());
                 Date firstActive = userVO.getFirstActive();
                 therapistRestoreSO.setFirstActive(firstActive != null ? firstActive.toString() : null);

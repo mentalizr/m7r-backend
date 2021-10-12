@@ -33,7 +33,7 @@ public class LoginPatientGetAll {
             PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userId);
 
             PatientRestoreSO patientRestoreSO = new PatientRestoreSO();
-            patientRestoreSO.setUuid(userLoginCompositeVO.getUserId());
+            patientRestoreSO.setUserId(userLoginCompositeVO.getUserId());
             patientRestoreSO.setActive(userLoginCompositeVO.isActive());
             patientRestoreSO.setUsername(userLoginCompositeVO.getUsername());
             patientRestoreSO.setPasswordHash(userLoginCompositeVO.getPasswordHash());

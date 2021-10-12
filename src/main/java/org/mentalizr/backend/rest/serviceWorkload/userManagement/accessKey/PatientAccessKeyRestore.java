@@ -14,7 +14,7 @@ public class PatientAccessKeyRestore {
     public static void restore(AccessKeyRestoreSO accessKeyRestoreSO) throws DataSourceException {
 
         PatientAccessKeyCreate.createUserAccessKeyPatientComposite(
-                accessKeyRestoreSO.getId(),
+                accessKeyRestoreSO.getUserId(),
                 accessKeyRestoreSO.isActive(),
                 accessKeyRestoreSO.getAccessKey(),
                 accessKeyRestoreSO.getProgramId(),
