@@ -142,7 +142,7 @@ public class EndpointTherapist {
         feedbackSO.setTherapistId(therapistId);
         feedbackSO.setSeenByPatient(false);
         feedbackSO.setSeenByPatientTimestamp(Dates.epochAsISO());
-        formDataSO.setFeedbackSO(feedbackSO);
+        formDataSO.setFeedback(feedbackSO);
 
         FormDataDAO.createOrUpdate(formDataSO);
 

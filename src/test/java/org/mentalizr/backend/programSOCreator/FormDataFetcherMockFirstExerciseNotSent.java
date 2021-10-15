@@ -21,7 +21,7 @@ public class FormDataFetcherMockFirstExerciseNotSent implements FormDataFetcher 
 
         ExerciseSO exerciseSO = new ExerciseSO();
         exerciseSO.setSent(false);
-        formDataSO.setExerciseSO(exerciseSO);
+        formDataSO.setExercise(exerciseSO);
 
         formDataSO.setFormElementDataList(new ArrayList<>());
 

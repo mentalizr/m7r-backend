@@ -23,13 +23,13 @@ public class FormDataFetcherMockSecondExerciseNotSent implements FormDataFetcher
 
         ExerciseSO exerciseSO = new ExerciseSO();
         exerciseSO.setSent(true);
-        formDataSO.setExerciseSO(exerciseSO);
+        formDataSO.setExercise(exerciseSO);
 
         formDataSO.setFormElementDataList(new ArrayList<>());
 
         FeedbackSO feedbackSO = new FeedbackSO();
         feedbackSO.setText("text");
-        formDataSO.setFeedbackSO(feedbackSO);
+        formDataSO.setFeedback(feedbackSO);
 
         return formDataSO;
     }
@@ -41,7 +41,7 @@ public class FormDataFetcherMockSecondExerciseNotSent implements FormDataFetcher
 
         ExerciseSO exerciseSO = new ExerciseSO();
         exerciseSO.setSent(false);
-        formDataSO.setExerciseSO(exerciseSO);
+        formDataSO.setExercise(exerciseSO);
 
         formDataSO.setFormElementDataList(new ArrayList<>());
 

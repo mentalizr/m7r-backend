@@ -240,7 +240,7 @@ public class EndpointPatient {
     }
 
     @POST
-    @Path("saveFormData")
+    @Path("patient/formData/save")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response saveFormData(FormDataSO formDataSO,
                              @Context HttpServletRequest httpServletRequest) {
@@ -257,7 +257,7 @@ public class EndpointPatient {
     }
 
     @POST
-    @Path("sendFormData")
+    @Path("patient/formData/send")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response sendFormData(FormDataSO formDataSO,
                              @Context HttpServletRequest httpServletRequest) {
@@ -266,19 +266,23 @@ public class EndpointPatient {
 
         AuthorizationService.assertIsLoggedInAsPatientWithUserId(httpServletRequest, formDataSO.getUserId());
 
+        // TODO debug
+        logger.debug("FormDate to save:");
+        logger.debug(FormDataSOX.toJsonWithFormatting(formDataSO));
+
         if (FormDataSOs.isSent(formDataSO)) {
             logger.error("Inconsistency check failed on calling [sendFormData]: FormData is already sent.");
             return ResponseFactory.preconditionFailed("FormData is already sent.");
         }
 
         if (!FormDataSOs.isExercise(formDataSO)) {
-            logger.error("Inconsistency check failed on calling [sendFormData]: FormData that is no exercise.");
+            logger.error("Inconsistency check failed on calling [sendFormData]: FormData is no exercise.");
             return ResponseFactory.preconditionFailed("FormData is no exercise.");
         }
 
         // TODO: Check if contentId is consistent and exercise
 
-        ExerciseSO exerciseSO = formDataSO.getExerciseSO();
+        ExerciseSO exerciseSO = formDataSO.getExercise();
         exerciseSO.setSent(true);
         exerciseSO.setLastModifiedTimestamp(Dates.currentTimestampAsISO());
 
