@@ -19,6 +19,14 @@ public class TherapistHttpSessionAttribute extends UserHttpSessionAttribute impl
         this.roleTherapistVO = userLoginCompositeVO.getRoleTherapistVO();
     }
 
+    public RoleTherapistVO getRoleTherapistVO() {
+        return roleTherapistVO;
+    }
+
+    public UserLoginVO getUserLoginVO() {
+        return userLoginVO;
+    }
+
     @Override
     public UserRole getUserRole() {
         return UserRole.THERAPIST;

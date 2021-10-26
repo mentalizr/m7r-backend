@@ -7,6 +7,7 @@ import org.mentalizr.backend.auth.TherapistHttpSessionAttribute;
 import org.mentalizr.backend.config.ProjectConfiguration;
 import org.mentalizr.backend.mock.PatientMessagesSOMock;
 import org.mentalizr.backend.mock.PatientsOverviewSOMock;
+import org.mentalizr.backend.patientsOverviewSOCreator.PatientsOverviewSOCreator;
 import org.mentalizr.backend.rest.ResponseFactory;
 import org.mentalizr.commons.Dates;
 import org.mentalizr.persistence.mongo.DocumentNotFoundException;
@@ -76,14 +77,24 @@ public class EndpointTherapist {
 
         AuthorizationService.assertIsLoggedInAsTherapist(httpServletRequest);
 
-        logger.debug("Create PatientsOverviewSOMock...");
+        TherapistHttpSessionAttribute therapistHttpSessionAttribute
+                = AuthorizationService.assertIsLoggedInAsTherapist(httpServletRequest);
 
-        // TODO mocked
-        PatientsOverviewSO patientsOverviewSO = PatientsOverviewSOMock.createPatientsOverviewSO();
+        // TODO debug
+        logger.debug("Therapist username: [" + therapistHttpSessionAttribute.getUserLoginVO().getUsername() + "].");
 
-        logger.debug("PatientsOverviewSOMock created.");
+        // TODO remove mock
+        //noinspection SpellCheckingInspection
+        if (therapistHttpSessionAttribute.getUserLoginVO().getUsername().equals("tmock")) {
+            logger.debug("Create PatientsOverviewSOMock...");
+            PatientsOverviewSO patientsOverviewSO = PatientsOverviewSOMock.createPatientsOverviewSO();
+            logger.debug("PatientsOverviewSOMock created.");
+            return patientsOverviewSO;
+        }
 
-        return patientsOverviewSO;
+        PatientsOverviewSOCreator patientsOverviewSOCreator
+                = new PatientsOverviewSOCreator(therapistHttpSessionAttribute.getRoleTherapistVO());
+        return patientsOverviewSOCreator.create();
     }
 
     @GET

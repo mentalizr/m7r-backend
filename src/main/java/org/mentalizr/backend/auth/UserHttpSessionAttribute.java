@@ -26,5 +26,4 @@ public abstract class UserHttpSessionAttribute implements Serializable {
 
     public abstract int getGender();
 
-
 }
