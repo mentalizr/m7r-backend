@@ -30,25 +30,27 @@ public class CurrentActivity {
         return Dates.isYoungerThan(timestampExercise, timestampFeedback) ? lastExercise.get() : lastFeedback.get();
     }
 
-    public String getLastActiveAsGermanDate() {
-        if (this.lastActiveFormDataSO == null) return "";
+    public String getLastActiveAsGermanDateTime() {
+        if (notHasLastActiveFormData()) return "";
         String isoDate;
-        if (FormDataSOs.hasFeedback(this.lastActiveFormDataSO)) {
+        if (hasFeedback() && isFeedbackSeenByPatient()) {
             isoDate = this.lastActiveFormDataSO.getFeedback().getSeenByPatientTimestamp();
-        } else if (FormDataSOs.isExercise(this.lastActiveFormDataSO)) {
+        } else if (hasFeedback() && !isFeedbackSeenByPatient()) {
+            isoDate = this.lastActiveFormDataSO.getExercise().getLastModifiedTimestamp();
+        } else if (hasExercise()) {
             isoDate = this.lastActiveFormDataSO.getExercise().getLastModifiedTimestamp();
         } else {
             throw createInconsistencyException();
         }
-        return Dates.asGermanDate(isoDate);
+        return Dates.asGermanDateTime(isoDate);
     }
 
     public String getOverviewMessage() {
-        if (this.lastActiveFormDataSO == null) return "";
-        if (FormDataSOs.hasFeedback(this.lastActiveFormDataSO)) {
+        if (notHasLastActiveFormData()) return "";
+        if (hasFeedback()) {
             String feedback = this.lastActiveFormDataSO.getFeedback().getText();
             return StringHelper.limit(feedback, 30);
-        } else if (FormDataSOs.isExercise(this.lastActiveFormDataSO)) {
+        } else if (hasExercise()) {
             return "Übung abgeschlossen.";
         } else {
             throw createInconsistencyException();
@@ -86,6 +88,11 @@ public class CurrentActivity {
 
     private boolean hasFeedback() {
         return FormDataSOs.hasFeedback(this.lastActiveFormDataSO);
+    }
+
+    private boolean isFeedbackSeenByPatient() {
+        if (!hasFeedback()) throw new IllegalStateException("Has no feedback. Check before calling method.");
+        return (this.lastActiveFormDataSO.getFeedback().isSeenByPatient());
     }
 
     private IllegalStateException createInconsistencyException() {

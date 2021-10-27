@@ -16,16 +16,15 @@ public class PatientOverviewSOCreatorUserLogin implements PatientOverviewSOCreat
     @Override
     public PatientOverviewSO create() {
         CurrentActivity currentActivity = new CurrentActivity(this.userLoginVO.getUserId());
-        PatientOverviewSO patientOverviewSO = new PatientOverviewSO();
 
+        PatientOverviewSO patientOverviewSO = new PatientOverviewSO();
         patientOverviewSO.setUserId(this.userLoginVO.getUserId());
         patientOverviewSO.setDisplayName(DisplayName.obtain(this.userLoginVO));
         patientOverviewSO.setInitials(Initials.obtain(this.userLoginVO));
-
-        // TODO
-        patientOverviewSO.setHasUpdate(false);
-        patientOverviewSO.setHasReceiveStatus(false);
-        patientOverviewSO.setLastActiveDate(currentActivity.getLastActiveAsGermanDate());
+        patientOverviewSO.setHasUpdate(currentActivity.hasUpdate());
+        patientOverviewSO.setHasReceiveStatus(currentActivity.hasReceiveStatus());
+        patientOverviewSO.setReceived(currentActivity.isReceived());
+        patientOverviewSO.setLastActiveDate(currentActivity.getLastActiveAsGermanDateTime());
         patientOverviewSO.setOverviewMessage(currentActivity.getOverviewMessage());
 
         return patientOverviewSO;

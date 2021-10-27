@@ -7,11 +7,11 @@ import org.mentalizr.backend.auth.TherapistHttpSessionAttribute;
 import org.mentalizr.backend.config.ProjectConfiguration;
 import org.mentalizr.backend.mock.PatientMessagesSOMock;
 import org.mentalizr.backend.mock.PatientsOverviewSOMock;
+import org.mentalizr.backend.patientMessagesSOCreator.PatientMessagesSOCreator;
 import org.mentalizr.backend.patientsOverviewSOCreator.PatientsOverviewSOCreator;
 import org.mentalizr.backend.rest.ResponseFactory;
 import org.mentalizr.commons.Dates;
 import org.mentalizr.persistence.mongo.DocumentNotFoundException;
-import org.mentalizr.persistence.mongo.MongoDates;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackData;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataConverter;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
@@ -109,11 +109,16 @@ public class EndpointTherapist {
                 = AuthorizationService.assertIsLoggedInAsTherapist(httpServletRequest);
         String therapistId = therapistHttpSessionAttribute.getUserVO().getId();
 
-        // TODO mocked
-        PatientMessagesSO patientMessagesSO = PatientMessagesSOMock.createPatientMessagesSO(therapistId, patientId);
+        // TODO remove mock
+        //noinspection SpellCheckingInspection
+        if (therapistHttpSessionAttribute.getUserLoginVO().getUsername().equals("tmock")) {
+            PatientMessagesSO patientMessagesSO = PatientMessagesSOMock.createPatientMessagesSO(therapistId, patientId);
+            logger.debug("PatientMessagesSO created as mock.");
+            return patientMessagesSO;
+        }
 
-        logger.debug("PatientMessagesSO created.");
-
+        PatientMessagesSOCreator patientMessagesSOCreator = new PatientMessagesSOCreator(patientId, therapistId);
+        PatientMessagesSO patientMessagesSO = patientMessagesSOCreator.create();
         return patientMessagesSO;
     }
 
