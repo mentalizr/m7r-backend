@@ -9,6 +9,7 @@ import org.mentalizr.serviceObjects.frontend.therapist.patientMessage.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 public class PatientMessagesSOCreator {
 
@@ -46,6 +47,7 @@ public class PatientMessagesSOCreator {
         String isoDateExercise = formDataSO.getExercise().getLastModifiedTimestamp();
 
         PatientMessageExerciseSO patientMessageExerciseSO = new PatientMessageExerciseSO();
+        patientMessageExerciseSO.setMessageId(UUID.randomUUID().toString());
         patientMessageExerciseSO.setTimestamp(Dates.toEpochMilli(isoDateExercise));
         patientMessageExerciseSO.setSenderId(this.userIdPatient);
         patientMessageExerciseSO.setExerciseId(formDataSO.getContentId());
@@ -60,6 +62,7 @@ public class PatientMessagesSOCreator {
             String isoDateFeedback = formDataSO.getFeedback().getCreatedTimestamp();
 
             PatientMessageFeedbackSO patientMessageFeedbackSO = new PatientMessageFeedbackSO();
+            patientMessageFeedbackSO.setMessageId(UUID.randomUUID().toString());
             patientMessageFeedbackSO.setTimestamp(Dates.toEpochMilli(isoDateFeedback));
             patientMessageFeedbackSO.setSenderId(this.userIdTherapist);
             patientMessageFeedbackSO.setExerciseId(formDataSO.getContentId());
