@@ -3,7 +3,6 @@ package org.mentalizr.backend.rest.endpoints;
 import org.bson.Document;
 import org.mentalizr.backend.programSOCreator.FormDataFetcher;
 import org.mentalizr.backend.programSOCreator.FormDataFetcherMongo;
-import org.mentalizr.backend.programSOCreator.ProgramAdapter;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.auth.AuthorizationService;
 import org.mentalizr.backend.auth.PatientHttpSessionAttribute;
@@ -25,6 +24,7 @@ import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
 import org.mentalizr.persistence.mongo.formData.FormDataConverter;
 import org.mentalizr.persistence.mongo.formData.FormDataDAO;
 import org.mentalizr.persistence.mongo.formData.FormDataMongoHandler;
+import org.mentalizr.persistence.mongo.formData.FormDataTimestampUpdater;
 import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.serviceObjects.frontend.application.UserSO;
@@ -235,6 +235,8 @@ public class EndpointPatient {
         UserVO userVO = patientHttpSessionAttribute.getUserVO();
 
         FormDataSO formDataSO = FormDataDAO.obtain(userVO.getId(), contentId);
+        FormDataTimestampUpdater.markFeedbackAsSeenByPatient(formDataSO);
+
         logger.debug(FormDataSOX.toJsonWithFormatting(formDataSO));
         return formDataSO;
     }

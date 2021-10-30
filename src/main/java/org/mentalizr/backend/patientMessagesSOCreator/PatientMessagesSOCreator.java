@@ -2,6 +2,7 @@ package org.mentalizr.backend.patientMessagesSOCreator;
 
 import org.mentalizr.commons.Dates;
 import org.mentalizr.persistence.mongo.formData.FormDataDAO;
+import org.mentalizr.persistence.mongo.formData.FormDataTimestampUpdater;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSOs;
 import org.mentalizr.serviceObjects.frontend.therapist.patientMessage.*;
@@ -32,6 +33,7 @@ public class PatientMessagesSOCreator {
 
     public PatientMessagesSO create() {
         List<FormDataSO> formDataSOExercises = FormDataDAO.getAllExercises(this.userIdPatient);
+        FormDataTimestampUpdater.markExerciseAsSeenByTherapist(formDataSOExercises);
         List<PatientMessageSO> patientMessageSOList = new ArrayList<>();
         for (FormDataSO formDataSO : formDataSOExercises) {
             List<PatientMessageSO> patientMessageSOs = createPatientMessageSO(formDataSO);
