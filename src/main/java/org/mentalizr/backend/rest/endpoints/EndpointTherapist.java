@@ -10,6 +10,7 @@ import org.mentalizr.backend.mock.PatientsOverviewSOMock;
 import org.mentalizr.backend.patientMessagesSOCreator.PatientMessagesSOCreator;
 import org.mentalizr.backend.patientsOverviewSOCreator.PatientsOverviewSOCreator;
 import org.mentalizr.backend.rest.ResponseFactory;
+import org.mentalizr.backend.rest.serviceWorkload.common.CommonServiceWorkload;
 import org.mentalizr.commons.Dates;
 import org.mentalizr.persistence.mongo.DocumentNotFoundException;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackData;
@@ -33,6 +34,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsPatient;
 import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsTherapist;
 
 @Path("v1")
@@ -165,5 +167,19 @@ public class EndpointTherapist {
 
         return ResponseFactory.ok();
     }
+
+    @GET
+    @Path("therapist/programContent/{contentId}")
+    @Produces(MediaType.TEXT_HTML)
+    public Response programContent(
+            @PathParam("contentId") String contentId,
+            @Context HttpServletRequest httpServletRequest) {
+        logger.debug("[therapist/programContent] [" + contentId + "]");
+
+        assertIsLoggedInAsTherapist(httpServletRequest);
+
+        return CommonServiceWorkload.getProgramContent(contentId);
+    }
+
 
 }

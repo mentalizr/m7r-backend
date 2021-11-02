@@ -12,6 +12,7 @@ import org.mentalizr.backend.proc.event.ExerciseSubmittedEvent;
 import org.mentalizr.backend.programSOCreator.ProgramSOCreator;
 import org.mentalizr.backend.rest.ResponseFactory;
 import org.mentalizr.backend.rest.entities.UserFactory;
+import org.mentalizr.backend.rest.serviceWorkload.common.CommonServiceWorkload;
 import org.mentalizr.commons.Dates;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
@@ -52,7 +53,6 @@ import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAs
 public class EndpointPatient {
 
     private static final Logger logger = LoggerFactory.getLogger(EndpointPatient.class);
-    private static final int DELAY_ON_NEXT_CONTENT = 0;
 
     @GET
     @Path("patient/appConfig")
@@ -174,53 +174,45 @@ public class EndpointPatient {
     }
 
     @GET
-    @Path("programContent/{contentId}")
+    @Path("patient/programContent/{contentId}")
     @Produces(MediaType.TEXT_HTML)
     public Response programContent(
             @PathParam("contentId") String contentId,
             @Context HttpServletRequest httpServletRequest) {
-        logger.debug("[programContent] [" + contentId + "]");
+        logger.debug("[patient/programContent] [" + contentId + "]");
 
         assertIsLoggedInAsPatient(httpServletRequest);
 
-        return getProgramContent(contentId);
+        return CommonServiceWorkload.getProgramContent(contentId);
     }
 
-    @GET
-    @Path("programInfoContent/{contentId}")
-    @Produces(MediaType.TEXT_HTML)
-    public Response programInfoContent(
-            @PathParam("contentId") String contentId,
-            @Context HttpServletRequest httpServletRequest) {
+//    @GET
+//    @Path("programInfoContent/{contentId}")
+//    @Produces(MediaType.TEXT_HTML)
+//    public Response programInfoContent(
+//            @PathParam("contentId") String contentId,
+//            @Context HttpServletRequest httpServletRequest) {
+//
+//        //TODO This service is equal to 'programContent'. Unify to service 'content'.
+//
+//        logger.debug("[programInfoContent] [" + contentId + "]");
+//
+//        assertIsLoggedInAsPatient(httpServletRequest);
+//
+//        return CommonServiceWorkload.getProgramContent(contentId);
+//    }
 
-        //TODO This service is equal to 'programContent'. Unify to service 'content'.
-
-        logger.debug("[programInfoContent] [" + contentId + "]");
-
-        assertIsLoggedInAsPatient(httpServletRequest);
-
-        return getProgramContent(contentId);
-    }
-
-    private Response getProgramContent(String contentId) {
-        if (DELAY_ON_NEXT_CONTENT > 0) {
-            try {
-                Thread.sleep(DELAY_ON_NEXT_CONTENT);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        ContentManager contentManager = ApplicationContext.getContentManager();
-        try {
-            java.nio.file.Path stepContentFile = contentManager.getContent(contentId);
-            FileInputStream fileInputStream = new FileInputStream(stepContentFile.toFile());
-            return Response.ok(fileInputStream).build();
-        } catch (ContentNotFoundException | FileNotFoundException e) {
-            logger.error("Content not found. Cause: " + e.getMessage());
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
-    }
+//    private Response getProgramContent(String contentId) {
+//        ContentManager contentManager = ApplicationContext.getContentManager();
+//        try {
+//            java.nio.file.Path stepContentFile = contentManager.getContent(contentId);
+//            FileInputStream fileInputStream = new FileInputStream(stepContentFile.toFile());
+//            return Response.ok(fileInputStream).build();
+//        } catch (ContentNotFoundException | FileNotFoundException e) {
+//            logger.error("Content not found. Cause: " + e.getMessage());
+//            throw new WebApplicationException(Response.Status.NOT_FOUND);
+//        }
+//    }
 
     @GET
     @Path("formData/{contentId}")
