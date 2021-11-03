@@ -3,6 +3,7 @@ package org.mentalizr.backend.rest.endpoints;
 import org.bson.Document;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.auth.AuthorizationService;
+import org.mentalizr.backend.auth.PatientHttpSessionAttribute;
 import org.mentalizr.backend.auth.TherapistHttpSessionAttribute;
 import org.mentalizr.backend.config.ProjectConfiguration;
 import org.mentalizr.backend.mock.PatientMessagesSOMock;
@@ -18,8 +19,10 @@ import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataConverter;
 import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
 import org.mentalizr.persistence.mongo.formData.FormDataDAO;
 import org.mentalizr.persistence.mongo.formData.FormDataTimestampUpdater;
+import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FeedbackSO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
+import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSOX;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSOs;
 import org.mentalizr.serviceObjects.frontend.therapist.ApplicationConfigTherapistSO;
 import org.mentalizr.serviceObjects.frontend.therapist.PatientsOverviewSO;
@@ -181,5 +184,22 @@ public class EndpointTherapist {
         return CommonServiceWorkload.getProgramContent(contentId);
     }
 
+    @GET
+    @Path("therapist/formData/{userId}/{contentId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public FormDataSO getFormData(
+            @PathParam("userId") String userId,
+            @PathParam("contentId") String contentId,
+            @Context HttpServletRequest httpServletRequest) {
+
+        logger.debug("[therapist/formData] [" + contentId + "]");
+
+        assertIsLoggedInAsTherapist(httpServletRequest);
+
+        FormDataSO formDataSO = FormDataDAO.obtain(userId, contentId);
+
+        logger.debug(FormDataSOX.toJsonWithFormatting(formDataSO));
+        return formDataSO;
+    }
 
 }

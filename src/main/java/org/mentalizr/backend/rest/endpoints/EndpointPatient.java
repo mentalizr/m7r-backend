@@ -215,7 +215,7 @@ public class EndpointPatient {
 //    }
 
     @GET
-    @Path("formData/{contentId}")
+    @Path("patient/formData/{contentId}")
     @Produces(MediaType.APPLICATION_JSON)
     public FormDataSO getFormData(
             @PathParam("contentId") String contentId,
@@ -291,26 +291,19 @@ public class EndpointPatient {
         return ResponseFactory.ok();
     }
 
-    @GET
-    @Path("feedbackData/{contentId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public FeedbackData getFeedbackData(
-            @PathParam("contentId") String contentId,
-            @Context HttpServletRequest httpServletRequest) {
-
-        logger.debug("[feedbackData]");
-
-        PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
-        UserVO userVO = patientHttpSessionAttribute.getUserVO();
-
-        Document document = FeedbackDataMongoHandler.fetch(userVO.getId(), contentId);
-        if (document == null) return new FeedbackData();
-
-        FeedbackData feedbackData = FeedbackDataConverter.convert(document);
-
-        logger.debug(document.toJson());
-
-        return feedbackData;
-    }
+//    @GET
+//    @Path("feedbackData/{contentId}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public FeedbackData getFeedbackData(
+//            @PathParam("contentId") String contentId,
+//            @Context HttpServletRequest httpServletRequest) {
+//
+//        logger.debug("[feedbackData]");
+//
+//        PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
+//        UserVO userVO = patientHttpSessionAttribute.getUserVO();
+//
+//        return CommonServiceWorkload.getFeedbackData(userVO.getId(), contentId);
+//    }
 
 }
