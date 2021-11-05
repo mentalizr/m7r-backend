@@ -1,25 +1,16 @@
 package org.mentalizr.backend.rest.endpoints;
 
-import org.bson.Document;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.auth.AuthorizationService;
-import org.mentalizr.backend.auth.PatientHttpSessionAttribute;
 import org.mentalizr.backend.auth.TherapistHttpSessionAttribute;
 import org.mentalizr.backend.config.ProjectConfiguration;
-import org.mentalizr.backend.mock.PatientMessagesSOMock;
-import org.mentalizr.backend.mock.PatientsOverviewSOMock;
 import org.mentalizr.backend.patientMessagesSOCreator.PatientMessagesSOCreator;
 import org.mentalizr.backend.patientsOverviewSOCreator.PatientsOverviewSOCreator;
 import org.mentalizr.backend.rest.ResponseFactory;
 import org.mentalizr.backend.rest.serviceWorkload.common.CommonServiceWorkload;
 import org.mentalizr.commons.Dates;
 import org.mentalizr.persistence.mongo.DocumentNotFoundException;
-import org.mentalizr.persistence.mongo.feedbackData.FeedbackData;
-import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataConverter;
-import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
 import org.mentalizr.persistence.mongo.formData.FormDataDAO;
-import org.mentalizr.persistence.mongo.formData.FormDataTimestampUpdater;
-import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FeedbackSO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSOX;
@@ -37,14 +28,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsPatient;
 import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsTherapist;
 
 @Path("v1")
 public class EndpointTherapist {
 
     private static final Logger logger = LoggerFactory.getLogger(EndpointTherapist.class);
-    private static final Logger authLogger = LoggerFactory.getLogger("m7r-auth");
 
     @GET
     @Path("therapist/appConfig")
@@ -59,22 +48,6 @@ public class EndpointTherapist {
         return projectConfiguration.getApplicationConfigTherapistSO("some-program");
     }
 
-    @POST
-    @Path("sendFeedbackData")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public void sendFeedbackData(FeedbackData feedbackData, @Context HttpServletRequest httpServletRequest) {
-        logger.debug("[therapist:sendFeedbackData]");
-
-        AuthorizationService.assertIsLoggedInAsTherapist(httpServletRequest);
-
-        Document document = FeedbackDataConverter.convert(feedbackData);
-        FeedbackDataMongoHandler.createOrUpdate(document);
-
-        logger.debug(document.toJson());
-
-        // TODO Event Feedback Submitted Event
-    }
-
     @GET
     @Path("therapist/patientsOverview")
     @Produces(MediaType.APPLICATION_JSON)
@@ -85,19 +58,6 @@ public class EndpointTherapist {
 
         TherapistHttpSessionAttribute therapistHttpSessionAttribute
                 = AuthorizationService.assertIsLoggedInAsTherapist(httpServletRequest);
-
-        // TODO debug
-        logger.debug("Therapist username: [" + therapistHttpSessionAttribute.getUserLoginVO().getUsername() + "].");
-
-        // TODO remove mock
-        //noinspection SpellCheckingInspection
-        if (therapistHttpSessionAttribute.getUserLoginVO().getUsername().equals("tmock")) {
-            logger.debug("Create PatientsOverviewSOMock...");
-            PatientsOverviewSO patientsOverviewSO = PatientsOverviewSOMock.createPatientsOverviewSO();
-            logger.debug("PatientsOverviewSOMock created.");
-            return patientsOverviewSO;
-        }
-
         PatientsOverviewSOCreator patientsOverviewSOCreator
                 = new PatientsOverviewSOCreator(therapistHttpSessionAttribute.getRoleTherapistVO());
         return patientsOverviewSOCreator.create();
@@ -115,17 +75,8 @@ public class EndpointTherapist {
                 = AuthorizationService.assertIsLoggedInAsTherapist(httpServletRequest);
         String therapistId = therapistHttpSessionAttribute.getUserVO().getId();
 
-        // TODO remove mock
-        //noinspection SpellCheckingInspection
-        if (therapistHttpSessionAttribute.getUserLoginVO().getUsername().equals("tmock")) {
-            PatientMessagesSO patientMessagesSO = PatientMessagesSOMock.createPatientMessagesSO(therapistId, patientId);
-            logger.debug("PatientMessagesSO created as mock.");
-            return patientMessagesSO;
-        }
-
         PatientMessagesSOCreator patientMessagesSOCreator = new PatientMessagesSOCreator(patientId, therapistId);
-        PatientMessagesSO patientMessagesSO = patientMessagesSOCreator.create();
-        return patientMessagesSO;
+        return patientMessagesSOCreator.create();
     }
 
     @POST

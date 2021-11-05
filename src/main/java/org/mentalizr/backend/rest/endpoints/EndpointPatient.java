@@ -16,12 +16,8 @@ import org.mentalizr.backend.rest.serviceWorkload.common.CommonServiceWorkload;
 import org.mentalizr.commons.Dates;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
-import org.mentalizr.contentManager.fileHierarchy.exceptions.ContentNotFoundException;
 import org.mentalizr.contentManager.fileHierarchy.exceptions.ProgramNotFoundException;
 import org.mentalizr.contentManager.programStructure.ProgramStructure;
-import org.mentalizr.persistence.mongo.feedbackData.FeedbackData;
-import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataConverter;
-import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
 import org.mentalizr.persistence.mongo.formData.FormDataConverter;
 import org.mentalizr.persistence.mongo.formData.FormDataDAO;
 import org.mentalizr.persistence.mongo.formData.FormDataMongoHandler;
@@ -58,7 +54,7 @@ public class EndpointPatient {
     @Path("patient/appConfig")
     @Produces(MediaType.APPLICATION_JSON)
     public ApplicationConfigPatientSO appConfig(@Context HttpServletRequest httpServletRequest) {
-        logger.debug("[patient:appConfig]");
+        logger.debug("[patient/appConfig]");
 
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
 
@@ -71,7 +67,7 @@ public class EndpointPatient {
     @Path("patient/therapist")
     @Produces(MediaType.APPLICATION_JSON)
     public UserSO therapist(@Context HttpServletRequest httpServletRequest) {
-        logger.debug("[patient:therapist]");
+        logger.debug("[patient/therapist]");
 
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
         return UserFactory.getInstanceForRelatedTherapist(patientHttpSessionAttribute);
@@ -81,7 +77,7 @@ public class EndpointPatient {
     @Path("patient/program")
     @Produces(MediaType.APPLICATION_JSON)
     public ProgramSO program(@Context HttpServletRequest httpServletRequest) {
-        logger.debug("[patient:program]");
+        logger.debug("[patient/program]");
 
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
 
@@ -179,40 +175,12 @@ public class EndpointPatient {
     public Response programContent(
             @PathParam("contentId") String contentId,
             @Context HttpServletRequest httpServletRequest) {
-        logger.debug("[patient/programContent] [" + contentId + "]");
+        logger.debug("[patient/programContent] contentId:[" + contentId + "]");
 
         assertIsLoggedInAsPatient(httpServletRequest);
 
         return CommonServiceWorkload.getProgramContent(contentId);
     }
-
-//    @GET
-//    @Path("programInfoContent/{contentId}")
-//    @Produces(MediaType.TEXT_HTML)
-//    public Response programInfoContent(
-//            @PathParam("contentId") String contentId,
-//            @Context HttpServletRequest httpServletRequest) {
-//
-//        //TODO This service is equal to 'programContent'. Unify to service 'content'.
-//
-//        logger.debug("[programInfoContent] [" + contentId + "]");
-//
-//        assertIsLoggedInAsPatient(httpServletRequest);
-//
-//        return CommonServiceWorkload.getProgramContent(contentId);
-//    }
-
-//    private Response getProgramContent(String contentId) {
-//        ContentManager contentManager = ApplicationContext.getContentManager();
-//        try {
-//            java.nio.file.Path stepContentFile = contentManager.getContent(contentId);
-//            FileInputStream fileInputStream = new FileInputStream(stepContentFile.toFile());
-//            return Response.ok(fileInputStream).build();
-//        } catch (ContentNotFoundException | FileNotFoundException e) {
-//            logger.error("Content not found. Cause: " + e.getMessage());
-//            throw new WebApplicationException(Response.Status.NOT_FOUND);
-//        }
-//    }
 
     @GET
     @Path("patient/formData/{contentId}")
@@ -221,7 +189,7 @@ public class EndpointPatient {
             @PathParam("contentId") String contentId,
             @Context HttpServletRequest httpServletRequest) {
 
-        logger.debug("[formDataSO] [" + contentId + "]");
+        logger.debug("[patient/formData] contentId:[" + contentId + "]");
 
         PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
         UserVO userVO = patientHttpSessionAttribute.getUserVO();
@@ -239,9 +207,7 @@ public class EndpointPatient {
     public Response saveFormData(FormDataSO formDataSO,
                              @Context HttpServletRequest httpServletRequest) {
 
-        logger.debug("[saveFormData]");
-
-        logger.debug("FormDataSO: " + formDataSO.toString());
+        logger.debug("[patient/formData/save] userId:[" + formDataSO.getUserId() + "] contentId:[" + formDataSO.getContentId() + "]");
 
         AuthorizationService.assertIsLoggedInAsPatientWithUserId(httpServletRequest, formDataSO.getUserId());
 
@@ -256,13 +222,9 @@ public class EndpointPatient {
     public Response sendFormData(FormDataSO formDataSO,
                              @Context HttpServletRequest httpServletRequest) {
 
-        logger.debug("[sendFormData]");
+        logger.debug("[patient/formData/send] userId:[" + formDataSO.getUserId() + "] contentId:[" + formDataSO.getContentId() + "]");
 
         AuthorizationService.assertIsLoggedInAsPatientWithUserId(httpServletRequest, formDataSO.getUserId());
-
-        // TODO debug
-        logger.debug("FormDate to save:");
-        logger.debug(FormDataSOX.toJsonWithFormatting(formDataSO));
 
         if (FormDataSOs.isSent(formDataSO)) {
             logger.error("Inconsistency check failed on calling [sendFormData]: FormData is already sent.");
@@ -274,8 +236,6 @@ public class EndpointPatient {
             return ResponseFactory.preconditionFailed("FormData is no exercise.");
         }
 
-        // TODO: Check if contentId is consistent and exercise
-
         ExerciseSO exerciseSO = formDataSO.getExercise();
         exerciseSO.setSent(true);
         exerciseSO.setLastModifiedTimestamp(Dates.currentTimestampAsISO());
@@ -286,24 +246,9 @@ public class EndpointPatient {
         logger.debug(document.toJson());
 
         // TODO
-        new ExerciseSubmittedEvent(formDataSO).fire();
+        // new ExerciseSubmittedEvent(formDataSO).fire();
 
         return ResponseFactory.ok();
     }
-
-//    @GET
-//    @Path("feedbackData/{contentId}")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public FeedbackData getFeedbackData(
-//            @PathParam("contentId") String contentId,
-//            @Context HttpServletRequest httpServletRequest) {
-//
-//        logger.debug("[feedbackData]");
-//
-//        PatientHttpSessionAttribute patientHttpSessionAttribute = assertIsLoggedInAsPatient(httpServletRequest);
-//        UserVO userVO = patientHttpSessionAttribute.getUserVO();
-//
-//        return CommonServiceWorkload.getFeedbackData(userVO.getId(), contentId);
-//    }
 
 }

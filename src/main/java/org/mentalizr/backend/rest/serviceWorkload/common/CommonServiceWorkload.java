@@ -1,12 +1,8 @@
 package org.mentalizr.backend.rest.serviceWorkload.common;
 
-import org.bson.Document;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.fileHierarchy.exceptions.ContentNotFoundException;
-import org.mentalizr.persistence.mongo.feedbackData.FeedbackData;
-import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataConverter;
-import org.mentalizr.persistence.mongo.feedbackData.FeedbackDataMongoHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
