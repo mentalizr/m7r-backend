@@ -1,6 +1,7 @@
 package org.mentalizr.backend.rest.service.userManagement.accessKey;
 
 import org.mentalizr.backend.auth.AuthorizationService;
+import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertProgram;
@@ -18,13 +19,13 @@ public class AccessKeyRestoreService extends Service {
     }
 
     @Override
-    protected void logEntry() {
-        logger.info("[userManagement:accessKey:restore] entry");
+    protected String getServiceId() {
+        return "/admin/user/accessKey/restore";
     }
 
     @Override
-    protected void checkSecurityConstraints() {
-        AuthorizationService.assertIsLoggedInAsAdmin(this.httpServletRequest);
+    protected UserHttpSessionAttribute checkSecurityConstraints() {
+        return AuthorizationService.assertIsLoggedInAsAdmin(this.httpServletRequest);
     }
 
     @Override
@@ -46,11 +47,6 @@ public class AccessKeyRestoreService extends Service {
 
         PatientAccessKeyRestore.restore(getAccessKeyRestoreSO());
         return null;
-    }
-
-    @Override
-    protected void logLeave() {
-        logger.info("[userManagement:accessKey:restore] leave");
     }
 
     private AccessKeyRestoreSO getAccessKeyRestoreSO() {

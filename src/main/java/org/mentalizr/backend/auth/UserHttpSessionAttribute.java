@@ -26,4 +26,13 @@ public abstract class UserHttpSessionAttribute implements Serializable {
 
     public abstract int getGender();
 
+    public static PatientHttpSessionAttribute asPatientHttpSessionAttribute(UserHttpSessionAttribute userHttpSessionAttribute) {
+        if (userHttpSessionAttribute == null)
+            throw new IllegalArgumentException("Specified userHttpSessionAttribute is null.");
+        if (!(userHttpSessionAttribute instanceof PatientHttpSessionAttribute))
+            throw new IllegalArgumentException("Specified userHttpSessionAttribute is not of type "
+                    + PatientHttpSessionAttribute.class.getSimpleName() + ".");
+        return (PatientHttpSessionAttribute) userHttpSessionAttribute;
+    }
+
 }

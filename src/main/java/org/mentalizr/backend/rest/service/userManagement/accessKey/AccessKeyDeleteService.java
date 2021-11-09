@@ -1,6 +1,7 @@
 package org.mentalizr.backend.rest.service.userManagement.accessKey;
 
 import org.mentalizr.backend.auth.AuthorizationService;
+import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertAccessKey;
@@ -18,13 +19,13 @@ public class AccessKeyDeleteService extends Service {
     }
 
     @Override
-    protected void logEntry() {
-        logger.info("[userManagement:accessKey:delete] entry");
+    protected String getServiceId() {
+        return "admin/user/accessKey/delete";
     }
 
     @Override
-    protected void checkSecurityConstraints() {
-        AuthorizationService.assertIsLoggedInAsAdmin(this.httpServletRequest);
+    protected UserHttpSessionAttribute checkSecurityConstraints() {
+        return AuthorizationService.assertIsLoggedInAsAdmin(this.httpServletRequest);
     }
 
     @Override
@@ -36,11 +37,6 @@ public class AccessKeyDeleteService extends Service {
     protected Object workLoad() throws DataSourceException, EntityNotFoundException {
         PatientAccessKeyDelete.delete(getAccessKeyDeleteSO());
         return null;
-    }
-
-    @Override
-    protected void logLeave() {
-        logger.info("[userManagement:accessKey:delete] leave");
     }
 
     private AccessKeyDeleteSO getAccessKeyDeleteSO() {

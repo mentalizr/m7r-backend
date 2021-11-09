@@ -33,8 +33,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Date;
 
-@Path("v1/admin/user/patient")
+@Path(EndpointUserManagementPatient.PATH_PREFIX)
 public class EndpointUserManagementPatient {
+
+    public static final String PATH_PREFIX = "v1/admin/user/patient";
 
     private static final Logger logger = LoggerFactory.getLogger(EndpointUserManagementPatient.class);
 

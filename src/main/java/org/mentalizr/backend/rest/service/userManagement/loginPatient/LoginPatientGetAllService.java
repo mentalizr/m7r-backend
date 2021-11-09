@@ -1,6 +1,8 @@
 package org.mentalizr.backend.rest.service.userManagement.loginPatient;
 
 import org.mentalizr.backend.auth.AuthorizationService;
+import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import org.mentalizr.backend.rest.endpoints.EndpointUserManagementPatient;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey.PatientAccessKeyGetAll;
@@ -14,20 +16,18 @@ import javax.servlet.http.HttpServletRequest;
 
 public class LoginPatientGetAllService extends Service {
 
-    private static final String SERVICE_TAG = "userManagement:loginPatient";
-
     public LoginPatientGetAllService(HttpServletRequest httpServletRequest) {
         super(httpServletRequest);
     }
 
     @Override
-    protected void logEntry() {
-        logger.info("[" + SERVICE_TAG + ":getAll] entry");
+    protected String getServiceId() {
+        return EndpointUserManagementPatient.PATH_PREFIX + "/getAll";
     }
 
     @Override
-    protected void checkSecurityConstraints() {
-        AuthorizationService.assertIsLoggedInAsAdmin(this.httpServletRequest);
+    protected UserHttpSessionAttribute checkSecurityConstraints() {
+        return AuthorizationService.assertIsLoggedInAsAdmin(this.httpServletRequest);
     }
 
     @Override
@@ -37,11 +37,6 @@ public class LoginPatientGetAllService extends Service {
     @Override
     protected PatientRestoreCollectionSO workLoad() throws DataSourceException, EntityNotFoundException {
         return LoginPatientGetAll.getAll();
-    }
-
-    @Override
-    protected void logLeave() {
-        logger.info("[" + SERVICE_TAG + ":getAll] leave");
     }
 
 }

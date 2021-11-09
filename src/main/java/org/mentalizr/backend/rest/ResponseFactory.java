@@ -19,6 +19,9 @@ public class ResponseFactory {
         return Response.ok(serviceObject).build();
     }
 
+    public static Response unauthorized() {
+        return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
 
     public static Response preconditionFailed(String message) {
         // TODO use official HTTP error code PRECONDITION_FAILED

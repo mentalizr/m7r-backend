@@ -17,18 +17,19 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("v1/admin/user/accessKey")
+@Path(EndpointUserManagementAccessKey.PATH_PREFIX)
 public class EndpointUserManagementAccessKey {
+
+    public static final String PATH_PREFIX = "v1/admin/user/accessKey";
 
     private static final Logger logger = LoggerFactory.getLogger(EndpointUserManagementAccessKey.class);
 
     @POST
-    @Path("create")
+    @Path(AccessKeyCreateService.NAME)
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(AccessKeyCreateSO accessKeyCreateSO,
                            @Context HttpServletRequest httpServletRequest) {
-
         return new AccessKeyCreateService(httpServletRequest, accessKeyCreateSO).call();
     }
 

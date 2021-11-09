@@ -1,6 +1,8 @@
 package org.mentalizr.backend.rest.service.userManagement.accessKey;
 
 import org.mentalizr.backend.auth.AuthorizationService;
+import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import org.mentalizr.backend.rest.endpoints.EndpointUserManagementAccessKey;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertProgram;
@@ -14,18 +16,20 @@ import javax.servlet.http.HttpServletRequest;
 
 public class AccessKeyCreateService extends Service {
 
+    public static final String NAME = "create";
+
     public AccessKeyCreateService(HttpServletRequest httpServletRequest, AccessKeyCreateSO accessKeyCreateSO) {
         super(httpServletRequest, accessKeyCreateSO);
     }
 
     @Override
-    protected void logEntry() {
-        logger.info("[userManagement:accessKey:create] entry");
+    protected String getServiceId() {
+        return EndpointUserManagementAccessKey.PATH_PREFIX + "/" + NAME;
     }
 
     @Override
-    protected void checkSecurityConstraints() {
-        AuthorizationService.assertIsLoggedInAsAdmin(this.httpServletRequest);
+    protected UserHttpSessionAttribute checkSecurityConstraints() {
+        return AuthorizationService.assertIsLoggedInAsAdmin(this.httpServletRequest);
     }
 
     @Override
@@ -46,11 +50,6 @@ public class AccessKeyCreateService extends Service {
     protected AccessKeyCollectionSO workLoad() throws DataSourceException {
 
         return PatientAccessKeyCreate.create(getAccessKeyCreateSO());
-    }
-
-    @Override
-    protected void logLeave() {
-        logger.info("[userManagement:accessKey:create] leave");
     }
 
     private AccessKeyCreateSO getAccessKeyCreateSO() {
