@@ -1,11 +1,10 @@
-package org.mentalizr.backend.rest.endpoints.patient.formData;
+package org.mentalizr.backend.rest.endpoints.therapist;
 
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.formData.FormDataDAO;
-import org.mentalizr.persistence.mongo.formData.FormDataTimestampUpdater;
-import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
+import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSOX;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -16,17 +15,18 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsPatient;
+import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsTherapist;
 
 @Path("v1")
 public class GetFormDataREST {
 
-    private static final String SERVICE_ID = "patient/formData";
+    private static final String SERVICE_ID = "therapist/formData";
 
     @GET
-    @Path(SERVICE_ID + "/{contentId}")
+    @Path(SERVICE_ID + "/{userId}/{contentId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getFormData(
+            @PathParam("userId") String userId,
             @PathParam("contentId") String contentId,
             @Context HttpServletRequest httpServletRequest) {
 
@@ -39,23 +39,19 @@ public class GetFormDataREST {
 
             @Override
             protected UserHttpSessionAttribute checkSecurityConstraints() {
-                return assertIsLoggedInAsPatient(this.httpServletRequest);
+                return assertIsLoggedInAsTherapist(httpServletRequest);
             }
 
             @Override
             protected FormDataSO workLoad() {
-                UserVO userVO = getPatientHttpSessionAttribute().getUserVO();
-
-                FormDataSO formDataSO = FormDataDAO.obtain(userVO.getId(), contentId);
-                FormDataTimestampUpdater.markFeedbackAsSeenByPatient(formDataSO);
-
+                FormDataSO formDataSO = FormDataDAO.obtain(userId, contentId);
+                logger.trace(FormDataSOX.toJsonWithFormatting(formDataSO));
                 return formDataSO;
             }
 
             @Override
             protected void logLeave() {
-                String userId = this.userHttpSessionAttribute.getUserVO().getId();
-                logger.debug("[" + SERVICE_ID + "][" + userId + "][" + contentId + "] completed.");
+                this.logger.debug("[" + SERVICE_ID + "][" + userId + "][" + contentId + "] completed.");
             }
 
         }.call();

@@ -58,6 +58,12 @@ public class MediaImgREST {
                 return new FileInputStream(mediaPath.toFile());
             }
 
+            @Override
+            protected void logLeave() {
+                String userId = this.userHttpSessionAttribute.getUserVO().getId();
+                this.logger.debug("[" + SERVICE_ID + "][" + userId + "][" + img + "] completed.");
+            }
+
         }.call();
 
     }

@@ -35,4 +35,13 @@ public abstract class UserHttpSessionAttribute implements Serializable {
         return (PatientHttpSessionAttribute) userHttpSessionAttribute;
     }
 
+    public static TherapistHttpSessionAttribute asTherapistHttpSessionAttribute(UserHttpSessionAttribute userHttpSessionAttribute) {
+        if (userHttpSessionAttribute == null)
+            throw new IllegalArgumentException("Specified userHttpSessionAttribute is null.");
+        if (!(userHttpSessionAttribute instanceof TherapistHttpSessionAttribute))
+            throw new IllegalArgumentException("Specified userHttpSessionAttribute is not of type "
+                    + TherapistHttpSessionAttribute.class.getSimpleName() + ".");
+        return (TherapistHttpSessionAttribute) userHttpSessionAttribute;
+    }
+
 }

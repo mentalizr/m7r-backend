@@ -7,7 +7,8 @@ public class MentalizrRestApplication extends ResourceConfig {
         packages(
                 "org.mentalizr.backend.rest.endpoints",
                 "org.mentalizr.backend.rest.endpoints.patient",
-                "org.mentalizr.backend.rest.endpoints.patient.formData"
+                "org.mentalizr.backend.rest.endpoints.patient.formData",
+                "org.mentalizr.backend.rest.endpoints.therapist"
         );
     }
 }

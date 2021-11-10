@@ -1,6 +1,7 @@
 package org.mentalizr.backend.rest.service;
 
 import org.mentalizr.backend.auth.PatientHttpSessionAttribute;
+import org.mentalizr.backend.auth.TherapistHttpSessionAttribute;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.ResponseFactory;
@@ -53,7 +54,12 @@ public abstract  class Service {
     protected abstract Object workLoad() throws DataSourceException, EntityNotFoundException, RESTException, ContentManagerException, IOException;
 
     protected void logLeave() {
-        logger.debug("[" + getServiceId() + "] completed.");
+        if (this.userHttpSessionAttribute != null) {
+            String userId = this.userHttpSessionAttribute.getUserVO().getId();
+            logger.debug("[" + getServiceId() + "][" + userId + "] completed.");
+        } else {
+            logger.debug("[" + getServiceId() + "] completed.");
+        }
     }
 
     public Response call() {
@@ -98,6 +104,10 @@ public abstract  class Service {
 
     protected PatientHttpSessionAttribute getPatientHttpSessionAttribute() {
         return UserHttpSessionAttribute.asPatientHttpSessionAttribute(this.userHttpSessionAttribute);
+    }
+
+    protected TherapistHttpSessionAttribute getTherapistHttpSessionAttribute() {
+        return UserHttpSessionAttribute.asTherapistHttpSessionAttribute(this.userHttpSessionAttribute);
     }
 
 }

@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+@Deprecated
 public class CommonServiceWorkload {
 
     private static final Logger logger = LoggerFactory.getLogger(CommonServiceWorkload.class);

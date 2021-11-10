@@ -1,11 +1,10 @@
-package org.mentalizr.backend.rest.endpoints.patient;
+package org.mentalizr.backend.rest.endpoints.therapist;
 
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
-import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -18,18 +17,18 @@ import javax.ws.rs.core.Response;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsPatient;
+import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsTherapist;
 
 @Path("v1")
-public class MediaAVREST {
+public class ProgramContentREST {
 
-    private static final String SERVICE_ID = "mediaAV";
+    private static final String SERVICE_ID = "therapist/programContent";
 
     @GET
-    @Path(SERVICE_ID + "/{audioVideo}")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Response mediaVideo(
-            @PathParam("audioVideo") String audioVideo,
+    @Path(SERVICE_ID + "/{contentId}")
+    @Produces(MediaType.TEXT_HTML)
+    public Response programContent(
+            @PathParam("contentId") String contentId,
             @Context HttpServletRequest httpServletRequest) {
 
         return new Service(httpServletRequest) {
@@ -41,24 +40,24 @@ public class MediaAVREST {
 
             @Override
             protected UserHttpSessionAttribute checkSecurityConstraints() {
-                return assertIsLoggedInAsPatient(httpServletRequest);
+                return assertIsLoggedInAsTherapist(httpServletRequest);
             }
 
             @Override
             protected Object workLoad() throws ContentManagerException, IOException {
-                PatientProgramVO patientProgramVO = getPatientHttpSessionAttribute().getPatientProgramVO();
-                String programId = patientProgramVO.getProgramId();
                 ContentManager contentManager = ApplicationContext.getContentManager();
-                java.nio.file.Path mediaPath = contentManager.getMediaResource(programId, audioVideo);
-                return new FileInputStream(mediaPath.toFile());
+                java.nio.file.Path stepContentFile = contentManager.getContent(contentId);
+                return new FileInputStream(stepContentFile.toFile());
             }
 
             @Override
             protected void logLeave() {
                 String userId = this.userHttpSessionAttribute.getUserVO().getId();
-                this.logger.debug("[" + SERVICE_ID + "][" + userId + "][" + audioVideo + "] completed.");
+                this.logger.debug("[" + SERVICE_ID + "][" + userId + "][" + contentId + "] completed.");
             }
 
         }.call();
+
     }
+
 }

@@ -72,8 +72,9 @@ public class SendFormDataREST {
 
             @Override
             protected void logLeave() {
-                logger.debug("[" + SERVICE_ID + "] userId: [" + formDataSO.getUserId() + "] " +
-                        "contentId: [" + formDataSO.getContentId() + "] completed.");
+                String userId = formDataSO.getUserId();
+                String contentId = formDataSO.getContentId();
+                logger.debug("[" + SERVICE_ID + "][" + userId + "][" + contentId + "] completed.");
             }
 
         }.call();
