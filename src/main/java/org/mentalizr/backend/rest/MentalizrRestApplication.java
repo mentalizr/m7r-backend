@@ -8,7 +8,8 @@ public class MentalizrRestApplication extends ResourceConfig {
                 "org.mentalizr.backend.rest.endpoints",
                 "org.mentalizr.backend.rest.endpoints.patient",
                 "org.mentalizr.backend.rest.endpoints.patient.formData",
-                "org.mentalizr.backend.rest.endpoints.therapist"
+                "org.mentalizr.backend.rest.endpoints.therapist",
+                "org.mentalizr.backend.rest.endpoints.admin.userManagement.accessKey"
         );
     }
 }

@@ -26,7 +26,7 @@ public class SubmitFeedback {
     private static final String SERVICE_ID = "therapist/submitFeedback";
 
     @POST
-    @Path("therapist/submitFeedback")
+    @Path(SERVICE_ID)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response submitFeedback(FeedbackSubmissionSO feedbackSubmissionSO,
                                    @Context HttpServletRequest httpServletRequest) {

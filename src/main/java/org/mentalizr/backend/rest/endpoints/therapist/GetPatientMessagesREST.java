@@ -1,6 +1,5 @@
 package org.mentalizr.backend.rest.endpoints.therapist;
 
-import org.mentalizr.backend.auth.AuthorizationService;
 import org.mentalizr.backend.auth.TherapistHttpSessionAttribute;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.patientMessagesSOCreator.PatientMessagesSOCreator;
@@ -19,7 +18,7 @@ import javax.ws.rs.core.Response;
 import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsTherapist;
 
 @Path("v1")
-public class GetPatientMessages {
+public class GetPatientMessagesREST {
 
     public static final String SERVICE_ID = "therapist/patientMessages";
 
