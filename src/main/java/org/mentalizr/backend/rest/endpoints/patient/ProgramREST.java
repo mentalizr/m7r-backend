@@ -1,6 +1,7 @@
 package org.mentalizr.backend.rest.endpoints.patient;
 
 import org.mentalizr.backend.applicationContext.ApplicationContext;
+import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.programSOCreator.FormDataFetcher;
 import org.mentalizr.backend.programSOCreator.FormDataFetcherMongo;
@@ -45,7 +46,7 @@ public class ProgramREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
+            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return assertIsLoggedInAsPatient(this.httpServletRequest);
             }
 

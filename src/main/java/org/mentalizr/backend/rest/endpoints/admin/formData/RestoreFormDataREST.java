@@ -1,6 +1,7 @@
 package org.mentalizr.backend.rest.endpoints.admin.formData;
 
 import org.bson.Document;
+import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.ResponseFactory;
@@ -46,7 +47,7 @@ public class RestoreFormDataREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
+            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return assertIsLoggedInAsAdmin(httpServletRequest);
             }
 

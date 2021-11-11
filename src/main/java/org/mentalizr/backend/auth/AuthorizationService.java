@@ -23,54 +23,34 @@ public class AuthorizationService {
         }
     }
 
-    public static AdminHttpSessionAttribute assertIsLoggedInAsAdmin(HttpServletRequest httpServletRequest) {
+    public static AdminHttpSessionAttribute assertIsLoggedInAsAdmin(HttpServletRequest httpServletRequest) throws UnauthorizedException {
         AssertMethodPrecondition.parameterNotNull("httpServletRequest", httpServletRequest);
-        try {
-            return checkAsAdmin(httpServletRequest);
-        } catch (UnauthorizedException e) {
-            authLogger.warn(e.getMessage());
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-        }
+        return checkAsAdmin(httpServletRequest);
     }
 
-    public static PatientHttpSessionAttribute assertIsLoggedInAsPatient(HttpServletRequest httpServletRequest) {
+    public static PatientHttpSessionAttribute assertIsLoggedInAsPatient(HttpServletRequest httpServletRequest) throws UnauthorizedException {
         AssertMethodPrecondition.parameterNotNull("httpServletRequest", httpServletRequest);
-        try {
-            return checkAsPatient(httpServletRequest);
-        } catch (UnauthorizedException e) {
-            authLogger.warn(e.getMessage());
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-        }
+        return checkAsPatient(httpServletRequest);
     }
 
-    public static PatientHttpSessionAttribute assertIsLoggedInAsPatientWithUserId(HttpServletRequest httpServletRequest, String actualUserId) {
+    public static PatientHttpSessionAttribute assertIsLoggedInAsPatientWithUserId(HttpServletRequest httpServletRequest, String actualUserId) throws UnauthorizedException {
 
         AssertMethodPrecondition.parameterNotNull("httpServletRequest", httpServletRequest);
 
-        try {
-            PatientHttpSessionAttribute patientHttpSessionAttribute = checkAsPatient(httpServletRequest);
+        PatientHttpSessionAttribute patientHttpSessionAttribute = checkAsPatient(httpServletRequest);
 
-            UserVO userVO = patientHttpSessionAttribute.getUserVO();
-            if (!userVO.getId().equals(actualUserId)) {
-                throw new UnauthorizedException("[checkAsPatientWithUserId] failed: Expected UserId: " + userVO.getId() + " Actual UserId: " +  actualUserId);
-            }
-
-            return patientHttpSessionAttribute;
-
-        } catch (UnauthorizedException e) {
-            authLogger.warn(e.getMessage());
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        UserVO userVO = patientHttpSessionAttribute.getUserVO();
+        if (!userVO.getId().equals(actualUserId)) {
+            throw new UnauthorizedException("[checkAsPatientWithUserId] failed: Expected UserId: " + userVO.getId() + " Actual UserId: " +  actualUserId);
         }
+
+        return patientHttpSessionAttribute;
+
     }
 
-    public static TherapistHttpSessionAttribute assertIsLoggedInAsTherapist(HttpServletRequest httpServletRequest) {
+    public static TherapistHttpSessionAttribute assertIsLoggedInAsTherapist(HttpServletRequest httpServletRequest) throws UnauthorizedException {
         AssertMethodPrecondition.parameterNotNull("httpServletRequest", httpServletRequest);
-        try {
-            return checkAsTherapist(httpServletRequest);
-        } catch (UnauthorizedException e) {
-            authLogger.warn(e.getMessage());
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-        }
+        return checkAsTherapist(httpServletRequest);
     }
 
     private static UserHttpSessionAttribute checkAsUser(HttpServletRequest httpServletRequest) throws UnauthorizedException {

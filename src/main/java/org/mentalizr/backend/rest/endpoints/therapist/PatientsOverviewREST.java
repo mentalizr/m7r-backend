@@ -2,6 +2,7 @@ package org.mentalizr.backend.rest.endpoints.therapist;
 
 import org.mentalizr.backend.auth.AuthorizationService;
 import org.mentalizr.backend.auth.TherapistHttpSessionAttribute;
+import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.patientsOverviewSOCreator.PatientsOverviewSOCreator;
 import org.mentalizr.backend.rest.service.Service;
@@ -35,14 +36,13 @@ public class PatientsOverviewREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
+            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return assertIsLoggedInAsTherapist(httpServletRequest);
             }
 
             @Override
             protected PatientsOverviewSO workLoad() {
-                TherapistHttpSessionAttribute therapistHttpSessionAttribute
-                        = assertIsLoggedInAsTherapist(httpServletRequest);
+                TherapistHttpSessionAttribute therapistHttpSessionAttribute = getTherapistHttpSessionAttribute();
                 PatientsOverviewSOCreator patientsOverviewSOCreator
                         = new PatientsOverviewSOCreator(therapistHttpSessionAttribute.getRoleTherapistVO());
                 return patientsOverviewSOCreator.create();

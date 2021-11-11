@@ -1,6 +1,7 @@
 package org.mentalizr.backend.rest.endpoints.therapist;
 
 import org.mentalizr.backend.applicationContext.ApplicationContext;
+import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.contentManager.ContentManager;
@@ -39,7 +40,7 @@ public class ProgramContentREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
+            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return assertIsLoggedInAsTherapist(httpServletRequest);
             }
 

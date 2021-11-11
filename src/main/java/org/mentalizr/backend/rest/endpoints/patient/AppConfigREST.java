@@ -1,6 +1,7 @@
 package org.mentalizr.backend.rest.endpoints.patient;
 
 import org.mentalizr.backend.applicationContext.ApplicationContext;
+import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.config.ProjectConfiguration;
 import org.mentalizr.backend.rest.service.Service;
@@ -35,7 +36,7 @@ public class AppConfigREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
+            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return assertIsLoggedInAsPatient(httpServletRequest);
             }
 

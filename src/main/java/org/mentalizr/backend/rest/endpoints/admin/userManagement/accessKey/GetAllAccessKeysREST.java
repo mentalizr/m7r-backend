@@ -1,6 +1,7 @@
 package org.mentalizr.backend.rest.endpoints.admin.userManagement.accessKey;
 
 import org.mentalizr.backend.auth.AuthorizationService;
+import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey.PatientAccessKeyGetAll;
@@ -34,7 +35,7 @@ public class GetAllAccessKeysREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
+            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return AuthorizationService.assertIsLoggedInAsAdmin(this.httpServletRequest);
             }
 

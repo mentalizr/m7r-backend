@@ -1,7 +1,9 @@
 package org.mentalizr.backend.rest.endpoints.admin.userManagement.patient;
 
 import org.mentalizr.backend.auth.AuthorizationService;
+import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import org.mentalizr.backend.exceptions.InfrastructureException;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
@@ -50,12 +52,12 @@ public class RestorePatientREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
+            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return AuthorizationService.assertIsLoggedInAsAdmin(httpServletRequest);
             }
 
             @Override
-            protected void checkPreconditions() throws DataSourceException, ServicePreconditionFailedException {
+            protected void checkPreconditions() throws ServicePreconditionFailedException, InfrastructureException {
                 AssertUser.existsNot(
                         patientRestoreSO.getUserId(),
                         "User with specified UUID [%s] is preexisting."

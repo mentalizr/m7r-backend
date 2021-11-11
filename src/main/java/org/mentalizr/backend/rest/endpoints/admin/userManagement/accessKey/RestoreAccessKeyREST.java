@@ -1,7 +1,9 @@
 package org.mentalizr.backend.rest.endpoints.admin.userManagement.accessKey;
 
 import org.mentalizr.backend.auth.AuthorizationService;
+import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import org.mentalizr.backend.exceptions.InfrastructureException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertProgram;
@@ -39,12 +41,12 @@ public class RestoreAccessKeyREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
+            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return AuthorizationService.assertIsLoggedInAsAdmin(this.httpServletRequest);
             }
 
             @Override
-            protected void checkPreconditions() throws DataSourceException, ServicePreconditionFailedException {
+            protected void checkPreconditions() throws ServicePreconditionFailedException, InfrastructureException {
                 AssertRoleTherapist.exists(
                         getAccessKeyRestoreSO().getTherapistId(),
                         "Referenced therapist [%s] not existing."
@@ -56,7 +58,7 @@ public class RestoreAccessKeyREST {
             }
 
             @Override
-            protected Object workLoad() throws DataSourceException {
+            protected Object workLoad() throws InfrastructureException {
                 PatientAccessKeyRestore.restore(getAccessKeyRestoreSO());
                 return null;
             }

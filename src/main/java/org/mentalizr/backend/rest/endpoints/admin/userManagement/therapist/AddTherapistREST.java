@@ -1,13 +1,12 @@
 package org.mentalizr.backend.rest.endpoints.admin.userManagement.therapist;
 
+import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
-import org.mentalizr.backend.rest.RESTException;
+import org.mentalizr.backend.exceptions.InfrastructureException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertUserLogin;
-import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
-import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.RoleTherapistDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.RoleTherapistVO;
@@ -22,7 +21,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 
 import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsAdmin;
 
@@ -46,12 +44,12 @@ public class AddTherapistREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
+            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return assertIsLoggedInAsAdmin(httpServletRequest);
             }
 
             @Override
-            protected void checkPreconditions() throws DataSourceException, ServicePreconditionFailedException {
+            protected void checkPreconditions() throws ServicePreconditionFailedException, InfrastructureException {
                 AssertUserLogin.existsNotWithUsername(
                         therapistAddSO.getUsername(),
                         "User with specified username [%s] is preexisting."
@@ -59,7 +57,7 @@ public class AddTherapistREST {
             }
 
             @Override
-            protected TherapistAddSO workLoad() throws DataSourceException, EntityNotFoundException, RESTException, ContentManagerException, IOException {
+            protected TherapistAddSO workLoad() throws DataSourceException {
                 UserLoginCompositeVO userLoginCompositeVO = UserLogin.add(
                         therapistAddSO.isActive(),
                         therapistAddSO.getUsername(),

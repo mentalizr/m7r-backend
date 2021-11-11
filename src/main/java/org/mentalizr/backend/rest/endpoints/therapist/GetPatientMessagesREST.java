@@ -1,6 +1,7 @@
 package org.mentalizr.backend.rest.endpoints.therapist;
 
 import org.mentalizr.backend.auth.TherapistHttpSessionAttribute;
+import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.patientMessagesSOCreator.PatientMessagesSOCreator;
 import org.mentalizr.backend.rest.service.Service;
@@ -37,14 +38,13 @@ public class GetPatientMessagesREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
+            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return assertIsLoggedInAsTherapist(httpServletRequest);
             }
 
             @Override
             protected PatientMessagesSO workLoad() {
-                TherapistHttpSessionAttribute therapistHttpSessionAttribute
-                        = assertIsLoggedInAsTherapist(httpServletRequest);
+                TherapistHttpSessionAttribute therapistHttpSessionAttribute = getTherapistHttpSessionAttribute();
                 String therapistId = therapistHttpSessionAttribute.getUserVO().getId();
 
                 PatientMessagesSOCreator patientMessagesSOCreator = new PatientMessagesSOCreator(patientId, therapistId);

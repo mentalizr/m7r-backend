@@ -1,5 +1,6 @@
 package org.mentalizr.backend.rest.endpoints.patient;
 
+import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.config.Configuration;
 import org.mentalizr.backend.rest.RESTException;
@@ -35,7 +36,7 @@ public class TherapeutImgThumbnailREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
+            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return assertIsLoggedInAsPatient(httpServletRequest);
             }
 

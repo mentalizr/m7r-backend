@@ -1,10 +1,9 @@
 package org.mentalizr.backend.rest.endpoints.admin.userManagement.therapist;
 
 import org.mentalizr.backend.auth.AuthorizationService;
+import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
-import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.service.Service;
-import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.RoleTherapistDAO;
@@ -18,7 +17,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.util.Date;
 
 @Path("v1")
@@ -43,12 +41,12 @@ public class GetTherapistREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
+            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return AuthorizationService.assertIsLoggedInAsAdmin(httpServletRequest);
             }
 
             @Override
-            protected TherapistRestoreSO workLoad() throws DataSourceException, EntityNotFoundException, RESTException, ContentManagerException, IOException {
+            protected TherapistRestoreSO workLoad() throws DataSourceException, EntityNotFoundException {
                 UserLoginCompositeVO userLoginCompositeVO = UserLoginCompositeDAO.findByUk_username(username);
                 RoleTherapistVO roleTherapistVO = RoleTherapistDAO.load(userLoginCompositeVO.getUserId());
 

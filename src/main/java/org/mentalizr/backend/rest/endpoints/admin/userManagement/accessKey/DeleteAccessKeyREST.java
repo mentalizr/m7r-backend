@@ -1,7 +1,9 @@
 package org.mentalizr.backend.rest.endpoints.admin.userManagement.accessKey;
 
 import org.mentalizr.backend.auth.AuthorizationService;
+import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import org.mentalizr.backend.exceptions.InfrastructureException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertAccessKey;
@@ -41,17 +43,17 @@ public class DeleteAccessKeyREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
+            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return AuthorizationService.assertIsLoggedInAsAdmin(this.httpServletRequest);
             }
 
             @Override
-            protected void checkPreconditions() throws DataSourceException, ServicePreconditionFailedException {
+            protected void checkPreconditions() throws ServicePreconditionFailedException, InfrastructureException {
                 AssertAccessKey.isExistingWithAccessKey(getAccessKeyDeleteSO().getAccessKey());
             }
 
             @Override
-            protected Object workLoad() throws DataSourceException, EntityNotFoundException {
+            protected Object workLoad() throws InfrastructureException {
                 PatientAccessKeyDelete.delete(getAccessKeyDeleteSO());
                 return null;
             }

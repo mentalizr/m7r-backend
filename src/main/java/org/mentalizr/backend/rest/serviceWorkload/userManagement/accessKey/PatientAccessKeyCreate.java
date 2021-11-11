@@ -1,5 +1,6 @@
 package org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey;
 
+import org.mentalizr.backend.exceptions.InfrastructureException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.UserAccessKeyDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserAccessKeyPatientCompositeDAO;
@@ -12,7 +13,10 @@ import org.mentalizr.serviceObjects.userManagement.AccessKeyRestoreSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public class PatientAccessKeyCreate {
 
@@ -20,8 +24,15 @@ public class PatientAccessKeyCreate {
 
     private static final int ACCESS_KEY_LENGTH = 12;
 
-    public static AccessKeyCollectionSO create(AccessKeyCreateSO accessKeyCreateSO) throws DataSourceException {
+    public static AccessKeyCollectionSO create(AccessKeyCreateSO accessKeyCreateSO) throws InfrastructureException {
+        try {
+            return createInternal(accessKeyCreateSO);
+        } catch (DataSourceException e) {
+            throw new InfrastructureException(e.getMessage(), e);
+        }
+    }
 
+    private static AccessKeyCollectionSO createInternal(AccessKeyCreateSO accessKeyCreateSO) throws DataSourceException {
         Set<String> accessKeys = generateAccessKeys(
                 accessKeyCreateSO.getStartWith(),
                 accessKeyCreateSO.getNrOfKeys());

@@ -2,6 +2,7 @@ package org.mentalizr.backend.rest;
 
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.serviceObjects.ErrorSO;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 
@@ -21,6 +22,7 @@ public class ResponseFactory {
 
     public static Response unauthorized() {
         return Response.status(Response.Status.UNAUTHORIZED).build();
+//        return Response.status(401).entity("Unauthorized").build();
     }
 
     public static Response preconditionFailed(String message) {

@@ -1,5 +1,6 @@
 package org.mentalizr.backend.rest.endpoints.therapist;
 
+import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.formData.FormDataDAO;
@@ -38,7 +39,7 @@ public class GetFormDataREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
+            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return assertIsLoggedInAsTherapist(httpServletRequest);
             }
 

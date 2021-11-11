@@ -1,6 +1,7 @@
 package org.mentalizr.backend.rest.endpoints.patient.formData;
 
 import org.bson.Document;
+import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
@@ -40,7 +41,7 @@ public class SendFormDataREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
+            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return assertIsLoggedInAsPatientWithUserId(httpServletRequest, formDataSO.getUserId());
             }
 

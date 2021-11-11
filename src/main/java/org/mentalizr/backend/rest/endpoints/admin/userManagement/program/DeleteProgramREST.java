@@ -1,10 +1,9 @@
 package org.mentalizr.backend.rest.endpoints.admin.userManagement.program;
 
 import org.mentalizr.backend.auth.AuthorizationService;
+import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
-import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.service.Service;
-import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.ProgramDAO;
@@ -14,7 +13,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 
 @Path("v1")
 public class DeleteProgramREST {
@@ -37,12 +35,12 @@ public class DeleteProgramREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
+            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return AuthorizationService.assertIsLoggedInAsAdmin(httpServletRequest);
             }
 
             @Override
-            protected Object workLoad() throws DataSourceException, EntityNotFoundException, RESTException, ContentManagerException, IOException {
+            protected Object workLoad() throws DataSourceException, EntityNotFoundException {
                 ProgramDAO.load(programId);
                 ProgramDAO.delete(programId);
                 return null;
