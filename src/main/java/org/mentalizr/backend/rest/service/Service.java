@@ -56,6 +56,9 @@ public abstract  class Service {
 
     protected abstract Object workLoad() throws RESTException, ContentManagerException, InfrastructureException, IOException, DataSourceException, EntityNotFoundException;
 
+    protected void updateActivityStatus(){
+    }
+
     protected void logLeave() {
         if (this.userHttpSessionAttribute != null) {
             String userId = this.userHttpSessionAttribute.getUserVO().getId();
@@ -98,6 +101,13 @@ public abstract  class Service {
         } catch (RESTException | ContentManagerException | IOException | InfrastructureException | DataSourceException | EntityNotFoundException e) {
             logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
                     + getServiceId() + "]: " + e.getMessage(), e);
+            return ResponseFactory.internalServerError(e);
+        }
+
+        try {
+            updateActivityStatus();
+        } catch (RuntimeException e) {
+            logger.error("A RuntimeException occurred on executing method updateActivityStatus for service [" + getServiceId() + "]: " + e.getMessage(), e);
             return ResponseFactory.internalServerError(e);
         }
 
