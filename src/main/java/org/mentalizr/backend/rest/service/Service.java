@@ -98,10 +98,14 @@ public abstract  class Service {
         Object responseSO;
         try {
             responseSO = workLoad();
-        } catch (RESTException | ContentManagerException | IOException | InfrastructureException | DataSourceException | EntityNotFoundException e) {
+        } catch (RESTException | ContentManagerException | IOException | InfrastructureException | DataSourceException e) {
             logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
                     + getServiceId() + "]: " + e.getMessage(), e);
             return ResponseFactory.internalServerError(e);
+        } catch (EntityNotFoundException e) {
+            logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
+                    + getServiceId() + "]: " + e.getMessage());
+            return ResponseFactory.entityNotFound(e);
         }
 
         try {

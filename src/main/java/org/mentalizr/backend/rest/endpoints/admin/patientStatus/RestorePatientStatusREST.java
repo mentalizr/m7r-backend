@@ -1,4 +1,4 @@
-package org.mentalizr.backend.rest.endpoints.admin.formData;
+package org.mentalizr.backend.rest.endpoints.admin.patientStatus;
 
 import org.bson.Document;
 import org.mentalizr.backend.auth.UnauthorizedException;
@@ -8,6 +8,9 @@ import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.DocumentPreexistingException;
 import org.mentalizr.persistence.mongo.formData.FormDataConverter;
 import org.mentalizr.persistence.mongo.formData.FormDataMongoHandler;
+import org.mentalizr.persistence.mongo.patientStatus.PatientStatusConverter;
+import org.mentalizr.persistence.mongo.patientStatus.PatientStatusMongoHandler;
+import org.mentalizr.serviceObjects.frontend.patient.PatientStatusSO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,15 +25,15 @@ import javax.ws.rs.core.Response;
 import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsAdmin;
 
 @Path("v1")
-public class RestoreFormDataREST {
+public class RestorePatientStatusREST {
 
-    private static final String SERVICE_ID = "admin/formData/restore";
+    private static final String SERVICE_ID = "admin/patientStatus/restore";
 
     @POST
     @Path(SERVICE_ID)
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response restore(FormDataSO formDataSO,
+    public Response restore(PatientStatusSO patientStatusSO,
                             @Context HttpServletRequest httpServletRequest) {
 
         return new Service(httpServletRequest) {
@@ -47,11 +50,11 @@ public class RestoreFormDataREST {
 
             @Override
             protected Object workLoad() throws RESTException {
-                Document document = FormDataConverter.convert(formDataSO);
+                Document document = PatientStatusConverter.convert(patientStatusSO);
                 try {
-                    FormDataMongoHandler.restore(document);
+                    PatientStatusMongoHandler.restore(document);
                 } catch (DocumentPreexistingException e) {
-                    throw new RESTException("REST method [" + SERVICE_ID + "]. FormData cannot be restored as it is preexisting.");
+                    throw new RESTException("REST method [" + SERVICE_ID + "]. PatientStatus cannot be restored as it is preexisting.");
                 }
                 return null;
             }
