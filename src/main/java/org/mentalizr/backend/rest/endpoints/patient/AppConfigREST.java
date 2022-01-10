@@ -3,10 +3,10 @@ package org.mentalizr.backend.rest.endpoints.patient;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
-import org.mentalizr.backend.config.ProjectConfiguration;
+import org.mentalizr.backend.config.BrandingConfiguration;
+import org.mentalizr.backend.config.BrandingConfigurationFactory;
 import org.mentalizr.backend.rest.service.Service;
-import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
-import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
+import org.mentalizr.serviceObjects.frontend.patient.ApplicationConfigPatientSO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -41,10 +41,10 @@ public class AppConfigREST {
             }
 
             @Override
-            protected Object workLoad() {
-                ProjectConfiguration projectConfiguration = ApplicationContext.getProjectConfiguration();
-                String projectId = getPatientHttpSessionAttribute().getPatientProgramVO().getProgramId();
-                return projectConfiguration.getApplicationConfigPatientSO(projectId);
+            protected ApplicationConfigPatientSO workLoad() {
+                BrandingConfiguration brandingConfiguration = ApplicationContext.getBrandingConfiguration();
+                String programId = getPatientHttpSessionAttribute().getPatientProgramVO().getProgramId();
+                return brandingConfiguration.getApplicationConfigPatientSO(programId);
             }
 
         }.call();

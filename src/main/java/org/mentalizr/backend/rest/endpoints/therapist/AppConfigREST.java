@@ -3,7 +3,8 @@ package org.mentalizr.backend.rest.endpoints.therapist;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
-import org.mentalizr.backend.config.ProjectConfiguration;
+import org.mentalizr.backend.config.BrandingConfiguration;
+import org.mentalizr.backend.config.BrandingConfigurationFactory;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.serviceObjects.frontend.therapist.ApplicationConfigTherapistSO;
 
@@ -41,9 +42,8 @@ public class AppConfigREST {
 
             @Override
             protected ApplicationConfigTherapistSO workLoad() {
-                ProjectConfiguration projectConfiguration = ApplicationContext.getProjectConfiguration();
-                // TODO: returns projectConfiguration for default program -> make generic
-                return projectConfiguration.getApplicationConfigTherapistSO("some-program");
+                BrandingConfiguration brandingConfiguration = ApplicationContext.getBrandingConfiguration();
+                return brandingConfiguration.getApplicationConfigTherapistSO();
             }
 
         }.call();

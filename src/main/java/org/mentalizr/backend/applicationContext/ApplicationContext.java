@@ -1,8 +1,8 @@
 package org.mentalizr.backend.applicationContext;
 
+import org.mentalizr.backend.config.BrandingConfiguration;
 import org.mentalizr.backend.config.Configuration;
-import org.mentalizr.backend.config.ProjectConfiguration;
-import org.mentalizr.backend.servletContext.ApplicationContextListener;
+import org.mentalizr.backend.config.BrandingConfigurationFactory;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ public class ApplicationContext {
     // TODO Include EventProcessor here?
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationContext.class);
-    private static ProjectConfiguration projectConfiguration;
+    private static BrandingConfiguration brandingConfiguration;
     private static ContentManager contentManager;
     private static boolean isInitialized = false;
 
@@ -24,7 +24,7 @@ public class ApplicationContext {
         logger.info("Start ApplicationContext initialization.");
 
         try {
-            projectConfiguration = new ProjectConfiguration();
+            brandingConfiguration = BrandingConfigurationFactory.createProjectConfiguration();
             contentManager = initContentManager();
         } catch (RuntimeException e) {
             logger.error("Initialization failed: " + e.getMessage());
@@ -44,9 +44,9 @@ public class ApplicationContext {
         }
     }
 
-    public static ProjectConfiguration getProjectConfiguration() {
+    public static BrandingConfiguration getBrandingConfiguration() {
         if (!isInitialized) throw new IllegalStateException("ApplicationContext not yet initialized.");
-        return projectConfiguration;
+        return brandingConfiguration;
     }
 
     public static ContentManager getContentManager() {
