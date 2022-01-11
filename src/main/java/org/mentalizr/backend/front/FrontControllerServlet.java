@@ -1,9 +1,7 @@
 package org.mentalizr.backend.front;
 
 import org.mentalizr.backend.config.Configuration;
-import org.mentalizr.backend.htmlChunks.HtmlChunk;
-import org.mentalizr.backend.htmlChunks.HtmlChunkCache;
-import org.mentalizr.backend.htmlChunks.InitChunkModifier;
+import org.mentalizr.backend.htmlChunks.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,11 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.ObjectInputFilter;
 
 public class FrontControllerServlet extends HttpServlet {
 
-    private static Logger logger = LoggerFactory.getLogger(FrontControllerServlet.class);
+    private static final Logger logger = LoggerFactory.getLogger(FrontControllerServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
@@ -24,26 +21,17 @@ public class FrontControllerServlet extends HttpServlet {
 
         httpServletResponse.setContentType("text/html");
 
-        HtmlChunkCache htmlChunkCache = new HtmlChunkCache(httpServletRequest.getServletContext());
-        String initChunk = htmlChunkCache.getChunkAsString(HtmlChunk.INIT);
+        HtmlChunkRegistry htmlChunkRegistry = new HtmlChunkRegistry(httpServletRequest.getServletContext());
+        String initChunk = htmlChunkRegistry.getChunk(HtmlChunkInit.NAME).asString();
 
-//        logger.debug("chunk as template:\n" + initChunk);
-
-        logger.debug("Default login screen: " + Configuration.getDefaultLogin().toString());
-
-        InitChunkModifier initChunkModifier = new InitChunkModifier(initChunk);
-        String initChunkWithLoginEntry;
+        HtmlChunkModifierInit htmlChunkModifierInit = new HtmlChunkModifierInit(initChunk);
         if (Configuration.getDefaultLogin() == Configuration.DefaultLogin.ACCESS_KEY) {
-            initChunkWithLoginEntry = initChunkModifier.withEntry(HtmlChunk.LOGIN_VOUCHER);
+            htmlChunkModifierInit.addEntry(HtmlChunkLoginVoucher.NAME);
         } else {
-            initChunkWithLoginEntry = initChunkModifier.withEntry(HtmlChunk.LOGIN);
+            htmlChunkModifierInit.addEntry(HtmlChunkLogin.NAME);
         }
 
-//        logger.debug("chunk with login Entry:\n" + initChunkWithLoginEntry);
-
-        httpServletResponse.getWriter().println(initChunkWithLoginEntry);
-
-//        logger.debug("doGet finished");
+        httpServletResponse.getWriter().println(htmlChunkModifierInit.getModifiedChunk());
     }
 
     @Override

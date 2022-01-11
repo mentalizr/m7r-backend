@@ -1,8 +1,6 @@
 package org.mentalizr.backend.front;
 
-import org.mentalizr.backend.htmlChunks.InitChunkModifier;
-import org.mentalizr.backend.htmlChunks.HtmlChunk;
-import org.mentalizr.backend.htmlChunks.HtmlChunkCache;
+import org.mentalizr.backend.htmlChunks.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +11,7 @@ import java.io.IOException;
 
 public class FrontControllerServletVoucherLogin extends HttpServlet {
 
-    private static Logger logger = LoggerFactory.getLogger(FrontControllerServletVoucherLogin.class);
+    private static final Logger logger = LoggerFactory.getLogger(FrontControllerServletVoucherLogin.class);
 
     @Override
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
@@ -22,19 +20,15 @@ public class FrontControllerServletVoucherLogin extends HttpServlet {
 
         httpServletResponse.setContentType("text/html");
 
-        HtmlChunkCache htmlChunkCache = new HtmlChunkCache(httpServletRequest.getServletContext());
-        String initChunk = htmlChunkCache.getChunkAsString(HtmlChunk.INIT);
+        HtmlChunkRegistry htmlChunkRegistry = new HtmlChunkRegistry(httpServletRequest.getServletContext());
+        String initChunk = htmlChunkRegistry.getChunk(HtmlChunkInit.NAME).asString();
 
-//        logger.debug("chunk as template:\n" + initChunk);
+        HtmlChunkModifierInit htmlChunkModifierInit = new HtmlChunkModifierInit(initChunk);
+        htmlChunkModifierInit.addEntry(HtmlChunkLoginVoucher.NAME);
 
-        InitChunkModifier initChunkModifier = new InitChunkModifier(initChunk);
-        String initChunkWithLoginEntry = initChunkModifier.withEntry(HtmlChunk.LOGIN_VOUCHER);
+        FrontControllerServletHelper.addTitle(htmlChunkModifierInit);
 
-//        logger.debug("chunk with login Entry:\n" + initChunkWithLoginEntry);
-
-        httpServletResponse.getWriter().println(initChunkWithLoginEntry);
-
-//        logger.debug("doGet finished");
+        httpServletResponse.getWriter().println(htmlChunkModifierInit.getModifiedChunk());
     }
 
     @Override

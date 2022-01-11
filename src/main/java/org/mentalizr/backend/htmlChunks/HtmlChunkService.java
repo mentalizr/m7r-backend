@@ -10,12 +10,10 @@ import java.io.InputStream;
 
 public class HtmlChunkService {
 
-    public static InputStream getHtmlChunk(HtmlChunk htmlChunk, HttpServletRequest httpServletRequest) {
-
-        HtmlChunkManager htmlChunkManager = new HtmlChunkManager(httpServletRequest);
-
+    public static InputStream getHtmlChunk(String chunkName, HttpServletRequest httpServletRequest) {
         try {
-            return htmlChunkManager.getHtmlChunk(htmlChunk);
+            HtmlChunkManager htmlChunkManager = new HtmlChunkManager(httpServletRequest);
+            return htmlChunkManager.getHtmlChunk(chunkName);
         } catch (UnauthorizedException e) {
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         } catch (IOException e) {

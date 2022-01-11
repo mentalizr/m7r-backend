@@ -2,7 +2,6 @@ package org.mentalizr.backend.rest.endpoints;
 
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.config.Configuration;
-import org.mentalizr.backend.htmlChunks.HtmlChunk;
 import org.mentalizr.backend.htmlChunks.HtmlChunkService;
 import org.mentalizr.backend.rest.entities.UserFactory;
 import org.mentalizr.serviceObjects.frontend.application.UserSO;
@@ -65,11 +64,9 @@ public class Endpoint {
 
         logger.debug("[htmlChunk] ...");
 
-        HtmlChunk htmlChunk = HtmlChunk.getHtmlChunkByName(chunkName.toUpperCase());
+        logger.debug("[htmlChunk] requested Chunk is: " + chunkName);
 
-        logger.debug("[htmlChunk] requested Chunk is: " + htmlChunk.toString());
-
-        InputStream inputStream = HtmlChunkService.getHtmlChunk(htmlChunk, httpServletRequest);
+        InputStream inputStream = HtmlChunkService.getHtmlChunk(chunkName, httpServletRequest);
         return Response.ok(inputStream).build();
     }
 

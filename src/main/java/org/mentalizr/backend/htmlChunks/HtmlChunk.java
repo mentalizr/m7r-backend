@@ -1,33 +1,67 @@
 package org.mentalizr.backend.htmlChunks;
 
-public enum HtmlChunk {
+import javax.servlet.ServletContext;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-    INIT("/WEB-INF/init.html"),
-    LOGIN("/WEB-INF/login.chunk.html"),
-    LOGIN_VOUCHER("WEB-INF/loginVoucher.chunk.html"),
-    PATIENT("/WEB-INF/patient.chunk.html"),
-    THERAPIST("/WEB-INF/therapist.chunk.html");
+public abstract class HtmlChunk {
 
-    private final String fileName;
+    protected final String chunk;
 
-    HtmlChunk(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public String getFileName() {
-        return this.fileName;
-    }
-
-    public static HtmlChunk getHtmlChunkByName(String htmlChunkName) {
-
-        HtmlChunk htmlChunk;
-        try {
-            htmlChunk = HtmlChunk.valueOf(htmlChunkName);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("No HtmlChunk found for name: " + htmlChunkName);
+    public HtmlChunk(ServletContext servletContext) throws IOException {
+        try (InputStream inputStream = servletContext.getResourceAsStream(getFileName())) {
+            if (inputStream == null)
+                throw new RuntimeException("HtmlChunk not found in web application: [" + getFileName() + "].");
+            String chunkWork = toStringWithNormalizedLineDelimiter(inputStream);
+            this.chunk = modifyChunk(chunkWork);
         }
-
-        return htmlChunk;
     }
 
+    public String asString() {
+        return this.chunk;
+    }
+
+    public InputStream asInputStream() throws IOException {
+        return fromString(chunk);
+    }
+
+    public abstract String getName();
+
+    public abstract String getFileName();
+
+    public abstract String modifyChunk(String chunk);
+
+    private static String toStringWithNormalizedLineDelimiter(InputStream inputStream, Charset charset, CharSequence delimiter) throws IOException {
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, charset))) {
+            return bufferedReader.lines().collect(Collectors.joining(delimiter));
+        }
+    }
+
+    private static String toStringWithNormalizedLineDelimiter(InputStream inputStream) throws IOException {
+        return toStringWithNormalizedLineDelimiter(inputStream, StandardCharsets.UTF_8, "\n");
+    }
+
+    private static InputStream fromString(String string, Charset charset) {
+        return new ByteArrayInputStream(string.getBytes(charset));
+    }
+
+    private static InputStream fromString(String string) {
+        return fromString(string, StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HtmlChunk htmlChunk = (HtmlChunk) o;
+        return Objects.equals(getName(), htmlChunk.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName());
+    }
 }
