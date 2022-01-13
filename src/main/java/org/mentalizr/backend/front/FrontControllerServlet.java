@@ -1,7 +1,11 @@
 package org.mentalizr.backend.front;
 
+import org.mentalizr.backend.applicationContext.ApplicationContext;
+import org.mentalizr.backend.config.BrandingConfiguration;
 import org.mentalizr.backend.config.Configuration;
+import org.mentalizr.backend.config.DefaultLoginScreen;
 import org.mentalizr.backend.htmlChunks.*;
+import org.mentalizr.serviceObjects.frontend.application.ApplicationConfigGenericSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,8 +28,11 @@ public class FrontControllerServlet extends HttpServlet {
         HtmlChunkRegistry htmlChunkRegistry = new HtmlChunkRegistry(httpServletRequest.getServletContext());
         String initChunk = htmlChunkRegistry.getChunk(HtmlChunkInit.NAME).asString();
 
+        BrandingConfiguration brandingConfiguration = ApplicationContext.getBrandingConfiguration();
+        ApplicationConfigGenericSO applicationConfigGenericSO = brandingConfiguration.getApplicationConfigGenericSO();
+        DefaultLoginScreen defaultLoginScreen = new DefaultLoginScreen(applicationConfigGenericSO.getDefaultLoginScreen());
         HtmlChunkModifierInit htmlChunkModifierInit = new HtmlChunkModifierInit(initChunk);
-        if (Configuration.getDefaultLogin() == Configuration.DefaultLogin.ACCESS_KEY) {
+        if (defaultLoginScreen.isAccessKey()) {
             htmlChunkModifierInit.addEntry(HtmlChunkLoginVoucher.NAME);
         } else {
             htmlChunkModifierInit.addEntry(HtmlChunkLogin.NAME);
