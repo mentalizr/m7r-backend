@@ -8,6 +8,7 @@ src/main/webapp/WEB-INF/*.html
 gradlew
 gradlew.bat
 src/main/resources/barnacle.conf
+src/main/resources/builddate.txt
 conf/logback.xml
 conf/m7r-project.conf
 conf/m7r.conf

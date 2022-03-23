@@ -1,5 +1,6 @@
 package org.mentalizr.backend.rest.endpoints;
 
+import de.arthurpicht.utils.io.InputStreams;
 import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.config.Configuration;
 import org.mentalizr.backend.htmlChunks.HtmlChunkService;
@@ -14,10 +15,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.List;
 
 import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedIn;
 
@@ -31,7 +30,17 @@ public class Endpoint {
 
     @GET
     public String defaultMessage() {
-        return "mentalizr REST interface is up and running.";}
+        String message = "mentalizr REST interface is up and running. ";
+        InputStream inputStream = InputStreams.getFileFromResourceAsStream("builddate.txt");
+        try {
+            List<String> strings = InputStreams.toStrings(inputStream);
+            message += "Build time: " + strings.get(0);
+        } catch (IOException | RuntimeException e) {
+            message += "Could not read builddate.txt";
+        }
+
+        return message + "\n";
+    }
 
     @GET
     @Path("test")
