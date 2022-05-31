@@ -1,3 +1,4 @@
+import java.nio.file.Files
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
 
@@ -100,33 +101,27 @@ task copyBarnacleConf(type: Copy) {
 }
 
 task copyWebAppConf(type: Copy) {
-    def defaultConfig = "vbox-dev"
-    def config = System.getenv("MENTALIZR_CONFIG")
-    if (config?.trim()) {
-        println "Project configuration specified by MENTALIZR_CONFIG: ${config}"
-    } else {
-        config = defaultConfig;
-        println "MENTALIZR_CONFIG not set. Go on with default: ${config}"
-    }
+    def userHome = System.getProperty("user.home")
+    def configDir = Paths.get(userHome).resolve(".m7r-host/config").normalize()
+    if (!Files.exists(configDir)) throw new GradleException(configDir.absolutePath + " not found.")
 
-    def logbackConf = Paths.get("$rootDir").resolve("../../infra/m7r-config/common/webapp/logback.xml").normalize().toFile()
+    def logbackConf = configDir.resolve("logback.xml").toFile()
     if (!logbackConf.exists()) throw new GradleException(logbackConf.absolutePath + " not found.")
     inputs.file(logbackConf)
-    outputs.file("$rootDir/src/main/resources/logback.xml")
+    outputs.file("$rootDir/conf/logback.xml")
     from file(logbackConf)
 
-    def m7rConf = Paths.get("$rootDir").resolve("../../infra/m7r-config/common/webapp/m7r.conf").normalize().toFile()
+    def m7rConf = configDir.resolve("m7r.conf").toFile()
     if (!m7rConf.exists()) throw new GradleException(m7rConf.absolutePath + " not found.")
     inputs.file(m7rConf)
-    outputs.file("$rootDir/src/main/resources/m7r.conf")
+    outputs.file("$rootDir/conf/m7r.conf")
     from file(m7rConf)
 
-    def instanceConfPath = "../../infra/m7r-config/" + config + "/m7r-instance.conf"
-    def m7rProjectConf = Paths.get("$rootDir").resolve(instanceConfPath).normalize().toFile()
-    if (!m7rProjectConf.exists()) throw new GradleException(m7rProjectConf.absolutePath + " not found.")
-    inputs.file(m7rProjectConf)
-    outputs.file("$rootDir/src/main/resources/m7r-instance.conf")
-    from file(m7rProjectConf)
+    def m7rInstanceConf = configDir.resolve("m7r-instance.conf").toFile()
+    if (!m7rInstanceConf.exists()) throw new GradleException(m7rInstanceConf.absolutePath + " not found.")
+    inputs.file(m7rInstanceConf)
+    outputs.file("$rootDir/conf/m7r-instance.conf")
+    from file(m7rInstanceConf)
 
     into "$rootDir/conf"
 }
