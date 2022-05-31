@@ -5,6 +5,7 @@ import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.config.Configuration;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.service.Service;
+import org.mentalizr.commons.paths.container.TomcatContainerImgBaseTmpDir;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -42,7 +43,7 @@ public class TherapeutImgThumbnailREST {
 
             @Override
             protected FileInputStream workLoad() throws RESTException {
-                File image = new File(Configuration.getDirImageRoot(), "dummies/DummyAvatar.png");
+                File image = new File(new TomcatContainerImgBaseTmpDir().toAbsolutePathString(), "dummies/DummyAvatar.png");
                 try {
                     return new FileInputStream(image);
                 } catch (FileNotFoundException e) {

@@ -3,6 +3,7 @@ package org.mentalizr.backend.applicationContext;
 import org.mentalizr.backend.config.BrandingConfiguration;
 import org.mentalizr.backend.config.Configuration;
 import org.mentalizr.backend.config.BrandingConfigurationFactory;
+import org.mentalizr.commons.paths.container.TomcatContainerContentDir;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.slf4j.Logger;
@@ -36,7 +37,7 @@ public class ApplicationContext {
     }
 
     private static ContentManager initContentManager() {
-        Path contentRoot = Configuration.getDirProgramContentRoot();
+        Path contentRoot = new TomcatContainerContentDir().asPath();
         try {
             return ContentManager.getInstanceForContentRoot(contentRoot);
         } catch (ContentManagerException e) {

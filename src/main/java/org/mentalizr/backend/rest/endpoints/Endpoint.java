@@ -5,6 +5,7 @@ import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.config.Configuration;
 import org.mentalizr.backend.htmlChunks.HtmlChunkService;
 import org.mentalizr.backend.rest.entities.UserFactory;
+import org.mentalizr.commons.paths.container.TomcatContainerImgBaseTmpDir;
 import org.mentalizr.serviceObjects.frontend.application.UserSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,7 +99,7 @@ public class Endpoint {
 
         assertIsLoggedIn(httpServletRequest);
 
-        File imageFile = new File(Configuration.getDirImageRoot(), "dummies/DummyAvatar.png");
+        File imageFile = new File(new TomcatContainerImgBaseTmpDir().toAbsolutePathString(), "dummies/DummyAvatar.png");
         try {
             FileInputStream fileInputStream = new FileInputStream(imageFile);
             return Response.ok(fileInputStream).build();
