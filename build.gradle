@@ -90,7 +90,11 @@ task copyResourcesFromFrontend(type: Copy) {
 }
 
 task copyBarnacleConf(type: Copy) {
-    def barnacleConf = Paths.get("$rootDir").resolve("../../infra/m7r-config/common/barnacle.conf").normalize().toFile()
+    def userHome = System.getProperty("user.home")
+    def configDir = Paths.get(userHome).resolve(".m7r-host/config").normalize()
+    if (!Files.exists(configDir)) throw new GradleException(configDir.absolutePath + " not found.")
+
+    def barnacleConf = configDir.resolve("common/barnacle.conf").toFile()
     if (!barnacleConf.exists()) throw new GradleException(barnacleConf.absolutePath + " not found.")
 
     inputs.file(barnacleConf)
@@ -105,13 +109,13 @@ task copyWebAppConf(type: Copy) {
     def configDir = Paths.get(userHome).resolve(".m7r-host/config").normalize()
     if (!Files.exists(configDir)) throw new GradleException(configDir.absolutePath + " not found.")
 
-    def logbackConf = configDir.resolve("logback.xml").toFile()
+    def logbackConf = configDir.resolve("common/logback.xml").toFile()
     if (!logbackConf.exists()) throw new GradleException(logbackConf.absolutePath + " not found.")
     inputs.file(logbackConf)
     outputs.file("$rootDir/conf/logback.xml")
     from file(logbackConf)
 
-    def m7rConf = configDir.resolve("m7r.conf").toFile()
+    def m7rConf = configDir.resolve("common/m7r.conf").toFile()
     if (!m7rConf.exists()) throw new GradleException(m7rConf.absolutePath + " not found.")
     inputs.file(m7rConf)
     outputs.file("$rootDir/conf/m7r.conf")
