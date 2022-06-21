@@ -18,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Enumeration;
 
 import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsPatient;
 
@@ -43,6 +44,18 @@ public class VideoREST {
             @Override
             protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return assertIsLoggedInAsPatient(httpServletRequest);
+            }
+
+            @Override
+            protected void logEntry() {
+                super.logEntry();
+                Enumeration<String> headers = this.httpServletRequest.getHeaderNames();
+                logger.info("Request header:");
+                while (headers.hasMoreElements()) {
+                    String headerString = headers.nextElement();
+                    String headerValue= this.httpServletRequest.getHeader(headerString);
+                    logger.info(headerString + ":" + headerValue);
+                }
             }
 
             @Override
