@@ -34,7 +34,7 @@
 
     <servlet>
         <servlet-name>mediaDownload</servlet-name>
-        <servlet-class>org.mentalizr.backend.media.MediaServlet</servlet-class>
+        <servlet-class>org.mentalizr.backend.media.M7rMediaServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>

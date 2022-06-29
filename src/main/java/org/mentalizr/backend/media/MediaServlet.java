@@ -1,14 +1,13 @@
 package org.mentalizr.backend.media;
 
 import de.arthurpicht.utils.core.strings.Strings;
-import org.mentalizr.backend.applicationContext.ApplicationContext;
+import org.mentalizr.backend.media.exception.BadRequestException;
+import org.mentalizr.backend.media.exception.ProcessException;
 import org.mentalizr.backend.media.range.Range;
 import org.mentalizr.backend.media.range.RangeParser;
 import org.mentalizr.backend.media.range.RangeParserException;
 import org.mentalizr.backend.media.range.Ranges;
 import org.mentalizr.backend.utils.IOUtils;
-import org.mentalizr.contentManager.ContentManager;
-import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,17 +17,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MediaServlet extends HttpServlet {
+public abstract class MediaServlet extends HttpServlet {
+
+    // Possible extensions:
+    // * If-Match, If-Unmodified-Since, ETag, Last-Modified, If-Range headers
 
     public static final String MULTIPART_BOUNDARY = "fRWi7Qa9XoEZMGNtft0q";
 
     private static final Logger logger = LoggerFactory.getLogger(MediaServlet.class);
+
+    public abstract Path getMediaPath(HttpServletRequest httpServletRequest) throws ProcessException;
 
     @Override
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
@@ -54,11 +60,10 @@ public class MediaServlet extends HttpServlet {
             boolean headOnly) throws IOException {
 
         try {
-            String mediaName = getMediaName(httpServletRequest);
-            logger.info("Requested media: [" + mediaName + "].");
-            logRequestHeaders(httpServletRequest);
+            Path mediaPath = getMediaPath(httpServletRequest);
 
-            Path mediaPath = getMediaPath(mediaName);
+            logger.info("Requested media: [" + mediaPath.getFileName().toString() + "].");
+            logRequestHeaders(httpServletRequest);
 
             Ranges ranges = getRanges(mediaPath, httpServletRequest);
             if (ranges.hasRange()) {
@@ -83,24 +88,6 @@ public class MediaServlet extends HttpServlet {
         }
     }
 
-    private String getMediaName(HttpServletRequest request) throws BadRequestException {
-        String pathInfo = request.getPathInfo();
-
-        if (Strings.isNullOrEmpty(pathInfo)) throw new IllegalMediaSpecificationException();
-
-        if (pathInfo.startsWith("/")) {
-            if (pathInfo.length() > 1) {
-                pathInfo = pathInfo.substring(1);
-            } else {
-                throw new IllegalMediaSpecificationException();
-            }
-        }
-
-        if (pathInfo.contains("/")) throw new IllegalMediaSpecificationException();
-
-        return pathInfo;
-    }
-
     private void logRequestHeaders(HttpServletRequest httpServletRequest) {
         List<String> headerNames = Collections.list(httpServletRequest.getHeaderNames());
         logger.debug("Request headers:");
@@ -114,15 +101,6 @@ public class MediaServlet extends HttpServlet {
         logger.debug("Response headers:");
         for (String headerName : headerNames) {
             logger.debug(headerName + ": " + httpServletResponse.getHeader(headerName));
-        }
-    }
-
-    private Path getMediaPath(String mediaName) throws ProcessException {
-        ContentManager contentManager = ApplicationContext.getContentManager();
-        try {
-            return contentManager.getMediaResource("sport", mediaName);
-        } catch (ContentManagerException e) {
-            throw new ProcessException(404, "Media not found: [" + mediaName + "].", e);
         }
     }
 
@@ -162,17 +140,10 @@ public class MediaServlet extends HttpServlet {
 
     private String getContentType(Path path) {
         String fileName = path.getFileName().toString().toLowerCase();
-        if (fileName.endsWith(".mp4")) {
-            return "video/mp4";
-        } else if (fileName.endsWith(".mp3")) {
-            return "audio/mp3";
-        } else if (fileName.endsWith(".pdf")) {
-            return "application/pdf";
-        } else if (fileName.endsWith(".txt")) {
-            return "text/plain";
-        } else {
-            return "application/octet-stream";
-        }
+        FileNameMap fileNameMap = URLConnection.getFileNameMap();
+        String mimeType = fileNameMap.getContentTypeFor(fileName);
+        if (Strings.isNullOrEmpty(mimeType)) mimeType = "application/octet-stream";
+        return mimeType;
     }
 
     private void writeContent(HttpServletResponse response, Path path, Ranges ranges) throws IOException {

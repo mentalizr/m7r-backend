@@ -1,4 +1,4 @@
-package org.mentalizr.backend.media;
+package org.mentalizr.backend.media.exception;
 
 import javax.servlet.http.HttpServletResponse;
 

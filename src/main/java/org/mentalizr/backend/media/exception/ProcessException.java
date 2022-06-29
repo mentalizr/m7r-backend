@@ -1,4 +1,4 @@
-package org.mentalizr.backend.media;
+package org.mentalizr.backend.media.exception;
 
 public class ProcessException extends Exception {
 
