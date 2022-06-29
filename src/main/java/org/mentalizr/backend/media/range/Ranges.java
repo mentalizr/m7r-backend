@@ -2,11 +2,16 @@ package org.mentalizr.backend.media.range;
 
 import de.arthurpicht.utils.core.assertion.AssertMethodPrecondition;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Ranges {
 
     private final List<Range> rangeList;
+
+    public static Ranges getEmptyInstance() {
+        return new Ranges(new ArrayList<>());
+    }
 
     public Ranges(List<Range> rangeList) {
         AssertMethodPrecondition.parameterNotNull("rangeList", rangeList);
@@ -21,11 +26,15 @@ public class Ranges {
         return this.rangeList.size() > 0;
     }
 
-    public boolean isSingleRange() {
+    public boolean hasSingleRange() {
         return this.rangeList.size() == 1;
     }
 
-    public int size() {
+    public boolean hasMultiRange() {
+        return this.rangeList.size() > 1;
+    }
+
+    public int getNrOfRanges() {
         return this.rangeList.size();
     }
 

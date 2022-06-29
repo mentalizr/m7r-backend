@@ -1,20 +1,26 @@
 package org.mentalizr.backend.media.range;
 
-import de.arthurpicht.utils.core.assertion.AssertMethodPrecondition;
 import de.arthurpicht.utils.core.strings.Strings;
 import org.mentalizr.backend.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public class RangeParser {
 
-    public static Ranges parse(String rangeHeaderValue, long totalLength) throws RangeParserException {
-        AssertMethodPrecondition.parameterNotNullAndNotEmpty("rangeHeaderValue", rangeHeaderValue);
+    private static final Logger logger = LoggerFactory.getLogger(RangeParser.class);
+
+    public static Ranges parse(HttpServletRequest request, long totalLength) throws RangeParserException {
+        String rangeHeaderValue = request.getHeader("Range");
+        return parseHeader(rangeHeaderValue, totalLength);
+    }
+
+    public static Ranges parseHeader(String rangeHeaderValue, long totalLength) throws RangeParserException {
+        if (Strings.isNullOrEmpty(rangeHeaderValue)) return Ranges.getEmptyInstance();
 
         rangeHeaderValue = shortenRangeHeaderValue(rangeHeaderValue);
-
-        System.out.println("after shortening:");
-        System.out.println(rangeHeaderValue);
 
         RangesBuilder rangesBuilder = new RangesBuilder();
         if (rangeHeaderValue.contains(",")) {
