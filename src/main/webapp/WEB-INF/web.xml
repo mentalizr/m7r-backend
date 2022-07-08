@@ -32,6 +32,11 @@
         <servlet-class>org.mentalizr.backend.front.FrontControllerServletLogin</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>mediaDownload</servlet-name>
+        <servlet-class>org.mentalizr.backend.media.MediaServlet</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>restService</servlet-name>
         <url-pattern>/service/*</url-pattern>
@@ -50,6 +55,11 @@
     <servlet-mapping>
         <servlet-name>frontControllerLogin</servlet-name>
         <url-pattern>/login/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>mediaDownload</servlet-name>
+        <url-pattern>/media/*</url-pattern>
     </servlet-mapping>
 
     <resource-ref>
