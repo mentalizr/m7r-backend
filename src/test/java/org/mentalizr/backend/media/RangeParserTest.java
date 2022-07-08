@@ -10,9 +10,9 @@ class RangeParserTest {
     @Test
     public void singleRangeWithBeginAndEnd() throws RangeParserException {
         String rangeHeaderValue = "bytes=1-2";
-        Ranges ranges = RangeParser.parse(rangeHeaderValue, 10);
+        Ranges ranges = RangeParser.parseHeader(rangeHeaderValue, 10);
 
-        assertTrue(ranges.isSingleRange());
+        assertTrue(ranges.hasSingleRange());
 
         Range range = ranges.getRanges().get(0);
 
@@ -23,9 +23,9 @@ class RangeParserTest {
     @Test
     public void singleRangeWithBeginAndEndOneByte() throws RangeParserException {
         String rangeHeaderValue = "bytes=2-2";
-        Ranges ranges = RangeParser.parse(rangeHeaderValue, 10);
+        Ranges ranges = RangeParser.parseHeader(rangeHeaderValue, 10);
 
-        assertTrue(ranges.isSingleRange());
+        assertTrue(ranges.hasSingleRange());
 
         Range range = ranges.getRanges().get(0);
 
@@ -36,9 +36,9 @@ class RangeParserTest {
     @Test
     public void capitalKeywordBytes() throws RangeParserException {
         String rangeHeaderValue = "BYTES=1-2";
-        Ranges ranges = RangeParser.parse(rangeHeaderValue, 10);
+        Ranges ranges = RangeParser.parseHeader(rangeHeaderValue, 10);
 
-        assertTrue(ranges.isSingleRange());
+        assertTrue(ranges.hasSingleRange());
 
         Range range = ranges.getRanges().get(0);
 
@@ -49,9 +49,9 @@ class RangeParserTest {
     @Test
     public void additionalSpacingInPrefix() throws RangeParserException {
         String rangeHeaderValue = "bytes = 1-2";
-        Ranges ranges = RangeParser.parse(rangeHeaderValue, 10);
+        Ranges ranges = RangeParser.parseHeader(rangeHeaderValue, 10);
 
-        assertTrue(ranges.isSingleRange());
+        assertTrue(ranges.hasSingleRange());
 
         Range range = ranges.getRanges().get(0);
 
@@ -62,9 +62,9 @@ class RangeParserTest {
     @Test
     public void additionalSpacingAlsoInValues() throws RangeParserException {
         String rangeHeaderValue = "bytes = 1 - 2";
-        Ranges ranges = RangeParser.parse(rangeHeaderValue, 10);
+        Ranges ranges = RangeParser.parseHeader(rangeHeaderValue, 10);
 
-        assertTrue(ranges.isSingleRange());
+        assertTrue(ranges.hasSingleRange());
 
         Range range = ranges.getRanges().get(0);
 
@@ -75,9 +75,9 @@ class RangeParserTest {
     @Test
     public void singleRangeWithBeginOny() throws RangeParserException {
         String rangeHeaderValue = "bytes=5-";
-        Ranges ranges = RangeParser.parse(rangeHeaderValue, 10);
+        Ranges ranges = RangeParser.parseHeader(rangeHeaderValue, 10);
 
-        assertTrue(ranges.isSingleRange());
+        assertTrue(ranges.hasSingleRange());
 
         Range range = ranges.getRanges().get(0);
 
@@ -88,9 +88,9 @@ class RangeParserTest {
     @Test
     public void singleRangeGetLast() throws RangeParserException {
         String rangeHeaderValue = "bytes=-6";
-        Ranges ranges = RangeParser.parse(rangeHeaderValue, 10);
+        Ranges ranges = RangeParser.parseHeader(rangeHeaderValue, 10);
 
-        assertTrue(ranges.isSingleRange());
+        assertTrue(ranges.hasSingleRange());
 
         Range range = ranges.getRanges().get(0);
 
@@ -103,7 +103,7 @@ class RangeParserTest {
         String rangeHeaderValue = "bytes=3-2";
 
         RangeParserException rangeParserException =
-                assertThrows(RangeParserException.class, () -> RangeParser.parse(rangeHeaderValue, 10));
+                assertThrows(RangeParserException.class, () -> RangeParser.parseHeader(rangeHeaderValue, 10));
 
         assertTrue(rangeParserException instanceof RangeHeaderOutOfBoundsException);
     }
@@ -113,7 +113,7 @@ class RangeParserTest {
         String rangeHeaderValue = "bytes=3-10";
 
         RangeParserException rangeParserException =
-                assertThrows(RangeParserException.class, () -> RangeParser.parse(rangeHeaderValue, 10));
+                assertThrows(RangeParserException.class, () -> RangeParser.parseHeader(rangeHeaderValue, 10));
 
         assertTrue(rangeParserException instanceof RangeHeaderOutOfBoundsException);
     }
@@ -121,10 +121,10 @@ class RangeParserTest {
     @Test
     public void twoRangeWithBeginAndEnd() throws RangeParserException {
         String rangeHeaderValue = "bytes=1-2,3-4";
-        Ranges ranges = RangeParser.parse(rangeHeaderValue, 10);
+        Ranges ranges = RangeParser.parseHeader(rangeHeaderValue, 10);
 
-        assertFalse(ranges.isSingleRange());
-        assertEquals(2, ranges.size());
+        assertFalse(ranges.hasSingleRange());
+        assertEquals(2, ranges.getNrOfRanges());
 
         Range range = ranges.getRanges().get(0);
         assertEquals(1, range.getBegin());
@@ -133,6 +133,19 @@ class RangeParserTest {
         range = ranges.getRanges().get(1);
         assertEquals(3, range.getBegin());
         assertEquals(4, range.getEnd());
+    }
+
+    @Test
+    public void emptyRangesByNull() throws RangeParserException {
+        Ranges ranges = RangeParser.parseHeader(null, 10);
+        assertFalse(ranges.hasRange());
+        assertFalse(ranges.hasSingleRange());
+    }
+
+    @Test
+    public void emptyRangesByEmptyHeaderValue() throws RangeParserException {
+        Ranges ranges = RangeParser.parseHeader("", 10);
+        assertFalse(ranges.hasRange());
     }
 
 }

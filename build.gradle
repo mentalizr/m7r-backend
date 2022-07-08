@@ -92,10 +92,10 @@ task copyResourcesFromFrontend(type: Copy) {
 task copyBarnacleConf(type: Copy) {
     def userHome = System.getProperty("user.home")
     def configDir = Paths.get(userHome).resolve(".m7r-host/config").normalize()
-    if (!Files.exists(configDir)) throw new GradleException(configDir.absolutePath + " not found.")
+    if (!Files.exists(configDir)) throw new GradleException(configDir.toAbsolutePath().toString() + ' not found.')
 
     def barnacleConf = configDir.resolve("common/barnacle.conf").toFile()
-    if (!barnacleConf.exists()) throw new GradleException(barnacleConf.absolutePath + " not found.")
+    if (!barnacleConf.exists()) throw new GradleException(barnacleConf.absolutePath + ' not found.')
 
     inputs.file(barnacleConf)
     outputs.file("$rootDir/src/main/resources/barnacle.conf")
@@ -107,22 +107,22 @@ task copyBarnacleConf(type: Copy) {
 task copyWebAppConf(type: Copy) {
     def userHome = System.getProperty("user.home")
     def configDir = Paths.get(userHome).resolve(".m7r-host/config").normalize()
-    if (!Files.exists(configDir)) throw new GradleException(configDir.absolutePath + " not found.")
+    if (!Files.exists(configDir)) throw new GradleException(configDir.toAbsolutePath() + " not found.")
 
     def logbackConf = configDir.resolve("common/logback.xml").toFile()
-    if (!logbackConf.exists()) throw new GradleException(logbackConf.absolutePath + " not found.")
+    if (!logbackConf.exists()) throw new GradleException(logbackConf.absolutePath + ' not found.')
     inputs.file(logbackConf)
     outputs.file("$rootDir/conf/logback.xml")
     from file(logbackConf)
 
     def m7rConf = configDir.resolve("common/m7r.conf").toFile()
-    if (!m7rConf.exists()) throw new GradleException(m7rConf.absolutePath + " not found.")
+    if (!m7rConf.exists()) throw new GradleException(m7rConf.absolutePath + ' not found.')
     inputs.file(m7rConf)
     outputs.file("$rootDir/conf/m7r.conf")
     from file(m7rConf)
 
     def m7rInstanceConf = configDir.resolve("m7r-instance.conf").toFile()
-    if (!m7rInstanceConf.exists()) throw new GradleException(m7rInstanceConf.absolutePath + " not found.")
+    if (!m7rInstanceConf.exists()) throw new GradleException(m7rInstanceConf.absolutePath + ' not found.')
     inputs.file(m7rInstanceConf)
     outputs.file("$rootDir/conf/m7r-instance.conf")
     from file(m7rInstanceConf)
