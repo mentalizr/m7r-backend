@@ -1,8 +1,7 @@
-package org.mentalizr.backend.auth;
+package org.mentalizr.backend.security.session.attributes.user;
 
 
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.backend.rest.entities.UserRole;
 
 import java.io.Serializable;

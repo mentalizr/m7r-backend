@@ -1,7 +1,7 @@
 package org.mentalizr.backend.rest.entities;
 
-import org.mentalizr.backend.auth.PatientHttpSessionAttribute;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import org.mentalizr.backend.security.session.attributes.user.PatientHttpSessionAttribute;
+import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
 import org.mentalizr.serviceObjects.frontend.application.UserSO;
 
 public class UserFactory {

@@ -1,9 +1,9 @@
 package org.mentalizr.backend.rest.endpoints;
 
-import org.mentalizr.backend.auth.Authentication;
-import org.mentalizr.backend.auth.AuthenticationService;
-import org.mentalizr.backend.auth.Authorization;
-import org.mentalizr.backend.auth.UnauthorizedException;
+import org.mentalizr.backend.security.auth.Authentication;
+import org.mentalizr.backend.security.auth.AuthenticationService;
+import org.mentalizr.backend.security.auth.Authorization;
+import org.mentalizr.backend.security.auth.UnauthorizedException;
 import org.mentalizr.backend.exceptions.InfrastructureException;
 import org.mentalizr.backend.rest.entities.factories.SessionStatusFactory;
 import org.mentalizr.backend.utils.HttpSessionHelper;
@@ -99,12 +99,9 @@ public class EndpointSession {
     @Path("logout")
     @Produces(MediaType.TEXT_PLAIN)
     public String logout(@Context HttpServletRequest httpServletRequest) {
-
         logger.debug("[logout]");
-
         AuthenticationService.logout(httpServletRequest);
         return "logout";
-
     }
 
     @GET
@@ -112,8 +109,8 @@ public class EndpointSession {
     @Produces(MediaType.TEXT_PLAIN)
     public String noop(@Context HttpServletRequest httpServletRequest) {
         logger.debug("[noop]");
-        Authentication authentication = AuthenticationService.assertIsLoggedIn(httpServletRequest, "noop", false);
-        return authentication.getHttpSession().getId();
+        AuthenticationService.assertHasSessionInAnyStaging(httpServletRequest, "noop", false);
+        return "noop";
     }
 
     @GET
@@ -130,7 +127,7 @@ public class EndpointSession {
         }
 
         Authorization authorization = new Authorization(authentication);
-        String sessionId = authentication.getHttpSession().getId();
+        String sessionId = authentication.getHttpSessionId();
         return SessionStatusFactory.getInstanceForValidSession(authorization.getUserRole(), sessionId);
     }
 

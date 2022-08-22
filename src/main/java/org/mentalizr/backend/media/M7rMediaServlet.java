@@ -2,9 +2,9 @@ package org.mentalizr.backend.media;
 
 import de.arthurpicht.utils.core.strings.Strings;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
-import org.mentalizr.backend.auth.AuthorizationService;
-import org.mentalizr.backend.auth.PatientHttpSessionAttribute;
-import org.mentalizr.backend.auth.UnauthorizedException;
+import org.mentalizr.backend.security.auth.AuthorizationService;
+import org.mentalizr.backend.security.session.attributes.user.PatientHttpSessionAttribute;
+import org.mentalizr.backend.security.auth.UnauthorizedException;
 import org.mentalizr.backend.media.exception.BadRequestException;
 import org.mentalizr.backend.media.exception.IllegalMediaSpecificationException;
 import org.mentalizr.backend.media.exception.ProcessException;

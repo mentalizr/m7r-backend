@@ -1,7 +1,7 @@
 package org.mentalizr.backend.rest.endpoints.generic;
 
 import org.mentalizr.backend.applicationContext.ApplicationContext;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
 import org.mentalizr.backend.config.BrandingConfiguration;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.serviceObjects.frontend.application.ApplicationConfigGenericSO;

@@ -1,9 +1,9 @@
 package org.mentalizr.backend.rest.service;
 
-import org.mentalizr.backend.auth.PatientHttpSessionAttribute;
-import org.mentalizr.backend.auth.TherapistHttpSessionAttribute;
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import org.mentalizr.backend.security.session.attributes.user.PatientHttpSessionAttribute;
+import org.mentalizr.backend.security.session.attributes.user.TherapistHttpSessionAttribute;
+import org.mentalizr.backend.security.auth.UnauthorizedException;
+import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
 import org.mentalizr.backend.exceptions.InfrastructureException;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.ResponseFactory;

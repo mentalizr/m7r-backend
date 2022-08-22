@@ -1,4 +1,4 @@
-package org.mentalizr.backend.auth;
+package org.mentalizr.backend.security.helper;
 
 import de.arthurpicht.utils.core.strings.Strings;
 import org.mentalizr.persistence.rdbms.barnacle.vo.RoleTherapistVO;

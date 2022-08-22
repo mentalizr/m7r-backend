@@ -1,8 +1,8 @@
 package org.mentalizr.backend.rest.endpoints.therapist;
 
 import org.mentalizr.backend.applicationContext.ApplicationContext;
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import org.mentalizr.backend.security.auth.UnauthorizedException;
+import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
@@ -18,7 +18,7 @@ import javax.ws.rs.core.Response;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsTherapist;
+import static org.mentalizr.backend.security.auth.AuthorizationService.assertIsLoggedInAsTherapist;
 
 @Path("v1")
 public class ProgramContentREST {

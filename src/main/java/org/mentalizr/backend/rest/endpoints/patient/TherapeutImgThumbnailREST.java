@@ -1,8 +1,7 @@
 package org.mentalizr.backend.rest.endpoints.patient;
 
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
-import org.mentalizr.backend.config.Configuration;
+import org.mentalizr.backend.security.auth.UnauthorizedException;
+import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.commons.paths.container.TomcatContainerImgBaseTmpDir;
@@ -17,7 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsPatient;
+import static org.mentalizr.backend.security.auth.AuthorizationService.assertIsLoggedInAsPatient;
 
 @Path("v1")
 public class TherapeutImgThumbnailREST {

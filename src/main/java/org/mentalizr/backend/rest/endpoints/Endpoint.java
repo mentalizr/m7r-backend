@@ -1,8 +1,7 @@
 package org.mentalizr.backend.rest.endpoints;
 
 import de.arthurpicht.utils.io.InputStreams;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
-import org.mentalizr.backend.config.Configuration;
+import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
 import org.mentalizr.backend.htmlChunks.HtmlChunkService;
 import org.mentalizr.backend.rest.entities.UserFactory;
 import org.mentalizr.commons.paths.container.TomcatContainerImgBaseTmpDir;
@@ -19,7 +18,7 @@ import javax.ws.rs.core.Response;
 import java.io.*;
 import java.util.List;
 
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedIn;
+import static org.mentalizr.backend.security.auth.AuthorizationService.assertIsLoggedIn;
 
 @Path("v1")
 public class Endpoint {

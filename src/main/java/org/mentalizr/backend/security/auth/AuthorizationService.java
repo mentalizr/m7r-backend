@@ -1,5 +1,9 @@
-package org.mentalizr.backend.auth;
+package org.mentalizr.backend.security.auth;
 
+import org.mentalizr.backend.security.session.attributes.user.AdminHttpSessionAttribute;
+import org.mentalizr.backend.security.session.attributes.user.PatientHttpSessionAttribute;
+import org.mentalizr.backend.security.session.attributes.user.TherapistHttpSessionAttribute;
+import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import de.arthurpicht.utils.core.assertion.AssertMethodPrecondition;
 import org.slf4j.Logger;

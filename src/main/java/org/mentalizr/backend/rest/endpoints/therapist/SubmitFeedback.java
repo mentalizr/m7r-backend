@@ -1,8 +1,8 @@
 package org.mentalizr.backend.rest.endpoints.therapist;
 
-import org.mentalizr.backend.auth.AuthorizationService;
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import org.mentalizr.backend.security.auth.AuthorizationService;
+import org.mentalizr.backend.security.auth.UnauthorizedException;
+import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.commons.Dates;

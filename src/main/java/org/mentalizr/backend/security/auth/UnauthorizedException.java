@@ -1,4 +1,4 @@
-package org.mentalizr.backend.auth;
+package org.mentalizr.backend.security.auth;
 
 public class UnauthorizedException extends Exception {
 

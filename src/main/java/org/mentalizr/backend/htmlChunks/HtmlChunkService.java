@@ -1,6 +1,6 @@
 package org.mentalizr.backend.htmlChunks;
 
-import org.mentalizr.backend.auth.UnauthorizedException;
+import org.mentalizr.backend.security.auth.UnauthorizedException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;

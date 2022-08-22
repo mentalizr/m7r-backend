@@ -1,17 +1,14 @@
 package org.mentalizr.backend.rest.endpoints.admin.patientStatus;
 
 import org.bson.Document;
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import org.mentalizr.backend.security.auth.UnauthorizedException;
+import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.DocumentPreexistingException;
-import org.mentalizr.persistence.mongo.formData.FormDataConverter;
-import org.mentalizr.persistence.mongo.formData.FormDataMongoHandler;
 import org.mentalizr.persistence.mongo.patientStatus.PatientStatusConverter;
 import org.mentalizr.persistence.mongo.patientStatus.PatientStatusMongoHandler;
 import org.mentalizr.serviceObjects.frontend.patient.PatientStatusSO;
-import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -22,7 +19,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsAdmin;
+import static org.mentalizr.backend.security.auth.AuthorizationService.assertIsLoggedInAsAdmin;
 
 @Path("v1")
 public class RestorePatientStatusREST {

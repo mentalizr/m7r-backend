@@ -1,9 +1,9 @@
 package org.mentalizr.backend.htmlChunks;
 
-import org.mentalizr.backend.auth.Authentication;
-import org.mentalizr.backend.auth.AuthenticationService;
-import org.mentalizr.backend.auth.Authorization;
-import org.mentalizr.backend.auth.UnauthorizedException;
+import org.mentalizr.backend.security.auth.Authentication;
+import org.mentalizr.backend.security.auth.AuthenticationService;
+import org.mentalizr.backend.security.auth.Authorization;
+import org.mentalizr.backend.security.auth.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,7 @@ public class HtmlChunkManager {
 
         if (chunkName.equals(HtmlChunkLoginVoucher.NAME)) return getLoginVoucherChunk();
 
-        Authentication authentication = AuthenticationService.assertIsLoggedIn(
+        Authentication authentication = AuthenticationService.assertHasValidSession(
                 this.httpServletRequest, "htmlChunk|HtmlChunkManager", true);
         Authorization authorization = new Authorization(authentication);
 

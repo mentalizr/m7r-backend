@@ -1,7 +1,7 @@
 package org.mentalizr.backend.rest.endpoints.therapist;
 
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import org.mentalizr.backend.security.auth.UnauthorizedException;
+import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.formData.FormDataDAO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
@@ -16,7 +16,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsTherapist;
+import static org.mentalizr.backend.security.auth.AuthorizationService.assertIsLoggedInAsTherapist;
 
 @Path("v1")
 public class GetFormDataREST {

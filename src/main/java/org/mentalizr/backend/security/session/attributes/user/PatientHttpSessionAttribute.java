@@ -1,21 +1,19 @@
-package org.mentalizr.backend.auth;
+package org.mentalizr.backend.security.session.attributes.user;
 
+import org.mentalizr.backend.security.helper.DisplayName;
 import org.mentalizr.backend.rest.entities.Patient;
-import org.mentalizr.backend.rest.entities.Therapeut;
 import org.mentalizr.backend.rest.entities.UserRole;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
 import org.mentalizr.persistence.rdbms.barnacle.dao.RoleTherapistDAO;
 import org.mentalizr.persistence.rdbms.barnacle.dao.UserLoginDAO;
-import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserLoginCompositeDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.RoleTherapistVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserLoginVO;
-import org.mentalizr.serviceObjects.frontend.application.UserSO;
 
 import java.io.Serializable;
 

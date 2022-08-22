@@ -1,9 +1,8 @@
 package org.mentalizr.backend.rest.endpoints.therapist;
 
-import org.mentalizr.backend.auth.AuthorizationService;
-import org.mentalizr.backend.auth.TherapistHttpSessionAttribute;
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import org.mentalizr.backend.security.session.attributes.user.TherapistHttpSessionAttribute;
+import org.mentalizr.backend.security.auth.UnauthorizedException;
+import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
 import org.mentalizr.backend.patientsOverviewSOCreator.PatientsOverviewSOCreator;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.serviceObjects.frontend.therapist.PatientsOverviewSO;
@@ -16,7 +15,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsTherapist;
+import static org.mentalizr.backend.security.auth.AuthorizationService.assertIsLoggedInAsTherapist;
 
 @Path("v1")
 public class PatientsOverviewREST {

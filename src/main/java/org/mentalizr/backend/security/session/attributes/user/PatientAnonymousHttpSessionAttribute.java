@@ -1,4 +1,4 @@
-package org.mentalizr.backend.auth;
+package org.mentalizr.backend.security.session.attributes.user;
 
 import org.mentalizr.backend.rest.entities.Patient;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;

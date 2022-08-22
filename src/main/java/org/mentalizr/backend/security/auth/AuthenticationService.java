@@ -1,8 +1,10 @@
-package org.mentalizr.backend.auth;
+package org.mentalizr.backend.security.auth;
 
 import de.arthurpicht.utils.core.assertion.AssertMethodPrecondition;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
+import org.mentalizr.backend.Const;
+import org.mentalizr.backend.security.session.SessionManager;
 import org.mentalizr.backend.exceptions.InfrastructureException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
@@ -14,23 +16,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 public class AuthenticationService {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
-    private static final Logger authLogger = LoggerFactory.getLogger("m7r-auth");
+    private static final Logger authLogger = Const.authLogger;
 
     public static void login(HttpServletRequest httpServletRequest, String username, char[] password) throws UnauthorizedException, InfrastructureException {
         AssertMethodPrecondition.parameterNotNull("httpServletRequest", httpServletRequest);
         AssertMethodPrecondition.parameterNotNull("username", username);
         AssertMethodPrecondition.parameterNotNull("password", password);
 
-        logger.debug("Check Authentication for user = '" + username + "'");
+        logger.debug("Check authentication for user = '" + username + "'");
 
-        logoutIfLoggedIn(httpServletRequest);
+        SessionManager.invalidate(httpServletRequest);
 
         checkUsernameSanity(username);
         checkPasswordSanity(password);
@@ -39,70 +40,55 @@ public class AuthenticationService {
 
         checkPasswordHash(userLoginCompositeVO, password);
 
-        UserHttpSessionAttribute userHttpSessionAttribute = createUserSessionAttributeForRole(userLoginCompositeVO);
+        SessionManager.createSessionForLogin(httpServletRequest, userLoginCompositeVO);
 
-        createSessionWithUserSessionAttribute(httpServletRequest, userHttpSessionAttribute);
-
-        authLogger.info("user [" + userLoginCompositeVO.getUsername() + "] login.");
+        // TODO Log staging string
+        authLogger.info("user [" + userLoginCompositeVO.getUsername() + "] login. Staging: TODO");
     }
 
     public static void loginWithAccessKey(HttpServletRequest httpServletRequest, String accessKey) throws UnauthorizedException, InfrastructureException {
         AssertMethodPrecondition.parameterNotNull("httpServletRequest", httpServletRequest);
         AssertMethodPrecondition.parameterNotNull("accessKey", accessKey);
 
-        logger.debug("Check Authentication for access key = '" + accessKey + "'");
+        logger.debug("Check authentication for access key = '" + accessKey + "'");
 
-        logoutIfLoggedIn(httpServletRequest);
+        SessionManager.invalidate(httpServletRequest);
 
         checkUsernameSanity(accessKey);
 
         UserAccessKeyCompositeVO userAccessKeyCompositeVO = obtainUserAccessKeyCompositeVO(accessKey);
-        UserHttpSessionAttribute userHttpSessionAttribute = createUserSessionAttributeForAccessKeyUser(userAccessKeyCompositeVO);
 
-        createSessionWithUserSessionAttribute(httpServletRequest, userHttpSessionAttribute);
+        SessionManager.createSessionForAccessKey(httpServletRequest, userAccessKeyCompositeVO);
     }
 
     public static void logout(HttpServletRequest httpServletRequest) {
-
         AssertMethodPrecondition.parameterNotNull("httpServletRequest", httpServletRequest);
-
-        HttpSession httpSession = httpServletRequest.getSession(false);
-
-        if (httpSession != null) {
-
-            UserHttpSessionAttribute userHttpSessionAttribute = (UserHttpSessionAttribute) httpSession.getAttribute(UserHttpSessionAttribute.USER);
-            httpSession.invalidate();
-
-            if (userHttpSessionAttribute != null) {
-                authLogger.info("[" + userHttpSessionAttribute.getUserVO().getId() + "] logout");
-            } else {
-                logger.error("Session inconsistent: session found valid without session attribute. Unknown user logged out.");
-            }
-
+        
+        if (SessionManager.hasSessionInAnyStaging(httpServletRequest)) {
+            SessionManager.invalidatePreexisting(httpServletRequest);
         } else {
-            logger.info("logout without valid session.");
+            logger.info("Logout without running session.");
         }
     }
 
-    public static Authentication assertIsLoggedIn(HttpServletRequest httpServletRequest, String restService, boolean logAssertionFailure) {
-
+    public static Authentication assertHasValidSession(HttpServletRequest httpServletRequest, String restService, boolean logAssertionFailure) {
         AssertMethodPrecondition.parameterNotNull("httpServletRequest", httpServletRequest);
 
         try {
             return new Authentication(httpServletRequest);
         } catch (UnauthorizedException e) {
-            if (logAssertionFailure) authLogger.warn("Not logged in when calling REST service [" + restService + "]");
+            if (logAssertionFailure) authLogger.warn("No valid session when calling REST service [" + restService + "]");
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
     }
 
-    private static void logoutIfLoggedIn(HttpServletRequest httpServletRequest) {
+    public static void assertHasSessionInAnyStaging(HttpServletRequest httpServletRequest, String restService, boolean logAssertionFailure) {
+        AssertMethodPrecondition.parameterNotNull("httpServletRequest", httpServletRequest);
 
-        AuthState authState = new AuthState(httpServletRequest);
-
-        if (authState.isLoggedIn()) {
-            authState.logOut();
-            logger.info("Found valid session when attempting login. Session invalidated.");
+        boolean hasSession = SessionManager.hasSessionInAnyStaging(httpServletRequest);
+        if (!hasSession) {
+            if (logAssertionFailure) authLogger.warn("No running session in any state when calling REST service [" + restService + "].");
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
         }
     }
 
@@ -122,41 +108,12 @@ public class AuthenticationService {
         } catch (DataSourceException e) {
             throw new InfrastructureException(e);
         } catch (EntityNotFoundException e) {
-            throw new UnauthorizedException("access key [" + accessKey + "] Login rejected. Unrecognized access key.");
-        }
-    }
-
-    private static UserHttpSessionAttribute createUserSessionAttributeForRole(UserLoginCompositeVO userLoginCompositeVO) throws InfrastructureException {
-
-        try {
-
-            if (userLoginCompositeVO.isInRolePatient()) {
-                return new PatientLoginHttpSessionAttribute(userLoginCompositeVO);
-            } else if (userLoginCompositeVO.isInRoleTherapist()) {
-                return new TherapistHttpSessionAttribute(userLoginCompositeVO);
-            } else if (userLoginCompositeVO.isInRoleAdmin()) {
-                return new AdminHttpSessionAttribute(userLoginCompositeVO);
-            } else {
-                throw new IllegalStateException("[" + userLoginCompositeVO.getUsername() + "] Unknown role.");
-
-            }
-        } catch (DataSourceException e) {
-            throw new InfrastructureException(e);
-        }
-    }
-
-    private static UserHttpSessionAttribute createUserSessionAttributeForAccessKeyUser(UserAccessKeyCompositeVO userAccessKeyCompositeVO) throws InfrastructureException {
-        try {
-            return new PatientAnonymousHttpSessionAttribute(userAccessKeyCompositeVO);
-        } catch (DataSourceException e) {
-            throw new InfrastructureException(e);
+            throw new UnauthorizedException("Login by access key [" + accessKey + "] rejected. Unrecognized.");
         }
     }
 
     private static void checkPasswordHash(UserLoginCompositeVO userLoginCompositeVO, char[] password) throws UnauthorizedException {
-
         Argon2 argon2 = Argon2Factory.create();
-
         try {
             if (!argon2.verify(userLoginCompositeVO.getPasswordHash(), password)) {
                 throw new UnauthorizedException("[" + userLoginCompositeVO.getUsername() + "] login rejected. Wrong password.");
@@ -164,11 +121,6 @@ public class AuthenticationService {
         } finally {
             argon2.wipeArray(password);
         }
-    }
-
-    private static void createSessionWithUserSessionAttribute(HttpServletRequest httpServletRequest, UserHttpSessionAttribute userHttpSessionAttribute) {
-        HttpSession httpSession = httpServletRequest.getSession(true);
-        httpSession.setAttribute(UserHttpSessionAttribute.USER, userHttpSessionAttribute);
     }
 
     private static void checkUsernameSanity(String username) throws UnauthorizedException {
@@ -196,7 +148,5 @@ public class AuthenticationService {
             throw new UnauthorizedException("Login rejected. Password length exceeded.");
         }
     }
-
-
 
 }
