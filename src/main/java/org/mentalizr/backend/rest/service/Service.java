@@ -1,5 +1,7 @@
 package org.mentalizr.backend.rest.service;
 
+import org.mentalizr.backend.Const;
+import org.mentalizr.backend.exceptions.IllegalServiceInputException;
 import org.mentalizr.backend.security.session.attributes.user.PatientHttpSessionAttribute;
 import org.mentalizr.backend.security.session.attributes.user.TherapistHttpSessionAttribute;
 import org.mentalizr.backend.security.auth.UnauthorizedException;
@@ -21,7 +23,7 @@ import java.io.IOException;
 public abstract  class Service {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    private static final Logger authLogger = LoggerFactory.getLogger("m7r-auth");
+    private static final Logger authLogger = Const.authLogger;
 
     protected HttpServletRequest httpServletRequest;
     protected Object serviceObjectRequest;
@@ -54,7 +56,7 @@ public abstract  class Service {
     protected void checkPreconditions() throws ServicePreconditionFailedException, InfrastructureException {
     }
 
-    protected abstract Object workLoad() throws RESTException, ContentManagerException, InfrastructureException, IOException, DataSourceException, EntityNotFoundException;
+    protected abstract Object workLoad() throws RESTException, ContentManagerException, InfrastructureException, IOException, DataSourceException, EntityNotFoundException, IllegalServiceInputException;
 
     protected void updateActivityStatus(){
     }
@@ -98,7 +100,8 @@ public abstract  class Service {
         Object responseSO;
         try {
             responseSO = workLoad();
-        } catch (RESTException | ContentManagerException | IOException | InfrastructureException | DataSourceException e) {
+        } catch (RESTException | ContentManagerException | IOException | InfrastructureException |
+                 DataSourceException e) {
             logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
                     + getServiceId() + "]: " + e.getMessage(), e);
             return ResponseFactory.internalServerError(e);
@@ -106,6 +109,10 @@ public abstract  class Service {
             logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
                     + getServiceId() + "]: " + e.getMessage());
             return ResponseFactory.entityNotFound(e);
+        } catch (IllegalServiceInputException e) {
+            logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
+                    + getServiceId() + "]: " + e.getMessage());
+            return ResponseFactory.badRequestError(e);
         }
 
         try {

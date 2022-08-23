@@ -1,9 +1,8 @@
 package org.mentalizr.backend.rest.endpoints;
 
-import org.mentalizr.backend.security.auth.Authentication;
-import org.mentalizr.backend.security.auth.AuthenticationService;
-import org.mentalizr.backend.security.auth.Authorization;
-import org.mentalizr.backend.security.auth.UnauthorizedException;
+import org.mentalizr.backend.Const;
+import org.mentalizr.backend.exceptions.IllegalServiceInputException;
+import org.mentalizr.backend.security.auth.*;
 import org.mentalizr.backend.exceptions.InfrastructureException;
 import org.mentalizr.backend.rest.entities.factories.SessionStatusFactory;
 import org.mentalizr.backend.utils.HttpSessionHelper;
@@ -21,7 +20,7 @@ import javax.ws.rs.core.Response;
 public class EndpointSession {
 
     private static final Logger logger = LoggerFactory.getLogger(EndpointSession.class);
-    private static final Logger authLogger = LoggerFactory.getLogger("m7r-auth");
+    private static final Logger authLogger = Const.authLogger;
     private static final int DELAY_ON_NEXT_CONTENT = 0;
 
     @POST
@@ -56,10 +55,13 @@ public class EndpointSession {
         } catch (UnauthorizedException e) {
             authLogger.warn(e.getMessage());
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-
+        } catch (IllegalServiceInputException e) {
+            logger.info(e.getMessage());
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } catch (InfrastructureException | RuntimeException e) {
             logger.error(e.getMessage(), e);
             throw new WebApplicationException((Response.Status.INTERNAL_SERVER_ERROR));
+
         }
     }
 
@@ -119,11 +121,21 @@ public class EndpointSession {
     public SessionStatusSO sessionStatus(@Context HttpServletRequest httpServletRequest) {
         logger.debug("[sessionStatus]");
 
+        IntermediateAuthentication intermediateAuthentication;
+        try {
+            intermediateAuthentication = new IntermediateAuthentication(httpServletRequest);
+        } catch (UnauthorizedException e) {
+            return SessionStatusFactory.getInstanceForInvalidSession();
+        }
+
         Authentication authentication;
         try {
             authentication = new Authentication(httpServletRequest);
         } catch (UnauthorizedException e) {
-            return SessionStatusFactory.getInstanceForInvalidSession();
+            return SessionStatusFactory.getInstanceForIntermediateSession(
+                    intermediateAuthentication.getUserHttpSessionAttribute().getUserRole(),
+                    intermediateAuthentication.getHttpSessionId(),
+                    intermediateAuthentication.getNextRequirement());
         }
 
         Authorization authorization = new Authorization(authentication);

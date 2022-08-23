@@ -7,5 +7,4 @@ public class Const {
 
     public static final Logger authLogger = LoggerFactory.getLogger("m7r-auth");
 
-
 }

@@ -4,8 +4,10 @@ import de.arthurpicht.utils.core.assertion.AssertMethodPrecondition;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import org.mentalizr.backend.Const;
+import org.mentalizr.backend.exceptions.IllegalServiceInputException;
 import org.mentalizr.backend.security.session.SessionManager;
 import org.mentalizr.backend.exceptions.InfrastructureException;
+import org.mentalizr.backend.utils.PasswordHelper;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserAccessKeyCompositeDAO;
@@ -24,7 +26,7 @@ public class AuthenticationService {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
     private static final Logger authLogger = Const.authLogger;
 
-    public static void login(HttpServletRequest httpServletRequest, String username, char[] password) throws UnauthorizedException, InfrastructureException {
+    public static void login(HttpServletRequest httpServletRequest, String username, char[] password) throws UnauthorizedException, InfrastructureException, IllegalServiceInputException {
         AssertMethodPrecondition.parameterNotNull("httpServletRequest", httpServletRequest);
         AssertMethodPrecondition.parameterNotNull("username", username);
         AssertMethodPrecondition.parameterNotNull("password", password);
@@ -34,7 +36,7 @@ public class AuthenticationService {
         SessionManager.invalidate(httpServletRequest);
 
         checkUsernameSanity(username);
-        checkPasswordSanity(password);
+        PasswordHelper.checkPasswordSanity(password);
 
         UserLoginCompositeVO userLoginCompositeVO = obtainUserLoginCompositeVO(username);
 

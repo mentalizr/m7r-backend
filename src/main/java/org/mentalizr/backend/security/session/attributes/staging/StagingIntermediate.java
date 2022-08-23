@@ -1,37 +1,23 @@
 package org.mentalizr.backend.security.session.attributes.staging;
 
+import org.mentalizr.backend.security.session.attributes.staging.requirements.Requirement;
+import org.mentalizr.backend.security.session.attributes.staging.requirements.Requirements;
+
 public class StagingIntermediate extends StagingAttribute {
 
-    private final boolean secondFactorRequired;
-    private final boolean passwordChangeRequired;
-    private final boolean consentPoliciesRequired;
-    private final boolean emailConfirmationRequired;
+    private final Requirements requirements;
 
-    public StagingIntermediate(boolean secondFactorRequired, boolean passwordChangeRequired, boolean consentPoliciesRequired, boolean emailConfirmationRequired) {
-        this.secondFactorRequired = secondFactorRequired;
-        this.passwordChangeRequired = passwordChangeRequired;
-        this.consentPoliciesRequired = consentPoliciesRequired;
-        this.emailConfirmationRequired = emailConfirmationRequired;
+    public StagingIntermediate(Requirements requirements) {
+        this.requirements = requirements;
     }
 
     public boolean hasRequirement() {
-        return this.secondFactorRequired || this.passwordChangeRequired || this.consentPoliciesRequired || this.emailConfirmationRequired;
+        return this.requirements.hasRequirements();
     }
 
-    public boolean isSecondFactorRequired() {
-        return this.secondFactorRequired;
-    }
-
-    public boolean isPasswordChangeRequired() {
-        return this.passwordChangeRequired;
-    }
-
-    public boolean isConsentPoliciesRequired() {
-        return this.consentPoliciesRequired;
-    }
-
-    public boolean isEmailConfirmationRequired() {
-        return this.emailConfirmationRequired;
+    public String getNextRequirementAsString() {
+        Requirement requirement = this.requirements.getNextRequirement();
+        return requirement.getName();
     }
 
 }

@@ -1,10 +1,13 @@
 package org.mentalizr.backend.security.session;
 
-import org.mentalizr.backend.security.session.attributes.staging.StagingAttribute;
-import org.mentalizr.backend.security.session.attributes.staging.StagingValid;
-import org.mentalizr.backend.security.session.attributes.user.*;
-import org.mentalizr.backend.security.session.user.*;
+import org.mentalizr.backend.Const;
 import org.mentalizr.backend.exceptions.InfrastructureException;
+import org.mentalizr.backend.security.session.attributes.staging.StagingAttribute;
+import org.mentalizr.backend.security.session.attributes.staging.StagingIntermediate;
+import org.mentalizr.backend.security.session.attributes.staging.StagingValid;
+import org.mentalizr.backend.security.session.attributes.staging.requirements.Requirements;
+import org.mentalizr.backend.security.session.attributes.staging.requirements.RequirementsFactory;
+import org.mentalizr.backend.security.session.attributes.user.*;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
@@ -17,7 +20,7 @@ import javax.servlet.http.HttpSession;
 public class SessionManager {
 
     private static final Logger logger = LoggerFactory.getLogger(SessionManager.class);
-    private static final Logger authLogger = LoggerFactory.getLogger("m7r-auth");
+    private static final Logger authLogger = Const.authLogger;
 
     public static void createSessionForLogin(HttpServletRequest httpServletRequest, UserLoginCompositeVO userLoginCompositeVO) throws InfrastructureException {
         UserHttpSessionAttribute userHttpSessionAttribute = createUserSessionAttributeForRole(userLoginCompositeVO);
@@ -25,7 +28,7 @@ public class SessionManager {
 
         HttpSession httpSession = httpServletRequest.getSession(true);
         httpSession.setAttribute(UserHttpSessionAttribute.USER, userHttpSessionAttribute);
-        httpSession.setAttribute(StagingAttribute.ATTRIBUTE_NAME, stagingAttribute);
+        httpSession.setAttribute(StagingAttribute.STAGING, stagingAttribute);
     }
 
     public static void createSessionForAccessKey(HttpServletRequest httpServletRequest, UserAccessKeyCompositeVO userAccessKeyCompositeVO) throws InfrastructureException {
@@ -34,7 +37,7 @@ public class SessionManager {
 
         HttpSession httpSession = httpServletRequest.getSession(true);
         httpSession.setAttribute(UserHttpSessionAttribute.USER, userHttpSessionAttribute);
-        httpSession.setAttribute(StagingAttribute.ATTRIBUTE_NAME, stagingAttribute);
+        httpSession.setAttribute(StagingAttribute.STAGING, stagingAttribute);
     }
 
     public static boolean hasSessionInAnyStaging(HttpServletRequest httpServletRequest) {
@@ -62,13 +65,21 @@ public class SessionManager {
     }
 
     private static StagingAttribute createStagingAttribute(UserLoginCompositeVO userLoginCompositeVO) {
-        // TODO Create Staging here
-        return new StagingValid();
+        Requirements requirements = RequirementsFactory.createRequirements(userLoginCompositeVO);
+        if (requirements.hasRequirements()) {
+            return new StagingIntermediate(requirements);
+        } else {
+            return new StagingValid();
+        }
     }
 
     private static StagingAttribute createStagingAttribute(UserAccessKeyCompositeVO userAccessKeyCompositeVO) {
-        // TODO Create Staging here
-        return new StagingValid();
+        Requirements requirements = RequirementsFactory.createRequirements(userAccessKeyCompositeVO);
+        if (requirements.hasRequirements()) {
+            return new StagingIntermediate(requirements);
+        } else {
+            return new StagingValid();
+        }
     }
 
     private static UserHttpSessionAttribute createUserSessionAttributeForRole(UserLoginCompositeVO userLoginCompositeVO) throws InfrastructureException {

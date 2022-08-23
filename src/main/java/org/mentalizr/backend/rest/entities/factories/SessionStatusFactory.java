@@ -5,18 +5,16 @@ import org.mentalizr.serviceObjects.SessionStatusSO;
 
 public class SessionStatusFactory {
 
-//    public static SessionStatus getInstance(boolean hasSession, UserRole userRole, String sessionId) {
-//        this.hasSession = hasSession;
-//        this.userRole = userRole.name();
-//        this.sessionId = sessionId;
-//    }
-
     public static SessionStatusSO getInstanceForValidSession(UserRole userRole, String sessionId) {
-        return new SessionStatusSO(true, userRole.name(), sessionId);
+        return new SessionStatusSO(SessionStatusSO.STATUS_VALID, userRole.name(), sessionId, "");
     }
 
     public static SessionStatusSO getInstanceForInvalidSession() {
-        return new SessionStatusSO(false, UserRole.UNDEFINED.name(), "");
+        return new SessionStatusSO(SessionStatusSO.STATUS_INVALID, UserRole.UNDEFINED.name(), "", "");
+    }
+
+    public static SessionStatusSO getInstanceForIntermediateSession(UserRole userRole, String sessionId, String require) {
+        return new SessionStatusSO(SessionStatusSO.STATUS_INTERMEDIATE, userRole.name(), sessionId, require);
     }
 
 }
