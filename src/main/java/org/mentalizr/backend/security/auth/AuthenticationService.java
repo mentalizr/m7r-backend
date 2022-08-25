@@ -42,10 +42,9 @@ public class AuthenticationService {
 
         checkPasswordHash(userLoginCompositeVO, password);
 
-        SessionManager.createSessionForLogin(httpServletRequest, userLoginCompositeVO);
+        String sessionString = SessionManager.createSessionForLogin(httpServletRequest, userLoginCompositeVO);
 
-        // TODO Log staging string
-        authLogger.info("user [" + userLoginCompositeVO.getUsername() + "] login. Staging: TODO");
+        authLogger.info("user [" + userLoginCompositeVO.getUsername() + "] login. " + sessionString);
     }
 
     public static void loginWithAccessKey(HttpServletRequest httpServletRequest, String accessKey) throws UnauthorizedException, InfrastructureException {
@@ -60,7 +59,9 @@ public class AuthenticationService {
 
         UserAccessKeyCompositeVO userAccessKeyCompositeVO = obtainUserAccessKeyCompositeVO(accessKey);
 
-        SessionManager.createSessionForAccessKey(httpServletRequest, userAccessKeyCompositeVO);
+        String sessionString = SessionManager.createSessionForAccessKey(httpServletRequest, userAccessKeyCompositeVO);
+
+        authLogger.info("accessKey [" + accessKey + "] login. " + sessionString);
     }
 
     public static void logout(HttpServletRequest httpServletRequest) {

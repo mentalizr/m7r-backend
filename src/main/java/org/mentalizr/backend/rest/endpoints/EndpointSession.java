@@ -5,7 +5,8 @@ import org.mentalizr.backend.exceptions.IllegalServiceInputException;
 import org.mentalizr.backend.security.auth.*;
 import org.mentalizr.backend.exceptions.InfrastructureException;
 import org.mentalizr.backend.rest.entities.factories.SessionStatusFactory;
-import org.mentalizr.backend.utils.HttpSessionHelper;
+import org.mentalizr.backend.security.session.SessionManager;
+import org.mentalizr.backend.utils.HttpSessions;
 import org.mentalizr.serviceObjects.SessionStatusSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public class EndpointSession {
             char[] passwordCharArray = password.toCharArray();
 
             AuthenticationService.login(httpServletRequest, username, passwordCharArray);
-            if (rememberMe) HttpSessionHelper.rememberMe(httpServletRequest);
+            if (rememberMe) HttpSessions.rememberMe(httpServletRequest);
 
             return "success";
 
@@ -84,7 +85,7 @@ public class EndpointSession {
         try {
 
             AuthenticationService.loginWithAccessKey(httpServletRequest, accessKey);
-            if (rememberMe) HttpSessionHelper.rememberMe(httpServletRequest);
+            if (rememberMe) HttpSessions.rememberMe(httpServletRequest);
             return "success";
 
         } catch (UnauthorizedException e) {
@@ -121,26 +122,34 @@ public class EndpointSession {
     public SessionStatusSO sessionStatus(@Context HttpServletRequest httpServletRequest) {
         logger.debug("[sessionStatus]");
 
-        IntermediateAuthentication intermediateAuthentication;
-        try {
-            intermediateAuthentication = new IntermediateAuthentication(httpServletRequest);
-        } catch (UnauthorizedException e) {
+        if (!SessionManager.hasSessionInAnyStaging(httpServletRequest))
             return SessionStatusFactory.getInstanceForInvalidSession();
-        }
 
-        Authentication authentication;
-        try {
-            authentication = new Authentication(httpServletRequest);
-        } catch (UnauthorizedException e) {
+        if (SessionManager.hasIntermediateSession(httpServletRequest)) {
+            IntermediateAuthentication intermediateAuthentication;
+            try {
+                intermediateAuthentication = new IntermediateAuthentication(httpServletRequest);
+            } catch (UnauthorizedException e) {
+                throw new IllegalStateException("Session expected to be staged as INTERMEDIATE.");
+            }
             return SessionStatusFactory.getInstanceForIntermediateSession(
                     intermediateAuthentication.getUserHttpSessionAttribute().getUserRole(),
                     intermediateAuthentication.getHttpSessionId(),
                     intermediateAuthentication.getNextRequirement());
         }
 
-        Authorization authorization = new Authorization(authentication);
-        String sessionId = authentication.getHttpSessionId();
-        return SessionStatusFactory.getInstanceForValidSession(authorization.getUserRole(), sessionId);
+        if (SessionManager.hasValidSession(httpServletRequest)) {
+            try {
+                Authentication authentication = new Authentication(httpServletRequest);
+                Authorization authorization = new Authorization(authentication);
+                String sessionId = authentication.getHttpSessionId();
+                return SessionStatusFactory.getInstanceForValidSession(authorization.getUserRole(), sessionId);
+            } catch (UnauthorizedException e) {
+                throw new IllegalStateException("Session expected to be staged as VALID.");
+            }
+        }
+
+        throw new IllegalStateException("Inconsistent session state.");
     }
 
 }

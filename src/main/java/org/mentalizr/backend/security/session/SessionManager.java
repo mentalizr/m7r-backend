@@ -8,6 +8,7 @@ import org.mentalizr.backend.security.session.attributes.staging.StagingValid;
 import org.mentalizr.backend.security.session.attributes.staging.requirements.Requirements;
 import org.mentalizr.backend.security.session.attributes.staging.requirements.RequirementsFactory;
 import org.mentalizr.backend.security.session.attributes.user.*;
+import org.mentalizr.backend.utils.HttpSessions;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
@@ -22,27 +23,44 @@ public class SessionManager {
     private static final Logger logger = LoggerFactory.getLogger(SessionManager.class);
     private static final Logger authLogger = Const.authLogger;
 
-    public static void createSessionForLogin(HttpServletRequest httpServletRequest, UserLoginCompositeVO userLoginCompositeVO) throws InfrastructureException {
+    public static String createSessionForLogin(HttpServletRequest httpServletRequest, UserLoginCompositeVO userLoginCompositeVO) throws InfrastructureException {
         UserHttpSessionAttribute userHttpSessionAttribute = createUserSessionAttributeForRole(userLoginCompositeVO);
         StagingAttribute stagingAttribute = createStagingAttribute(userLoginCompositeVO);
 
         HttpSession httpSession = httpServletRequest.getSession(true);
         httpSession.setAttribute(UserHttpSessionAttribute.USER, userHttpSessionAttribute);
         httpSession.setAttribute(StagingAttribute.STAGING, stagingAttribute);
+
+        return stagingAttribute.toString();
     }
 
-    public static void createSessionForAccessKey(HttpServletRequest httpServletRequest, UserAccessKeyCompositeVO userAccessKeyCompositeVO) throws InfrastructureException {
+    public static String createSessionForAccessKey(HttpServletRequest httpServletRequest, UserAccessKeyCompositeVO userAccessKeyCompositeVO) throws InfrastructureException {
         UserHttpSessionAttribute userHttpSessionAttribute = createUserSessionAttributeForAccessKeyUser(userAccessKeyCompositeVO);
         StagingAttribute stagingAttribute = createStagingAttribute(userAccessKeyCompositeVO);
 
         HttpSession httpSession = httpServletRequest.getSession(true);
         httpSession.setAttribute(UserHttpSessionAttribute.USER, userHttpSessionAttribute);
         httpSession.setAttribute(StagingAttribute.STAGING, stagingAttribute);
+
+        return stagingAttribute.toString();
     }
 
     public static boolean hasSessionInAnyStaging(HttpServletRequest httpServletRequest) {
-        HttpSession httpSession = httpServletRequest.getSession(false);
-        return httpSession != null;
+        return HttpSessions.hasRunningSession(httpServletRequest);
+    }
+
+    public static boolean hasValidSession(HttpServletRequest httpServletRequest) {
+        if (!HttpSessions.hasRunningSession(httpServletRequest)) return false;
+        HttpSession httpSession = HttpSessions.getRunningSession(httpServletRequest);
+        StagingAttribute stagingAttribute = getStagingAttributeFromRunningSession(httpSession);
+        return (stagingAttribute.isValid());
+    }
+
+    public static boolean hasIntermediateSession(HttpServletRequest httpServletRequest) {
+        if (!HttpSessions.hasRunningSession(httpServletRequest)) return false;
+        HttpSession httpSession = HttpSessions.getRunningSession(httpServletRequest);
+        StagingAttribute stagingAttribute = getStagingAttributeFromRunningSession(httpSession);
+        return (stagingAttribute.isIntermediate());
     }
 
     public static void invalidate(HttpServletRequest httpServletRequest) {
@@ -62,6 +80,10 @@ public class SessionManager {
                 logger.error("Session inconsistent: session found valid without session attribute. Unknown user logged out.");
             }
         }
+    }
+
+    private static StagingAttribute getStagingAttributeFromRunningSession(HttpSession httpSession) {
+        return (StagingAttribute) httpSession.getAttribute(StagingAttribute.STAGING);
     }
 
     private static StagingAttribute createStagingAttribute(UserLoginCompositeVO userLoginCompositeVO) {

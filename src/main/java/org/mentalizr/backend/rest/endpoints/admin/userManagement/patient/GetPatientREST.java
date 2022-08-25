@@ -19,6 +19,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Path("v1")
@@ -57,9 +58,9 @@ public class GetPatientREST {
                 PatientRestoreSO patientRestoreSO = new PatientRestoreSO();
                 patientRestoreSO.setUserId(userLoginCompositeVO.getUserId());
                 patientRestoreSO.setActive(userLoginCompositeVO.isActive());
-                Date firstActive = userLoginCompositeVO.getFirstActive();
+                ZonedDateTime firstActive = userLoginCompositeVO.getFirstActive();
                 patientRestoreSO.setFirstActive(firstActive != null ? firstActive.toString() : null);
-                Date lastActive = userLoginCompositeVO.getLastActive();
+                ZonedDateTime lastActive = userLoginCompositeVO.getLastActive();
                 patientRestoreSO.setLastActive(lastActive != null ? lastActive.toString() : null);
                 patientRestoreSO.setUsername(userLoginCompositeVO.getUsername());
                 patientRestoreSO.setPasswordHash(userLoginCompositeVO.getPasswordHash());

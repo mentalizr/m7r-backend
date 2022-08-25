@@ -20,4 +20,8 @@ public class StagingIntermediate extends StagingAttribute {
         return requirement.getName();
     }
 
+    public String toString() {
+        return "INTERMEDIATE " + this.requirements.toString();
+    }
+
 }

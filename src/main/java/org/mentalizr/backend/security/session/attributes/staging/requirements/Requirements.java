@@ -1,8 +1,12 @@
 package org.mentalizr.backend.security.session.attributes.staging.requirements;
 
 
+import de.arthurpicht.utils.core.strings.Strings;
+
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Requirements {
 
@@ -41,6 +45,12 @@ public class Requirements {
     public void markNextRequirementAsFulfilled() {
         Requirement requirement = getNextRequirement();
         this.requirementsSet.remove(requirement);
+    }
+
+    @Override
+    public String toString() {
+        List<String> names = this.requirementsSet.stream().map(Requirement::getName).collect(Collectors.toList());
+        return "Requirements: " + Strings.listing(names, ", ") + ".";
     }
 
 }

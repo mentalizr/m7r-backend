@@ -17,6 +17,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Path("v1")
@@ -53,9 +54,9 @@ public class GetTherapistREST {
                 TherapistRestoreSO therapistRestoreSO = new TherapistRestoreSO();
                 therapistRestoreSO.setUserId(userLoginCompositeVO.getUserId());
                 therapistRestoreSO.setActive(userLoginCompositeVO.isActive());
-                Date firstActive = userLoginCompositeVO.getFirstActive();
+                ZonedDateTime firstActive = userLoginCompositeVO.getFirstActive();
                 therapistRestoreSO.setFirstActive(firstActive != null ? firstActive.toString() : null);
-                Date lastActive = userLoginCompositeVO.getLastActive();
+                ZonedDateTime lastActive = userLoginCompositeVO.getLastActive();
                 therapistRestoreSO.setLastActive(lastActive != null ? lastActive.toString() : null);
                 therapistRestoreSO.setUsername(userLoginCompositeVO.getUsername());
                 therapistRestoreSO.setPasswordHash(userLoginCompositeVO.getPasswordHash());
