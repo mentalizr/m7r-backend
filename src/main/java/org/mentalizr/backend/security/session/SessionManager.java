@@ -113,7 +113,7 @@ public class SessionManager {
             } else if (userLoginCompositeVO.isInRoleAdmin()) {
                 return new AdminHttpSessionAttribute(userLoginCompositeVO);
             } else {
-                throw new IllegalStateException("[" + userLoginCompositeVO.getUsername() + "] Unknown role.");
+                throw new IllegalStateException("[" + userLoginCompositeVO.getUserLoginVO().getUsername() + "] Unknown role.");
             }
         } catch (DataSourceException e) {
             throw new InfrastructureException(e);

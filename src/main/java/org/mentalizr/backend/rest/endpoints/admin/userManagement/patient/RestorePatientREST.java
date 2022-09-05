@@ -82,12 +82,20 @@ public class RestorePatientREST {
                 UserLogin.restore(
                         patientRestoreSO.getUserId(),
                         patientRestoreSO.isActive(),
+                        patientRestoreSO.getFirstActive(),
+                        patientRestoreSO.getLastActive(),
+                        patientRestoreSO.getPolicyConsent(),
                         patientRestoreSO.getUsername(),
                         patientRestoreSO.getPasswordHash(),
                         patientRestoreSO.getEmail(),
                         patientRestoreSO.getFirstname(),
                         patientRestoreSO.getLastname(),
-                        patientRestoreSO.getGender()
+                        patientRestoreSO.getGender(),
+                        patientRestoreSO.isSecondFA(),
+                        patientRestoreSO.getEmailConfirmation(),
+                        patientRestoreSO.getEmailConfToken(),
+                        patientRestoreSO.getEmailConfCode(),
+                        patientRestoreSO.isRenewPasswordRequired()
                 );
 
                 RolePatientVO rolePatientVO = new RolePatientVO(patientRestoreSO.getUserId());

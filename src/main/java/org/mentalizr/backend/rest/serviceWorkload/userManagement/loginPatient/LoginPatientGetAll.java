@@ -1,5 +1,6 @@
 package org.mentalizr.backend.rest.serviceWorkload.userManagement.loginPatient;
 
+import org.mentalizr.backend.adapter.PatientRestoreSOAdapter;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
@@ -33,15 +34,7 @@ public class LoginPatientGetAll {
             RolePatientVO rolePatientVO = RolePatientDAO.load(userId);
             PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userId);
 
-            PatientRestoreSO patientRestoreSO = new PatientRestoreSO();
-            patientRestoreSO.setUserId(userLoginCompositeVO.getUserId());
-            patientRestoreSO.setActive(userLoginCompositeVO.isActive());
-            patientRestoreSO.setUsername(userLoginCompositeVO.getUsername());
-            patientRestoreSO.setPasswordHash(userLoginCompositeVO.getPasswordHash());
-            patientRestoreSO.setEmail(userLoginCompositeVO.getEmail());
-            patientRestoreSO.setFirstname(userLoginCompositeVO.getFirstName());
-            patientRestoreSO.setLastname(userLoginCompositeVO.getLastName());
-            patientRestoreSO.setGender(userLoginCompositeVO.getGender());
+            PatientRestoreSO patientRestoreSO = PatientRestoreSOAdapter.from(userLoginCompositeVO);
             patientRestoreSO.setProgramId(patientProgramVO.getProgramId());
             patientRestoreSO.setBlocking(patientProgramVO.getBlocking());
             patientRestoreSO.setTherapistId(rolePatientVO.getTherapistId());

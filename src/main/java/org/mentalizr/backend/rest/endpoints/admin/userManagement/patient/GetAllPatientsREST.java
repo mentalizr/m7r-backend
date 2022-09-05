@@ -1,5 +1,6 @@
 package org.mentalizr.backend.rest.endpoints.admin.userManagement.patient;
 
+import org.mentalizr.backend.adapter.PatientRestoreSOAdapter;
 import org.mentalizr.backend.security.auth.AuthorizationService;
 import org.mentalizr.backend.security.auth.UnauthorizedException;
 import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
@@ -12,6 +13,8 @@ import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserLoginCompositeDAO
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
+import org.mentalizr.persistence.rdbms.barnacle.vo.UserLoginVO;
+import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.serviceObjects.userManagement.PatientRestoreCollectionSO;
 import org.mentalizr.serviceObjects.userManagement.PatientRestoreSO;
 
@@ -66,15 +69,8 @@ public class GetAllPatientsREST {
                 RolePatientVO rolePatientVO = RolePatientDAO.load(userId);
                 PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userId);
 
-                PatientRestoreSO patientRestoreSO = new PatientRestoreSO();
-                patientRestoreSO.setUserId(userLoginCompositeVO.getUserId());
-                patientRestoreSO.setActive(userLoginCompositeVO.isActive());
-                patientRestoreSO.setUsername(userLoginCompositeVO.getUsername());
-                patientRestoreSO.setPasswordHash(userLoginCompositeVO.getPasswordHash());
-                patientRestoreSO.setEmail(userLoginCompositeVO.getEmail());
-                patientRestoreSO.setFirstname(userLoginCompositeVO.getFirstName());
-                patientRestoreSO.setLastname(userLoginCompositeVO.getLastName());
-                patientRestoreSO.setGender(userLoginCompositeVO.getGender());
+                PatientRestoreSO patientRestoreSO = PatientRestoreSOAdapter.from(userLoginCompositeVO);
+
                 patientRestoreSO.setProgramId(patientProgramVO.getProgramId());
                 patientRestoreSO.setBlocking(patientProgramVO.getBlocking());
                 patientRestoreSO.setTherapistId(rolePatientVO.getTherapistId());

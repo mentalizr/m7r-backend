@@ -1,5 +1,6 @@
 package org.mentalizr.backend.rest.entities;
 
+import org.mentalizr.persistence.rdbms.barnacle.vo.UserLoginVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import de.arthurpicht.utils.core.strings.Strings;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
@@ -16,19 +17,20 @@ public class Patient {
 
     public Patient(UserLoginCompositeVO userLoginCompositeVO) {
         this.userId = userLoginCompositeVO.getUserId();
+        UserLoginVO userLoginVO = userLoginCompositeVO.getUserLoginVO();
 
         String name = "";
-        if (!Strings.isNullOrEmpty(userLoginCompositeVO.getFirstName())) {
-            name += userLoginCompositeVO.getFirstName();
+        if (!Strings.isNullOrEmpty(userLoginVO.getFirstName())) {
+            name += userLoginVO.getFirstName();
         }
-        if (!Strings.isNullOrEmpty(userLoginCompositeVO.getLastName())) {
+        if (!Strings.isNullOrEmpty(userLoginVO.getLastName())) {
             if (name.length() > 0) name += " ";
-            name += userLoginCompositeVO.getLastName();
+            name += userLoginVO.getLastName();
         }
         if (name.length() > 0) {
             this.name = name;
         } else {
-            this.name = userLoginCompositeVO.getUsername();
+            this.name = userLoginVO.getUsername();
         }
     }
 

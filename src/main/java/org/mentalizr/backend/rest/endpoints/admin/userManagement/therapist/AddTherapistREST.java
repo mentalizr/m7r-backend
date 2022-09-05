@@ -65,7 +65,11 @@ public class AddTherapistREST {
                         therapistAddSO.getEmail(),
                         therapistAddSO.getFirstname(),
                         therapistAddSO.getLastname(),
-                        therapistAddSO.getGender()
+                        therapistAddSO.getGender(),
+                        therapistAddSO.isRequire2FA(),
+                        therapistAddSO.isRequirePolicyConsent(),
+                        therapistAddSO.isRequireEmailConfirmation(),
+                        therapistAddSO.isRequireRenewPassword()
                 );
 
                 String userUUID = userLoginCompositeVO.getUserId();
@@ -75,7 +79,7 @@ public class AddTherapistREST {
                 RoleTherapistDAO.create(roleTherapistVO);
 
                 therapistAddSO.setUserId(userUUID);
-                therapistAddSO.setPasswordHash(userLoginCompositeVO.getPasswordHash());
+                therapistAddSO.setPasswordHash(userLoginCompositeVO.getUserLoginVO().getPasswordHash());
 
                 return therapistAddSO;
             }

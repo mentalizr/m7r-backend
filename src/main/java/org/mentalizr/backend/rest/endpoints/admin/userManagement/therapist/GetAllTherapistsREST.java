@@ -1,5 +1,6 @@
 package org.mentalizr.backend.rest.endpoints.admin.userManagement.therapist;
 
+import org.mentalizr.backend.adapter.TherapistRestoreSOAdapter;
 import org.mentalizr.backend.security.auth.AuthorizationService;
 import org.mentalizr.backend.security.auth.UnauthorizedException;
 import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
@@ -22,9 +23,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Path("v1")
@@ -73,22 +72,7 @@ public class GetAllTherapistsREST {
                 UserVO userVO = UserDAO.load(roleTherapistVO.getUserId());
                 UserLoginVO userLoginVO = UserLoginDAO.load(roleTherapistVO.getUserId());
 
-                TherapistRestoreSO therapistRestoreSO = new TherapistRestoreSO();
-                therapistRestoreSO.setUserId(roleTherapistVO.getUserId());
-                therapistRestoreSO.setActive(userVO.getActive());
-                Long firstActive = userVO.getFirstActive();
-                therapistRestoreSO.setFirstActive(firstActive != null ? firstActive.toString() : null);
-                Long lastActive = userVO.getLastActive();
-                therapistRestoreSO.setLastActive(lastActive != null ? lastActive.toString() : null);
-                therapistRestoreSO.setUsername(userLoginVO.getUsername());
-                therapistRestoreSO.setPasswordHash(userLoginVO.getPasswordHash());
-                therapistRestoreSO.setEmail(userLoginVO.getEmail());
-                therapistRestoreSO.setFirstname(userLoginVO.getFirstName());
-                therapistRestoreSO.setLastname(userLoginVO.getLastName());
-                therapistRestoreSO.setGender(userLoginVO.getGender());
-                therapistRestoreSO.setTitle(roleTherapistVO.getTitle());
-
-                return therapistRestoreSO;
+                return TherapistRestoreSOAdapter.from(userVO, userLoginVO, roleTherapistVO);
             }
 
         }.call();

@@ -59,12 +59,20 @@ public class RestoreTherapistREST {
                 UserLogin.restore(
                         therapistRestoreSO.getUserId(),
                         therapistRestoreSO.isActive(),
+                        therapistRestoreSO.getFirstActive(),
+                        therapistRestoreSO.getLastActive(),
+                        therapistRestoreSO.getPolicyConsent(),
                         therapistRestoreSO.getUsername(),
                         therapistRestoreSO.getPasswordHash(),
                         therapistRestoreSO.getEmail(),
                         therapistRestoreSO.getFirstname(),
                         therapistRestoreSO.getLastname(),
-                        therapistRestoreSO.getGender()
+                        therapistRestoreSO.getGender(),
+                        therapistRestoreSO.isSecondFA(),
+                        therapistRestoreSO.getEmailConfirmation(),
+                        therapistRestoreSO.getEmailConfToken(),
+                        therapistRestoreSO.getEmailConfCode(),
+                        therapistRestoreSO.isRenewPasswordRequired()
                 );
                 RoleTherapistVO roleTherapistVO = new RoleTherapistVO(therapistRestoreSO.getUserId());
                 RoleTherapistDAO.create(roleTherapistVO);

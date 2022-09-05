@@ -44,7 +44,7 @@ public class AuthenticationService {
 
         String sessionString = SessionManager.createSessionForLogin(httpServletRequest, userLoginCompositeVO);
 
-        authLogger.info("user [" + userLoginCompositeVO.getUsername() + "] login. " + sessionString);
+        authLogger.info("user [" + userLoginCompositeVO.getUserLoginVO().getUsername() + "] login. " + sessionString);
     }
 
     public static void loginWithAccessKey(HttpServletRequest httpServletRequest, String accessKey) throws UnauthorizedException, InfrastructureException {
@@ -118,8 +118,10 @@ public class AuthenticationService {
     private static void checkPasswordHash(UserLoginCompositeVO userLoginCompositeVO, char[] password) throws UnauthorizedException {
         Argon2 argon2 = Argon2Factory.create();
         try {
-            if (!argon2.verify(userLoginCompositeVO.getPasswordHash(), password)) {
-                throw new UnauthorizedException("[" + userLoginCompositeVO.getUsername() + "] login rejected. Wrong password.");
+            if (!argon2.verify(userLoginCompositeVO.getUserLoginVO().getPasswordHash(), password)) {
+                throw new UnauthorizedException(
+                        "[" + userLoginCompositeVO.getUserLoginVO().getUsername() + "] login rejected. Wrong password."
+                );
             }
         } finally {
             argon2.wipeArray(password);

@@ -75,7 +75,11 @@ public class AddPatientREST {
                         patientAddSO.getEmail(),
                         patientAddSO.getFirstname(),
                         patientAddSO.getLastname(),
-                        patientAddSO.getGender()
+                        patientAddSO.getGender(),
+                        patientAddSO.isRequire2FA(),
+                        patientAddSO.isRequirePolicyConsent(),
+                        patientAddSO.isRequireEmailConfirmation(),
+                        patientAddSO.isRequireRenewPassword()
                 );
 
                 String userUUID = userLoginCompositeVO.getUserId();
@@ -90,7 +94,7 @@ public class AddPatientREST {
                 PatientProgramDAO.create(patientProgramVO);
 
                 patientAddSO.setUserId(userUUID);
-                patientAddSO.setPasswordHash(userLoginCompositeVO.getPasswordHash());
+                patientAddSO.setPasswordHash(userLoginCompositeVO.getUserLoginVO().getPasswordHash());
 
                 return patientAddSO;
             }

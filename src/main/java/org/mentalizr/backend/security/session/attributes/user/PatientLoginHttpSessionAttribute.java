@@ -23,7 +23,7 @@ public class PatientLoginHttpSessionAttribute extends PatientHttpSessionAttribut
 
     @Override
     public int getGender() {
-        return this.userLoginCompositeVO.getGender();
+        return this.userLoginCompositeVO.getUserLoginVO().getGender();
     }
 
     @Override

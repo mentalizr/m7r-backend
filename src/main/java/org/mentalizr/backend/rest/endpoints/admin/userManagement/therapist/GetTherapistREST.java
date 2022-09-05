@@ -1,5 +1,6 @@
 package org.mentalizr.backend.rest.endpoints.admin.userManagement.therapist;
 
+import org.mentalizr.backend.adapter.TherapistRestoreSOAdapter;
 import org.mentalizr.backend.security.auth.AuthorizationService;
 import org.mentalizr.backend.security.auth.UnauthorizedException;
 import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
@@ -10,6 +11,8 @@ import org.mentalizr.persistence.rdbms.barnacle.dao.RoleTherapistDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserLoginCompositeDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.RoleTherapistVO;
+import org.mentalizr.persistence.rdbms.barnacle.vo.UserLoginVO;
+import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.serviceObjects.userManagement.TherapistRestoreSO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,8 +20,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.time.ZonedDateTime;
-import java.util.Date;
 
 @Path("v1")
 public class GetTherapistREST {
@@ -51,22 +52,7 @@ public class GetTherapistREST {
                 UserLoginCompositeVO userLoginCompositeVO = UserLoginCompositeDAO.findByUk_username(username);
                 RoleTherapistVO roleTherapistVO = RoleTherapistDAO.load(userLoginCompositeVO.getUserId());
 
-                TherapistRestoreSO therapistRestoreSO = new TherapistRestoreSO();
-                therapistRestoreSO.setUserId(userLoginCompositeVO.getUserId());
-                therapistRestoreSO.setActive(userLoginCompositeVO.isActive());
-                ZonedDateTime firstActive = userLoginCompositeVO.getFirstActive();
-                therapistRestoreSO.setFirstActive(firstActive != null ? firstActive.toString() : null);
-                ZonedDateTime lastActive = userLoginCompositeVO.getLastActive();
-                therapistRestoreSO.setLastActive(lastActive != null ? lastActive.toString() : null);
-                therapistRestoreSO.setUsername(userLoginCompositeVO.getUsername());
-                therapistRestoreSO.setPasswordHash(userLoginCompositeVO.getPasswordHash());
-                therapistRestoreSO.setEmail(userLoginCompositeVO.getEmail());
-                therapistRestoreSO.setFirstname(userLoginCompositeVO.getFirstName());
-                therapistRestoreSO.setLastname(userLoginCompositeVO.getLastName());
-                therapistRestoreSO.setGender(userLoginCompositeVO.getGender());
-                therapistRestoreSO.setTitle(roleTherapistVO.getTitle());
-
-                return therapistRestoreSO;
+                return TherapistRestoreSOAdapter.from(userLoginCompositeVO, roleTherapistVO);
             }
 
         }.call();
