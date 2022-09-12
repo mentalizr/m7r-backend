@@ -2,6 +2,7 @@ package org.mentalizr.backend.rest.service;
 
 import org.mentalizr.backend.Const;
 import org.mentalizr.backend.exceptions.IllegalServiceInputException;
+import org.mentalizr.backend.security.session.attributes.SecurityAttribute;
 import org.mentalizr.backend.security.session.attributes.user.PatientHttpSessionAttribute;
 import org.mentalizr.backend.security.session.attributes.user.TherapistHttpSessionAttribute;
 import org.mentalizr.backend.security.auth.UnauthorizedException;
@@ -27,7 +28,7 @@ public abstract  class Service {
 
     protected HttpServletRequest httpServletRequest;
     protected Object serviceObjectRequest;
-    protected UserHttpSessionAttribute userHttpSessionAttribute;
+    protected SecurityAttribute securityAttribute;
 
     public Service(HttpServletRequest httpServletRequest) {
         this.httpServletRequest = httpServletRequest;
@@ -45,7 +46,7 @@ public abstract  class Service {
         logger.trace("[" + getServiceId() + "] called.");
     }
 
-    protected abstract UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException;
+    protected abstract SecurityAttribute checkSecurityConstraints() throws UnauthorizedException;
 
     /**
      * Check business preconditions that are not yet checked as security constraints.
@@ -62,8 +63,8 @@ public abstract  class Service {
     }
 
     protected void logLeave() {
-        if (this.userHttpSessionAttribute != null) {
-            String userId = this.userHttpSessionAttribute.getUserVO().getId();
+        if (this.securityAttribute != null) {
+            String userId = this.securityAttribute.getUserHttpSessionAttribute().getUserVO().getId();
             logger.debug("[" + getServiceId() + "][" + userId + "] completed.");
         } else {
             logger.debug("[" + getServiceId() + "] completed.");
@@ -80,7 +81,7 @@ public abstract  class Service {
         }
 
         try {
-            this.userHttpSessionAttribute = checkSecurityConstraints();
+            this.securityAttribute = checkSecurityConstraints();
         } catch (UnauthorizedException e) {
             authLogger.warn("Authorization failed for service [" + getServiceId() + "]: " + e.getMessage());
             return ResponseFactory.unauthorized();
@@ -133,11 +134,14 @@ public abstract  class Service {
     }
 
     protected PatientHttpSessionAttribute getPatientHttpSessionAttribute() {
-        return UserHttpSessionAttribute.asPatientHttpSessionAttribute(this.userHttpSessionAttribute);
+        UserHttpSessionAttribute userHttpSessionAttribute = this.securityAttribute.getUserHttpSessionAttribute();
+        return UserHttpSessionAttribute
+                .asPatientHttpSessionAttribute(userHttpSessionAttribute);
     }
 
     protected TherapistHttpSessionAttribute getTherapistHttpSessionAttribute() {
-        return UserHttpSessionAttribute.asTherapistHttpSessionAttribute(this.userHttpSessionAttribute);
+        UserHttpSessionAttribute userHttpSessionAttribute = this.securityAttribute.getUserHttpSessionAttribute();
+        return UserHttpSessionAttribute.asTherapistHttpSessionAttribute(userHttpSessionAttribute);
     }
 
 }

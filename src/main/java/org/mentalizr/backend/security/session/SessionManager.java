@@ -2,6 +2,7 @@ package org.mentalizr.backend.security.session;
 
 import org.mentalizr.backend.Const;
 import org.mentalizr.backend.exceptions.InfrastructureException;
+import org.mentalizr.backend.security.session.attributes.SecurityAttribute;
 import org.mentalizr.backend.security.session.attributes.staging.StagingAttribute;
 import org.mentalizr.backend.security.session.attributes.staging.StagingIntermediate;
 import org.mentalizr.backend.security.session.attributes.staging.StagingValid;
@@ -24,12 +25,12 @@ public class SessionManager {
     private static final Logger authLogger = Const.authLogger;
 
     public static String createSessionForLogin(HttpServletRequest httpServletRequest, UserLoginCompositeVO userLoginCompositeVO) throws InfrastructureException {
-        UserHttpSessionAttribute userHttpSessionAttribute = createUserSessionAttributeForRole(userLoginCompositeVO);
         StagingAttribute stagingAttribute = createStagingAttribute(userLoginCompositeVO);
+        UserHttpSessionAttribute userHttpSessionAttribute = createUserSessionAttributeForRole(userLoginCompositeVO);
+        SecurityAttribute securityAttribute = new SecurityAttribute(stagingAttribute, userHttpSessionAttribute);
 
         HttpSession httpSession = httpServletRequest.getSession(true);
-        httpSession.setAttribute(UserHttpSessionAttribute.USER, userHttpSessionAttribute);
-        httpSession.setAttribute(StagingAttribute.STAGING, stagingAttribute);
+        httpSession.setAttribute(SecurityAttribute.NAME, securityAttribute);
 
         return stagingAttribute.toString();
     }
@@ -37,10 +38,10 @@ public class SessionManager {
     public static String createSessionForAccessKey(HttpServletRequest httpServletRequest, UserAccessKeyCompositeVO userAccessKeyCompositeVO) throws InfrastructureException {
         UserHttpSessionAttribute userHttpSessionAttribute = createUserSessionAttributeForAccessKeyUser(userAccessKeyCompositeVO);
         StagingAttribute stagingAttribute = createStagingAttribute(userAccessKeyCompositeVO);
+        SecurityAttribute securityAttribute = new SecurityAttribute(stagingAttribute, userHttpSessionAttribute);
 
         HttpSession httpSession = httpServletRequest.getSession(true);
-        httpSession.setAttribute(UserHttpSessionAttribute.USER, userHttpSessionAttribute);
-        httpSession.setAttribute(StagingAttribute.STAGING, stagingAttribute);
+        httpSession.setAttribute(SecurityAttribute.NAME, securityAttribute);
 
         return stagingAttribute.toString();
     }
@@ -51,16 +52,14 @@ public class SessionManager {
 
     public static boolean hasValidSession(HttpServletRequest httpServletRequest) {
         if (!HttpSessions.hasRunningSession(httpServletRequest)) return false;
-        HttpSession httpSession = HttpSessions.getRunningSession(httpServletRequest);
-        StagingAttribute stagingAttribute = getStagingAttributeFromRunningSession(httpSession);
-        return (stagingAttribute.isValid());
+        SecurityAttribute securityAttribute = getSecurityAttribute(httpServletRequest);
+        return securityAttribute.isValid();
     }
 
     public static boolean hasIntermediateSession(HttpServletRequest httpServletRequest) {
         if (!HttpSessions.hasRunningSession(httpServletRequest)) return false;
-        HttpSession httpSession = HttpSessions.getRunningSession(httpServletRequest);
-        StagingAttribute stagingAttribute = getStagingAttributeFromRunningSession(httpSession);
-        return (stagingAttribute.isIntermediate());
+        SecurityAttribute securityAttribute = getSecurityAttribute(httpServletRequest);
+        return securityAttribute.isIntermediate();
     }
 
     public static void invalidate(HttpServletRequest httpServletRequest) {
@@ -71,19 +70,24 @@ public class SessionManager {
     public static void invalidatePreexisting(HttpServletRequest httpServletRequest) {
         HttpSession httpSession = httpServletRequest.getSession(false);
         if (httpSession != null) {
-            UserHttpSessionAttribute userHttpSessionAttribute = (UserHttpSessionAttribute) httpSession.getAttribute(UserHttpSessionAttribute.USER);
+            SecurityAttribute securityAttribute = getSecurityAttribute(httpServletRequest);
+            UserHttpSessionAttribute userHttpSessionAttribute = securityAttribute.getUserHttpSessionAttribute();
             httpSession.invalidate();
-
-            if (userHttpSessionAttribute != null) {
-                authLogger.info("[" + userHttpSessionAttribute.getUserVO().getId() + "] logout");
-            } else {
-                logger.error("Session inconsistent: session found valid without session attribute. Unknown user logged out.");
-            }
+            authLogger.info("[" + userHttpSessionAttribute.getUserVO().getId() + "] logout");
         }
     }
 
-    private static StagingAttribute getStagingAttributeFromRunningSession(HttpSession httpSession) {
-        return (StagingAttribute) httpSession.getAttribute(StagingAttribute.STAGING);
+    public static SecurityAttribute getSecurityAttribute(HttpServletRequest httpServletRequest) {
+        HttpSession httpSession = HttpSessions.getRunningSession(httpServletRequest);
+        SecurityAttribute securityAttribute = (SecurityAttribute) httpSession.getAttribute(SecurityAttribute.NAME);
+        if (securityAttribute == null)
+            throw new IllegalStateException("No SecurityAttribute found in running session.");
+        return securityAttribute;
+    }
+
+    public static String getSessionId(HttpServletRequest httpServletRequest) {
+        HttpSession httpSession = HttpSessions.getRunningSession(httpServletRequest);
+        return httpSession.getId();
     }
 
     private static StagingAttribute createStagingAttribute(UserLoginCompositeVO userLoginCompositeVO) {

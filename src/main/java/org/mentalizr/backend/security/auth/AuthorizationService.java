@@ -1,6 +1,7 @@
 package org.mentalizr.backend.security.auth;
 
 import org.mentalizr.backend.Const;
+import org.mentalizr.backend.security.session.attributes.SecurityAttribute;
 import org.mentalizr.backend.security.session.attributes.user.*;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import de.arthurpicht.utils.core.assertion.AssertMethodPrecondition;
@@ -25,7 +26,7 @@ public class AuthorizationService {
         }
     }
 
-    public static AdminHttpSessionAttribute assertIsLoggedInAsAdmin(HttpServletRequest httpServletRequest) throws UnauthorizedException {
+    public static SecurityAttribute assertIsLoggedInAsAdmin(HttpServletRequest httpServletRequest) throws UnauthorizedException {
         AssertMethodPrecondition.parameterNotNull("httpServletRequest", httpServletRequest);
         return checkAsAdmin(httpServletRequest);
     }
@@ -66,30 +67,30 @@ public class AuthorizationService {
         }
     }
 
-    private static UserHttpSessionAttribute checkAsUser(HttpServletRequest httpServletRequest) throws UnauthorizedException {
+    private static SecurityAttribute checkAsUser(HttpServletRequest httpServletRequest) throws UnauthorizedException {
         Authorization authorization = new Authorization(httpServletRequest);
-        return authorization.getUserHttpSessionAttribute();
+        return authorization.getSecurityAttribute();
     }
 
-    private static PatientHttpSessionAttribute checkAsPatient(HttpServletRequest httpServletRequest) throws UnauthorizedException {
+    private static SecurityAttribute checkAsPatient(HttpServletRequest httpServletRequest) throws UnauthorizedException {
         Authorization authorization = new Authorization(httpServletRequest);
         if (!authorization.isPatient())
             throw new UnauthorizedException("User not in role PATIENT.");
-        return authorization.getPatientHttpSessionAttribute();
+        return authorization.getSecurityAttribute();
     }
 
-    private static AdminHttpSessionAttribute checkAsAdmin(HttpServletRequest httpServletRequest) throws UnauthorizedException {
+    private static SecurityAttribute checkAsAdmin(HttpServletRequest httpServletRequest) throws UnauthorizedException {
         Authorization authorization = new Authorization(httpServletRequest);
         if (!authorization.isAdmin())
             throw new UnauthorizedException("User not in role ADMIN.");
-        return authorization.getAdminHttpSessionAttribute();
+        return authorization.getSecurityAttribute();
     }
 
-    private static TherapistHttpSessionAttribute checkAsTherapist(HttpServletRequest httpServletRequest) throws UnauthorizedException {
+    private static SecurityAttribute checkAsTherapist(HttpServletRequest httpServletRequest) throws UnauthorizedException {
         Authorization authorization = new Authorization(httpServletRequest);
         if (!authorization.isTherapist())
             throw new UnauthorizedException("User not in role THERAPIST.");
-        return authorization.getTherapistHttpSessionAttribute();
+        return authorization.getSecurityAttribute();
     }
 
 }

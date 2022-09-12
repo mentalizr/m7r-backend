@@ -1,5 +1,6 @@
 package org.mentalizr.backend.security.auth;
 
+import org.mentalizr.backend.security.session.attributes.SecurityAttribute;
 import org.mentalizr.backend.security.session.attributes.user.AdminHttpSessionAttribute;
 import org.mentalizr.backend.security.session.attributes.user.PatientHttpSessionAttribute;
 import org.mentalizr.backend.security.session.attributes.user.TherapistHttpSessionAttribute;
@@ -30,6 +31,10 @@ public class Authorization {
 
     public boolean isAdmin() {
         return this.authentication.getUserHttpSessionAttribute() instanceof AdminHttpSessionAttribute;
+    }
+
+    public SecurityAttribute getSecurityAttribute() {
+        return this.authentication.getSecurityAttribute();
     }
 
     public UserHttpSessionAttribute getUserHttpSessionAttribute() {

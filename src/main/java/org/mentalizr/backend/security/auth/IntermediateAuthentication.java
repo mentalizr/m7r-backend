@@ -10,12 +10,12 @@ public class IntermediateAuthentication extends AbstractAuthentication {
 
         super(httpServletRequest);
 
-        if (this.stagingAttribute.isValid())
+        if (this.securityAttribute.isValid())
             throw new UnauthorizedException("[Authentication] failed: Session is in state [valid] but is expected to be in state [intermediate].");
     }
 
     public String getNextRequirement() {
-        StagingIntermediate stagingIntermediate = (StagingIntermediate) this.stagingAttribute;
+        StagingIntermediate stagingIntermediate = (StagingIntermediate) this.securityAttribute.getStagingAttribute();
         return stagingIntermediate.getNextRequirementAsString();
     }
 

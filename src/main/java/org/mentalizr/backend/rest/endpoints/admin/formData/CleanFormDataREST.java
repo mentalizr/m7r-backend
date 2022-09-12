@@ -1,6 +1,7 @@
 package org.mentalizr.backend.rest.endpoints.admin.formData;
 
 import org.mentalizr.backend.security.auth.UnauthorizedException;
+import org.mentalizr.backend.security.session.attributes.SecurityAttribute;
 import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.formData.FormDataMongoHandler;
@@ -33,7 +34,7 @@ public class CleanFormDataREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
+            protected SecurityAttribute checkSecurityConstraints() throws UnauthorizedException {
                 return assertIsLoggedInAsAdmin(httpServletRequest);
             }
 

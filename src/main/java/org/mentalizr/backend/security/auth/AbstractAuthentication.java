@@ -1,54 +1,39 @@
 package org.mentalizr.backend.security.auth;
 
-import org.mentalizr.backend.Const;
+import org.mentalizr.backend.security.session.SessionManager;
+import org.mentalizr.backend.security.session.attributes.SecurityAttribute;
 import org.mentalizr.backend.security.session.attributes.staging.StagingAttribute;
 import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 public abstract class AbstractAuthentication {
     protected String httpSessionId;
-    protected UserHttpSessionAttribute userHttpSessionAttribute;
-    protected StagingAttribute stagingAttribute;
+    protected SecurityAttribute securityAttribute;
 
     public AbstractAuthentication(HttpServletRequest httpServletRequest) throws UnauthorizedException {
 
-        HttpSession httpSession = httpServletRequest.getSession(false);
-        if (httpSession == null)
+        if (!SessionManager.hasSessionInAnyStaging(httpServletRequest))
             throw new UnauthorizedException("[Authentication] failed: No running session.");
 
-        this.httpSessionId = httpSession.getId();
-
-        this.userHttpSessionAttribute = (UserHttpSessionAttribute) httpSession.getAttribute(UserHttpSessionAttribute.USER);
-        if (userHttpSessionAttribute == null) {
-            String errorMessage = getErrorMessage(UserHttpSessionAttribute.USER);
-            Const.authLogger.error(errorMessage);
-            throw new UnauthorizedException(errorMessage);
-        }
-
-        this.stagingAttribute = (StagingAttribute) httpSession.getAttribute(StagingAttribute.STAGING);
-        if (stagingAttribute == null) {
-            String errorMessage = getErrorMessage(StagingAttribute.STAGING);
-            throw new UnauthorizedException(errorMessage);
-        }
-
-    }
-
-    private String getErrorMessage(String attributeName) {
-        return "[Authentication] failed due to internal inconsistency: No attribute '" + attributeName + "' found in running session.";
+        this.httpSessionId = SessionManager.getSessionId(httpServletRequest);
+        this.securityAttribute = SessionManager.getSecurityAttribute(httpServletRequest);
     }
 
     public String getHttpSessionId() {
         return this.httpSessionId;
     }
 
+    public SecurityAttribute getSecurityAttribute() {
+        return this.securityAttribute;
+    }
+
     public UserHttpSessionAttribute getUserHttpSessionAttribute() {
-        return this.userHttpSessionAttribute;
+        return this.securityAttribute.getUserHttpSessionAttribute();
     }
 
     public StagingAttribute getStagingAttribute() {
-        return this.stagingAttribute;
+        return this.securityAttribute.getStagingAttribute();
     }
 
 }

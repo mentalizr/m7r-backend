@@ -7,5 +7,6 @@ includeBuild('../m7r-backend-proc')
 includeBuild('../m7r-backend-config')
 includeBuild('../m7r-service-objects')
 includeBuild('../m7r-content-manager')
+includeBuild('../../../ap/webAccessControl')
 
 

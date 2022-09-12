@@ -7,8 +7,9 @@ public class Authentication extends AbstractAuthentication {
     public Authentication(HttpServletRequest httpServletRequest) throws UnauthorizedException {
         super(httpServletRequest);
 
-        if (stagingAttribute.isIntermediate())
-            throw new UnauthorizedException("[Authentication] failed: Session is in state [intermediate].");
+        if (this.securityAttribute.getStagingAttribute().isIntermediate())
+            throw new UnauthorizedException("[Authentication] failed: Session is expected to be [valid] but is " +
+                    "[intermediate].");
     }
 
 }

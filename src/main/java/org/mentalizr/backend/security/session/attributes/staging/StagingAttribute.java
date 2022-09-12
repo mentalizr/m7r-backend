@@ -1,6 +1,8 @@
 package org.mentalizr.backend.security.session.attributes.staging;
 
-public abstract class StagingAttribute {
+import java.io.Serializable;
+
+public abstract class StagingAttribute implements Serializable {
 
     public static final String STAGING = "STAGING";
 
