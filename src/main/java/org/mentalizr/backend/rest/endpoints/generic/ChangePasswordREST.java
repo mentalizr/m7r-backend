@@ -1,9 +1,17 @@
 package org.mentalizr.backend.rest.endpoints.generic;
 
+import de.arthurpicht.utils.core.collection.Sets;
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.M7rAuthorization;
+import org.mentalizr.backend.accessControl.roles.Admin;
+import org.mentalizr.backend.accessControl.roles.M7rUser;
+import org.mentalizr.backend.accessControl.roles.PatientLogin;
+import org.mentalizr.backend.accessControl.roles.Therapist;
 import org.mentalizr.backend.exceptions.IllegalServiceInputException;
 import org.mentalizr.backend.rest.service.Service;
-import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
-import org.mentalizr.backend.utils.PasswordHelper;
+import org.mentalizr.backend.utils.CredentialsSanity;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.persistence.rdbms.edao.UserLoginEDAO;
@@ -19,8 +27,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import static org.mentalizr.backend.security.auth.AuthorizationService.assertIsLoggedInAsLoginUser;
 
 @Path("v1")
 public class ChangePasswordREST {
@@ -45,18 +51,26 @@ public class ChangePasswordREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
-                return assertIsLoggedInAsLoginUser(this.httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return AccessControl.assertValidSession(
+                        Sets.newHashSet(Admin.ROLE_NAME, PatientLogin.ROLE_NAME, Therapist.ROLE_NAME),
+                        httpServletRequest);
             }
 
             @Override
             protected Object workLoad() throws IllegalServiceInputException, DataSourceException {
 
                 char[] newPassword = changePasswordSO.getPassword().toCharArray();
-                PasswordHelper.checkPasswordSanity(newPassword);
+                try {
+                    CredentialsSanity.checkPasswordSanity(newPassword);
+                } catch (CredentialsSanity.BadCredentialsException e) {
+                    throw new IllegalServiceInputException(e.getMessage(), e);
+                }
 
                 String hash = Argon2Hash.getHash(newPassword);
-                UserVO userVO = this.userHttpSessionAttribute.getUserVO();
+                M7rAuthorization m7rAuthorization = new M7rAuthorization(this.authorization);
+                M7rUser m7rUser = m7rAuthorization.getUserAsM7rUser();
+                UserVO userVO = m7rUser.getUserVO();
 
                 UserLoginEDAO.updatePasswordHash(userVO.getId(), hash);
                 UserLoginEDAO.unsetRenewPasswordRequired(userVO.getId());

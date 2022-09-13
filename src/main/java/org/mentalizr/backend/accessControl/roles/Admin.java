@@ -1,0 +1,36 @@
+package org.mentalizr.backend.accessControl.roles;
+
+import org.mentalizr.backend.rest.entities.UserRole;
+import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
+
+import java.io.Serializable;
+
+public class Admin extends M7rUser implements Serializable {
+
+    public static final String ROLE_NAME ="ADMIN";
+
+    public Admin(UserLoginCompositeVO userLoginCompositeVO) {
+        super(userLoginCompositeVO.getUserVO());
+    }
+
+    @Override
+    public UserRole getUserRole() {
+        return UserRole.ADMIN;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "N.N.";
+    }
+
+    @Override
+    public int getGender() {
+        return 0;
+    }
+
+    @Override
+    public String getUserId() {
+        return this.getUserVO().getId();
+    }
+
+}

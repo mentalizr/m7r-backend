@@ -1,11 +1,9 @@
 package org.mentalizr.backend.rest.endpoints;
 
+import de.arthurpicht.webAccessControl.auth.*;
+import de.arthurpicht.webAccessControl.session.SessionManager;
 import org.mentalizr.backend.Const;
-import org.mentalizr.backend.exceptions.IllegalServiceInputException;
-import org.mentalizr.backend.security.auth.*;
-import org.mentalizr.backend.exceptions.InfrastructureException;
 import org.mentalizr.backend.rest.entities.factories.SessionStatusFactory;
-import org.mentalizr.backend.security.session.SessionManager;
 import org.mentalizr.backend.utils.HttpSessions;
 import org.mentalizr.serviceObjects.SessionStatusSO;
 import org.slf4j.Logger;
@@ -48,7 +46,7 @@ public class EndpointSession {
             // https://www.igorkromin.net/index.php/2017/05/05/posting-array-data-from-a-web-form-to-a-jersey-rest-service/
             char[] passwordCharArray = password.toCharArray();
 
-            AuthenticationService.login(httpServletRequest, username, passwordCharArray);
+            AccessControl.login(httpServletRequest, username, passwordCharArray);
             if (rememberMe) HttpSessions.rememberMe(httpServletRequest);
 
             return "success";
@@ -56,10 +54,7 @@ public class EndpointSession {
         } catch (UnauthorizedException e) {
             authLogger.warn(e.getMessage());
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-        } catch (IllegalServiceInputException e) {
-            logger.info(e.getMessage());
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        } catch (InfrastructureException | RuntimeException e) {
+        } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
             throw new WebApplicationException((Response.Status.INTERNAL_SERVER_ERROR));
 
@@ -84,7 +79,7 @@ public class EndpointSession {
 
         try {
 
-            AuthenticationService.loginWithAccessKey(httpServletRequest, accessKey);
+            AccessControl.loginWithAccessKey(httpServletRequest, accessKey);
             if (rememberMe) HttpSessions.rememberMe(httpServletRequest);
             return "success";
 
@@ -92,9 +87,9 @@ public class EndpointSession {
             authLogger.warn(e.getMessage());
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
 
-        } catch (InfrastructureException | RuntimeException e) {
+        } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
-            throw new WebApplicationException((Response.Status.INTERNAL_SERVER_ERROR));
+            throw new WebApplicationException(e.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -103,7 +98,7 @@ public class EndpointSession {
     @Produces(MediaType.TEXT_PLAIN)
     public String logout(@Context HttpServletRequest httpServletRequest) {
         logger.debug("[logout]");
-        AuthenticationService.logout(httpServletRequest);
+        AccessControl.logout(httpServletRequest);
         return "logout";
     }
 
@@ -112,7 +107,15 @@ public class EndpointSession {
     @Produces(MediaType.TEXT_PLAIN)
     public String noop(@Context HttpServletRequest httpServletRequest) {
         logger.debug("[noop]");
-        AuthenticationService.assertHasSessionInAnyStaging(httpServletRequest, "noop", false);
+        try {
+            AccessControl.assertHasSessionInAnyStaging(httpServletRequest);
+        } catch (UnauthorizedException e) {
+            authLogger.warn(e.getMessage());
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        } catch (RuntimeException e) {
+            logger.error(e.getMessage(), e);
+            throw new WebApplicationException(e.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
+        }
         return "noop";
     }
 
@@ -122,32 +125,49 @@ public class EndpointSession {
     public SessionStatusSO sessionStatus(@Context HttpServletRequest httpServletRequest) {
         logger.debug("[sessionStatus]");
 
-        if (!SessionManager.hasSessionInAnyStaging(httpServletRequest))
+//        if (!SessionManager.hasSessionInAnyStaging(httpServletRequest))
+//            return SessionStatusFactory.getInstanceForInvalidSession();
+
+        Authorization authorization;
+        try {
+            authorization = new Authorization(httpServletRequest);
+        } catch (UnauthorizedException e) {
             return SessionStatusFactory.getInstanceForInvalidSession();
+        }
 
-        if (SessionManager.hasIntermediateSession(httpServletRequest)) {
-            IntermediateAuthentication intermediateAuthentication;
-            try {
-                intermediateAuthentication = new IntermediateAuthentication(httpServletRequest);
-            } catch (UnauthorizedException e) {
-                throw new IllegalStateException("Session expected to be staged as INTERMEDIATE.");
-            }
+        if (authorization.isIntermediate()) {
             return SessionStatusFactory.getInstanceForIntermediateSession(
-                    intermediateAuthentication.getUserHttpSessionAttribute().getUserRole(),
-                    intermediateAuthentication.getHttpSessionId(),
-                    intermediateAuthentication.getNextRequirement());
+                    authorization.getRoleName(),
+                    authorization.getSessionId(),
+                    authorization.getNextRequirement());
+        } else if (authorization.isValid()) {
+            return SessionStatusFactory.getInstanceForValidSession(
+                    authorization.getRoleName(),
+                    authorization.getSessionId());
         }
 
-        if (SessionManager.hasValidSession(httpServletRequest)) {
-            try {
-                Authentication authentication = new Authentication(httpServletRequest);
-                Authorization authorization = new Authorization(authentication);
-                String sessionId = authentication.getHttpSessionId();
-                return SessionStatusFactory.getInstanceForValidSession(authorization.getUserRole(), sessionId);
-            } catch (UnauthorizedException e) {
-                throw new IllegalStateException("Session expected to be staged as VALID.");
-            }
-        }
+//        if (SessionManager.hasIntermediateSession(httpServletRequest)) {
+//            IntermediateAuthentication intermediateAuthentication;
+//            try {
+//                intermediateAuthentication = new IntermediateAuthentication(httpServletRequest);
+//            } catch (UnauthorizedException e) {
+//                throw new IllegalStateException("Session expected to be staged as INTERMEDIATE.");
+//            }
+//            return SessionStatusFactory.getInstanceForIntermediateSession(
+//                    intermediateAuthentication.getRoleName(),
+//                    intermediateAuthentication.getSessionId(),
+//                    intermediateAuthentication.getNextRequirement());
+//        }
+//
+//        if (SessionManager.hasValidSession(httpServletRequest)) {
+//            try {
+//                Authentication authentication = new Authentication(httpServletRequest);
+//                String sessionId = authentication.getSessionId();
+//                return SessionStatusFactory.getInstanceForValidSession(authentication.getRoleName(), sessionId);
+//            } catch (UnauthorizedException e) {
+//                throw new IllegalStateException("Session expected to be staged as VALID.");
+//            }
+//        }
 
         throw new IllegalStateException("Inconsistent session state.");
     }

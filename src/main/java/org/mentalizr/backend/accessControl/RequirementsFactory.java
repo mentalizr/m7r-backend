@@ -1,5 +1,6 @@
-package org.mentalizr.backend.security.session.attributes.staging.requirements;
+package org.mentalizr.backend.accessControl;
 
+import de.arthurpicht.webAccessControl.session.attributes.staging.requirements.Requirements;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserLoginVO;

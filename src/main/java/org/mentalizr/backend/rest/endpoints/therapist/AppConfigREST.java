@@ -1,8 +1,10 @@
 package org.mentalizr.backend.rest.endpoints.therapist;
 
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.roles.Therapist;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
-import org.mentalizr.backend.security.auth.UnauthorizedException;
-import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
 import org.mentalizr.backend.config.BrandingConfiguration;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.serviceObjects.frontend.therapist.ApplicationConfigTherapistSO;
@@ -15,7 +17,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static org.mentalizr.backend.security.auth.AuthorizationService.assertIsLoggedInAsTherapist;
 
 @Path("v1")
 public class AppConfigREST {
@@ -35,8 +36,8 @@ public class AppConfigREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return assertIsLoggedInAsTherapist(httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return AccessControl.assertValidSession(Therapist.ROLE_NAME, this.httpServletRequest);
             }
 
             @Override

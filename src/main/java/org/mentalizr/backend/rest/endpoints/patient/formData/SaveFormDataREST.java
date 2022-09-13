@@ -1,7 +1,8 @@
 package org.mentalizr.backend.rest.endpoints.patient.formData;
 
-import org.mentalizr.backend.security.auth.UnauthorizedException;
-import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.M7rAccessControl;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.formData.FormDataMongoHandler;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
@@ -13,8 +14,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import static org.mentalizr.backend.security.auth.AuthorizationService.assertIsLoggedInAsPatientWithUserId;
 
 @Path("v1")
 public class SaveFormDataREST {
@@ -35,8 +34,9 @@ public class SaveFormDataREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return assertIsLoggedInAsPatientWithUserId(httpServletRequest, formDataSO.getUserId());
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return M7rAccessControl.assertValidSessionAsPatientWithId(
+                        this.httpServletRequest, formDataSO.getUserId());
             }
 
             @Override

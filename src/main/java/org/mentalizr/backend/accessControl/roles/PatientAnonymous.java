@@ -1,4 +1,4 @@
-package org.mentalizr.backend.security.session.attributes.user;
+package org.mentalizr.backend.accessControl.roles;
 
 import org.mentalizr.backend.rest.entities.Patient;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
@@ -10,9 +10,11 @@ import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
 
 import java.io.Serializable;
 
-public class PatientAnonymousHttpSessionAttribute extends PatientHttpSessionAttribute implements Serializable {
+public class PatientAnonymous extends PatientAbstract implements Serializable {
 
-    public PatientAnonymousHttpSessionAttribute(UserAccessKeyCompositeVO userAccessKeyCompositeVO) throws DataSourceException {
+    public static final String ROLE_NAME = "ANONYMOUS_PATIENT";
+
+    public PatientAnonymous(UserAccessKeyCompositeVO userAccessKeyCompositeVO) throws DataSourceException {
         super(userAccessKeyCompositeVO, getUserLoginCompositeVOTherapist(userAccessKeyCompositeVO));
     }
 

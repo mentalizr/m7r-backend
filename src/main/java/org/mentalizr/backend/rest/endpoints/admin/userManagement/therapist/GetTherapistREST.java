@@ -1,9 +1,10 @@
 package org.mentalizr.backend.rest.endpoints.admin.userManagement.therapist;
 
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.adapter.TherapistRestoreSOAdapter;
-import org.mentalizr.backend.security.auth.AuthorizationService;
-import org.mentalizr.backend.security.auth.UnauthorizedException;
-import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
@@ -11,8 +12,6 @@ import org.mentalizr.persistence.rdbms.barnacle.dao.RoleTherapistDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserLoginCompositeDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.RoleTherapistVO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.UserLoginVO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.serviceObjects.userManagement.TherapistRestoreSO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,8 +42,8 @@ public class GetTherapistREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return AuthorizationService.assertIsLoggedInAsAdmin(httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return AccessControl.assertValidSession(Admin.ROLE_NAME, httpServletRequest);
             }
 
             @Override

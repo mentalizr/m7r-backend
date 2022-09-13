@@ -1,9 +1,11 @@
 package org.mentalizr.backend.htmlChunks;
 
-import org.mentalizr.backend.security.auth.Authentication;
-import org.mentalizr.backend.security.auth.AuthenticationService;
-import org.mentalizr.backend.security.auth.Authorization;
-import org.mentalizr.backend.security.auth.UnauthorizedException;
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.roles.PatientAnonymous;
+import org.mentalizr.backend.accessControl.roles.PatientLogin;
+import org.mentalizr.backend.accessControl.roles.Therapist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,18 +37,17 @@ public class HtmlChunkManager {
 
         if (chunkName.equals(HtmlChunkLoginVoucher.NAME)) return getLoginVoucherChunk();
 
-        Authentication authentication = AuthenticationService.assertHasValidSession(
-                this.httpServletRequest, "htmlChunk|HtmlChunkManager", true);
-        Authorization authorization = new Authorization(authentication);
+        Authorization authorization = AccessControl.assertValidSessionForAnyRole(this.httpServletRequest);
+        String roleName = authorization.getRoleName();
 
         if (chunkName.equals(HtmlChunkPatient.NAME)) {
-            if (!authorization.isPatient())
+            if (!(roleName.equals(PatientAnonymous.ROLE_NAME) || roleName.equals(PatientLogin.ROLE_NAME)))
                 throw new UnauthorizedException("UserLogin not in required role PATIENT.");
             return getPatientChunk();
         }
 
         if (chunkName.equals(HtmlChunkTherapist.NAME)) {
-            if (!authorization.isTherapist())
+            if (!(roleName.equals(Therapist.ROLE_NAME)))
                 throw new UnauthorizedException("UserLogin not in required role THERAPIST.");
             return getTherapistChunk();
         }

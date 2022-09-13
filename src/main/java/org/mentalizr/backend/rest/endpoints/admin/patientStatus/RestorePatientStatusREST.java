@@ -1,8 +1,10 @@
 package org.mentalizr.backend.rest.endpoints.admin.patientStatus;
 
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.bson.Document;
-import org.mentalizr.backend.security.auth.UnauthorizedException;
-import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
+import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.DocumentPreexistingException;
@@ -18,8 +20,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import static org.mentalizr.backend.security.auth.AuthorizationService.assertIsLoggedInAsAdmin;
 
 @Path("v1")
 public class RestorePatientStatusREST {
@@ -41,8 +41,8 @@ public class RestorePatientStatusREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return assertIsLoggedInAsAdmin(httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return AccessControl.assertValidSession(Admin.ROLE_NAME, httpServletRequest);
             }
 
             @Override

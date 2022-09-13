@@ -1,8 +1,10 @@
 package org.mentalizr.backend.rest.endpoints.therapist;
 
-import org.mentalizr.backend.security.session.attributes.user.TherapistHttpSessionAttribute;
-import org.mentalizr.backend.security.auth.UnauthorizedException;
-import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.M7rAuthorization;
+import org.mentalizr.backend.accessControl.roles.Therapist;
 import org.mentalizr.backend.patientMessagesSOCreator.PatientMessagesSOCreator;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.serviceObjects.frontend.therapist.patientMessage.PatientMessagesSO;
@@ -15,8 +17,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import static org.mentalizr.backend.security.auth.AuthorizationService.assertIsLoggedInAsTherapist;
 
 @Path("v1")
 public class GetPatientMessagesREST {
@@ -38,14 +38,15 @@ public class GetPatientMessagesREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return assertIsLoggedInAsTherapist(httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return AccessControl.assertValidSession(Therapist.ROLE_NAME, this.httpServletRequest);
             }
 
             @Override
             protected PatientMessagesSO workLoad() {
-                TherapistHttpSessionAttribute therapistHttpSessionAttribute = getTherapistHttpSessionAttribute();
-                String therapistId = therapistHttpSessionAttribute.getUserVO().getId();
+                M7rAuthorization m7rAuthorization = new M7rAuthorization(this.authorization);
+                Therapist therapist = m7rAuthorization.getUserAsTherapist();
+                String therapistId = therapist.getUserVO().getId();
 
                 PatientMessagesSOCreator patientMessagesSOCreator = new PatientMessagesSOCreator(patientId, therapistId);
                 return patientMessagesSOCreator.create();
@@ -53,7 +54,7 @@ public class GetPatientMessagesREST {
 
             @Override
             protected void logLeave() {
-                String userId = this.userHttpSessionAttribute.getUserVO().getId();
+                String userId = this.authorization.getUserId();
                 this.logger.debug("[" + SERVICE_ID + "][" + userId + "][" + patientId + "] completed.");
             }
 

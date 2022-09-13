@@ -1,8 +1,10 @@
 package org.mentalizr.backend.rest.endpoints.patient;
 
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.M7rAccessControl;
+import org.mentalizr.backend.accessControl.M7rAuthorization;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
-import org.mentalizr.backend.security.auth.UnauthorizedException;
-import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
 import org.mentalizr.backend.programSOCreator.FormDataFetcher;
 import org.mentalizr.backend.programSOCreator.FormDataFetcherMongo;
 import org.mentalizr.backend.programSOCreator.ProgramSOCreator;
@@ -24,8 +26,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static org.mentalizr.backend.security.auth.AuthorizationService.assertIsLoggedInAsPatient;
-
 @Path("v1")
 public class ProgramREST {
 
@@ -46,13 +46,14 @@ public class ProgramREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return assertIsLoggedInAsPatient(this.httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return M7rAccessControl.assertValidSessionAsPatient(this.httpServletRequest);
             }
 
             @Override
             protected ProgramSO workLoad() throws RESTException {
-                PatientProgramVO patientProgramVO = getPatientHttpSessionAttribute().getPatientProgramVO();
+                M7rAuthorization m7rAuthorization = new M7rAuthorization(this.authorization);
+                PatientProgramVO patientProgramVO = m7rAuthorization.getUserAsPatientAbstract().getPatientProgramVO();
                 ProgramStructure programStructure = obtainProgramStructure(patientProgramVO.getProgramId());
                 FormDataFetcher formDataFetcher = new FormDataFetcherMongo();
                 ProgramSOCreator programSOCreator = new ProgramSOCreator(

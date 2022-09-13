@@ -1,6 +1,6 @@
-package org.mentalizr.backend.security.session.attributes.user;
+package org.mentalizr.backend.accessControl.roles;
 
-import org.mentalizr.backend.security.helper.DisplayName;
+import org.mentalizr.backend.accessControl.helper.DisplayName;
 import org.mentalizr.backend.rest.entities.Patient;
 import org.mentalizr.backend.rest.entities.UserRole;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
@@ -17,14 +17,16 @@ import org.mentalizr.persistence.rdbms.barnacle.vo.UserLoginVO;
 
 import java.io.Serializable;
 
-public abstract class PatientHttpSessionAttribute extends UserHttpSessionAttribute implements Serializable {
+public abstract class PatientAbstract extends M7rUser implements Serializable {
+
+//    public static final String ROLE_NAME = "ABSTRACT_PATIENT";
 
     private final RolePatientVO rolePatientVO;
     private final PatientProgramVO patientProgramVO;
     private final UserLoginVO userLoginVOTherapist;
     private final RoleTherapistVO roleTherapistVO;
 
-    public PatientHttpSessionAttribute(UserLoginCompositeVO userLoginCompositeVO) throws DataSourceException {
+    public PatientAbstract(UserLoginCompositeVO userLoginCompositeVO) throws DataSourceException {
         super(userLoginCompositeVO.getUserVO());
         this.rolePatientVO = userLoginCompositeVO.getRolePatientVO();
         try {
@@ -36,7 +38,7 @@ public abstract class PatientHttpSessionAttribute extends UserHttpSessionAttribu
         }
     }
 
-    public PatientHttpSessionAttribute(UserAccessKeyCompositeVO userAccessKeyCompositeVO, UserLoginCompositeVO userLoginCompositeVOTherapist) throws DataSourceException {
+    public PatientAbstract(UserAccessKeyCompositeVO userAccessKeyCompositeVO, UserLoginCompositeVO userLoginCompositeVOTherapist) throws DataSourceException {
         super(userAccessKeyCompositeVO.getUserVO());
         this.rolePatientVO = userAccessKeyCompositeVO.getRolePatientVO();
         try {

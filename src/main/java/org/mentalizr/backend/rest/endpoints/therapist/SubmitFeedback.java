@@ -1,8 +1,9 @@
 package org.mentalizr.backend.rest.endpoints.therapist;
 
-import org.mentalizr.backend.security.auth.AuthorizationService;
-import org.mentalizr.backend.security.auth.UnauthorizedException;
-import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.roles.Therapist;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.commons.Dates;
@@ -42,8 +43,8 @@ public class SubmitFeedback {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return AuthorizationService.assertIsLoggedInAsTherapist(httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return AccessControl.assertValidSession(Therapist.ROLE_NAME, this.httpServletRequest);
             }
 
             @Override
@@ -67,7 +68,7 @@ public class SubmitFeedback {
 
             @Override
             protected Object workLoad() {
-                String therapistId = getTherapistHttpSessionAttribute().getUserVO().getId();
+                String therapistId = this.authorization.getUserId();
                 FeedbackSO feedbackSO = new FeedbackSO();
                 feedbackSO.setText(feedbackSubmissionSO.getFeedback());
                 feedbackSO.setCreatedTimestamp(Dates.currentTimestampAsISO());

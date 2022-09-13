@@ -1,4 +1,4 @@
-package org.mentalizr.backend.security.helper;
+package org.mentalizr.backend.accessControl.helper;
 
 import de.arthurpicht.utils.core.strings.Strings;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserLoginVO;

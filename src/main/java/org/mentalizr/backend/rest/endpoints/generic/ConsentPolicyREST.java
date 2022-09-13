@@ -1,14 +1,11 @@
 package org.mentalizr.backend.rest.endpoints.generic;
 
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.exceptions.IllegalServiceInputException;
 import org.mentalizr.backend.rest.service.Service;
-import org.mentalizr.backend.security.auth.IntermediateAuthorizationService;
-import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
-import org.mentalizr.backend.utils.PasswordHelper;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
-import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
-import org.mentalizr.persistence.rdbms.edao.UserLoginEDAO;
-import org.mentalizr.persistence.rdbms.utils.Argon2Hash;
 import org.mentalizr.serviceObjects.frontend.application.ChangePasswordSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +17,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import static org.mentalizr.backend.security.auth.AuthorizationService.assertIsLoggedInAsLoginUser;
 
 @Path("v1")
 public class ConsentPolicyREST {
@@ -46,23 +41,26 @@ public class ConsentPolicyREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
-                return IntermediateAuthorizationService.assertIsIntermediate(this.httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return AccessControl.assertIntermediateSession(this.httpServletRequest);
             }
 
             @Override
             protected Object workLoad() throws IllegalServiceInputException, DataSourceException {
 
-                char[] newPassword = changePasswordSO.getPassword().toCharArray();
-                PasswordHelper.checkPasswordSanity(newPassword);
+                // TODO
+                throw new RuntimeException("NIY");
 
-                String hash = Argon2Hash.getHash(newPassword);
-                UserVO userVO = this.userHttpSessionAttribute.getUserVO();
+//                char[] newPassword = changePasswordSO.getPassword().toCharArray();
+//                CredentialsSanity.checkPasswordSanity(newPassword);
+//
+//                String hash = Argon2Hash.getHash(newPassword);
+//                UserVO userVO = this.userHttpSessionAttribute.getUserVO();
+//
+//                UserLoginEDAO.updatePasswordHash(userVO.getId(), hash);
+//                UserLoginEDAO.unsetRenewPasswordRequired(userVO.getId());
 
-                UserLoginEDAO.updatePasswordHash(userVO.getId(), hash);
-                UserLoginEDAO.unsetRenewPasswordRequired(userVO.getId());
-
-                return null;
+//                return null;
             }
         }.call();
 

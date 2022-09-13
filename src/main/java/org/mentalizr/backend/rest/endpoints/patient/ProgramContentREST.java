@@ -1,8 +1,9 @@
 package org.mentalizr.backend.rest.endpoints.patient;
 
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.M7rAccessControl;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
-import org.mentalizr.backend.security.auth.UnauthorizedException;
-import org.mentalizr.backend.security.session.attributes.user.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
@@ -18,8 +19,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.FileInputStream;
 import java.io.IOException;
-
-import static org.mentalizr.backend.security.auth.AuthorizationService.assertIsLoggedInAsPatient;
 
 @Path("v1")
 public class ProgramContentREST {
@@ -41,8 +40,8 @@ public class ProgramContentREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return assertIsLoggedInAsPatient(httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return M7rAccessControl.assertValidSessionAsPatient(this.httpServletRequest);
             }
 
             @Override
@@ -54,13 +53,13 @@ public class ProgramContentREST {
 
             @Override
             protected void updateActivityStatus() {
-                String userId = this.userHttpSessionAttribute.getUserVO().getId();
+                String userId = this.authorization.getUserId();
                 PatientStatusDAO.updateLastContentId(userId, contentId);
             }
 
             @Override
             protected void logLeave() {
-                String userId = this.userHttpSessionAttribute.getUserVO().getId();
+                String userId = this.authorization.getUserId();
                 this.logger.debug("[" + SERVICE_ID + "][" + userId + "][" + contentId + "] completed.");
             }
 

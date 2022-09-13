@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.mentalizr.backend.security.session.attributes.staging.StagingAttribute;
 import org.mentalizr.backend.security.session.attributes.staging.StagingValid;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class StagingValidTestStage {
 
     @Test
