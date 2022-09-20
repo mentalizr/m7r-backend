@@ -1,7 +1,6 @@
 package org.mentalizr.backend.rest.endpoints;
 
 import de.arthurpicht.webAccessControl.auth.*;
-import de.arthurpicht.webAccessControl.session.SessionManager;
 import org.mentalizr.backend.Const;
 import org.mentalizr.backend.rest.entities.factories.SessionStatusFactory;
 import org.mentalizr.backend.utils.HttpSessions;

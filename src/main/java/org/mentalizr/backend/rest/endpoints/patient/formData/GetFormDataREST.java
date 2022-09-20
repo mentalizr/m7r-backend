@@ -50,7 +50,7 @@ public class GetFormDataREST {
 
             @Override
             protected FormDataSO workLoad() {
-                PatientAbstract patientAbstract = (PatientAbstract) this.authorization.getSecurityAttribute().getUser();
+                PatientAbstract patientAbstract = (PatientAbstract) this.authorization.getUser();
                 UserVO userVO = patientAbstract.getUserVO();
 
                 FormDataSO formDataSO = FormDataDAO.obtain(userVO.getId(), contentId);

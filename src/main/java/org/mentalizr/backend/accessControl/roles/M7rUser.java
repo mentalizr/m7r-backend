@@ -1,7 +1,7 @@
 package org.mentalizr.backend.accessControl.roles;
 
 
-import de.arthurpicht.webAccessControl.session.attributes.User;
+import de.arthurpicht.webAccessControl.securityAttribute.User;
 import org.mentalizr.backend.rest.entities.UserRole;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 
@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 public abstract class M7rUser extends User implements Serializable {
 
-//    public static final String USER = "user";
+    private static final long serialVersionUID = -1808172120620092363L;
 
     protected final UserVO userVO;
 

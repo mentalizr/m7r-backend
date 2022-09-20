@@ -1,7 +1,6 @@
 package org.mentalizr.backend.accessControl.roles;
 
-import de.arthurpicht.webAccessControl.session.attributes.User;
-import org.mentalizr.backend.exceptions.InfrastructureException;
+import de.arthurpicht.webAccessControl.securityAttribute.User;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;

@@ -14,6 +14,8 @@ public class PatientAnonymous extends PatientAbstract implements Serializable {
 
     public static final String ROLE_NAME = "ANONYMOUS_PATIENT";
 
+    private static final long serialVersionUID = -6729992745864775758L;
+
     public PatientAnonymous(UserAccessKeyCompositeVO userAccessKeyCompositeVO) throws DataSourceException {
         super(userAccessKeyCompositeVO, getUserLoginCompositeVOTherapist(userAccessKeyCompositeVO));
     }

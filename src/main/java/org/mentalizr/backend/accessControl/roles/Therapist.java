@@ -13,6 +13,7 @@ public class Therapist extends M7rUser implements Serializable {
 
     public static final String ROLE_NAME = "THERAPIST";
 
+    private static final long serialVersionUID = 1958519801529969611L;
 
     private final UserLoginVO userLoginVO;
     private final RoleTherapistVO roleTherapistVO;

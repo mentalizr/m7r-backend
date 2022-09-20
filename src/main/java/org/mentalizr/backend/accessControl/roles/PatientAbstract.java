@@ -19,7 +19,7 @@ import java.io.Serializable;
 
 public abstract class PatientAbstract extends M7rUser implements Serializable {
 
-//    public static final String ROLE_NAME = "ABSTRACT_PATIENT";
+    private static final long serialVersionUID = -1758127595328698137L;
 
     private final RolePatientVO rolePatientVO;
     private final PatientProgramVO patientProgramVO;

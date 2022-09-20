@@ -9,6 +9,8 @@ public class Admin extends M7rUser implements Serializable {
 
     public static final String ROLE_NAME ="ADMIN";
 
+    private static final long serialVersionUID = 8621340531156354740L;
+
     public Admin(UserLoginCompositeVO userLoginCompositeVO) {
         super(userLoginCompositeVO.getUserVO());
     }

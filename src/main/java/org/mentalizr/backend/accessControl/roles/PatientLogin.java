@@ -11,6 +11,7 @@ public class PatientLogin extends PatientAbstract implements Serializable {
 
     public static final String ROLE_NAME = "LOGIN_PATIENT";
 
+    private static final long serialVersionUID = 3076618539521635897L;
 
     private final UserLoginCompositeVO userLoginCompositeVO;
 

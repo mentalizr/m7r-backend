@@ -3,6 +3,8 @@ package org.mentalizr.backend.accessControl;
 import de.arthurpicht.webAccessControl.*;
 import de.arthurpicht.webAccessControl.handler.LoginHandlerAbstractFactory;
 import de.arthurpicht.webAccessControl.handler.RoleRegistry;
+import de.arthurpicht.webAccessControl.sessionManager.SessionManagerAbstractFactory;
+import de.arthurpicht.webAccessControl.sessionManager.SessionManagerFactoryHttp;
 import org.mentalizr.backend.M7rLoginHandlerAbstractFactory;
 import org.mentalizr.backend.accessControl.roles.*;
 import org.slf4j.Logger;
@@ -22,7 +24,9 @@ public class Initializer {
 
         LoginHandlerAbstractFactory loginHandlerAbstractFactory = new M7rLoginHandlerAbstractFactory();
 
-        WACContext WACContext = new WACContext(logger, roleRegistry, loginHandlerAbstractFactory);
+        SessionManagerAbstractFactory sessionManagerAbstractFactory = new SessionManagerFactoryHttp();
+
+        WACContext WACContext = new WACContext(logger, roleRegistry, loginHandlerAbstractFactory, sessionManagerAbstractFactory);
         WACContextRegistry.initialize(WACContext);
     }
 
