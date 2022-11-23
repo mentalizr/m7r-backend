@@ -21,7 +21,7 @@ public abstract class M7rUser extends User implements Serializable {
         return this.userVO;
     }
 
-    public abstract UserRole getUserRole();
+//    public abstract UserRole getUserRole();
 
     public abstract String getDisplayName();
 

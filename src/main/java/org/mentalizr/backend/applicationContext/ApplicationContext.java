@@ -1,5 +1,6 @@
 package org.mentalizr.backend.applicationContext;
 
+import org.mentalizr.backend.accessControl.WACContextInitializer;
 import org.mentalizr.backend.config.BrandingConfiguration;
 import org.mentalizr.backend.config.Configuration;
 import org.mentalizr.backend.config.BrandingConfigurationFactory;
@@ -25,6 +26,7 @@ public class ApplicationContext {
         logger.info("Start ApplicationContext initialization.");
 
         try {
+            WACContextInitializer.init();
             brandingConfiguration = BrandingConfigurationFactory.createProjectConfiguration();
             contentManager = initContentManager();
         } catch (RuntimeException e) {

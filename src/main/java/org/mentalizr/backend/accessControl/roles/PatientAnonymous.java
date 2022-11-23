@@ -43,4 +43,9 @@ public class PatientAnonymous extends PatientAbstract implements Serializable {
     public Patient getPatient() {
         return new Patient(this.userVO);
     }
+
+    @Override
+    public String getRoleName() {
+        return ROLE_NAME;
+    }
 }

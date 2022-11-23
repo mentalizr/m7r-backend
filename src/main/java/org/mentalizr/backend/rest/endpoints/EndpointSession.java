@@ -138,7 +138,7 @@ public class EndpointSession {
             return SessionStatusFactory.getInstanceForIntermediateSession(
                     authorization.getRoleName(),
                     authorization.getSessionId(),
-                    authorization.getNextRequirement());
+                    authorization.getNextRequirement().getName());
         } else if (authorization.isValid()) {
             return SessionStatusFactory.getInstanceForValidSession(
                     authorization.getRoleName(),

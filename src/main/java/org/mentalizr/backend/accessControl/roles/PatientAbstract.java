@@ -70,11 +70,6 @@ public abstract class PatientAbstract extends M7rUser implements Serializable {
         return this.roleTherapistVO;
     }
 
-    @Override
-    public UserRole getUserRole() {
-        return UserRole.PATIENT;
-    }
-
     public abstract Patient getPatient();
 
 }

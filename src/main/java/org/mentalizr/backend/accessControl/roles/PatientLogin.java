@@ -35,4 +35,8 @@ public class PatientLogin extends PatientAbstract implements Serializable {
         return new Patient(this.userLoginCompositeVO);
     }
 
+    @Override
+    public String getRoleName() {
+        return ROLE_NAME;
+    }
 }

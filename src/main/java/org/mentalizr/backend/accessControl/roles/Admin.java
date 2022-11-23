@@ -16,11 +16,6 @@ public class Admin extends M7rUser implements Serializable {
     }
 
     @Override
-    public UserRole getUserRole() {
-        return UserRole.ADMIN;
-    }
-
-    @Override
     public String getDisplayName() {
         return "N.N.";
     }
@@ -28,6 +23,11 @@ public class Admin extends M7rUser implements Serializable {
     @Override
     public int getGender() {
         return 0;
+    }
+
+    @Override
+    public String getRoleName() {
+        return ROLE_NAME;
     }
 
     @Override

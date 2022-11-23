@@ -33,11 +33,6 @@ public class Therapist extends M7rUser implements Serializable {
     }
 
     @Override
-    public UserRole getUserRole() {
-        return UserRole.THERAPIST;
-    }
-
-    @Override
     public String getDisplayName() {
         return DisplayName.obtain(this.userLoginVO, this.roleTherapistVO);
     }
@@ -49,6 +44,11 @@ public class Therapist extends M7rUser implements Serializable {
 
     public String getTitle() {
         return this.roleTherapistVO.getTitle();
+    }
+
+    @Override
+    public String getRoleName() {
+        return ROLE_NAME;
     }
 
     @Override

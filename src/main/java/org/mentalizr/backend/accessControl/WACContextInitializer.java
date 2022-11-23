@@ -10,7 +10,7 @@ import org.mentalizr.backend.accessControl.roles.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Initializer {
+public class WACContextInitializer {
 
     public static void init() {
         Logger logger = LoggerFactory.getLogger("auth");
@@ -22,13 +22,17 @@ public class Initializer {
                 .add(Therapist.ROLE_NAME, Therapist.class)
                 .build();
 
-        LoginHandlerAbstractFactory loginHandlerAbstractFactory = new M7rLoginHandlerAbstractFactory();
+        LoginHandlerAbstractFactory loginHandlerAbstractFactory
+                = new M7rLoginHandlerAbstractFactory();
 
-        SessionManagerAbstractFactory sessionManagerAbstractFactory = new SessionManagerFactoryHttp();
+        SessionManagerAbstractFactory sessionManagerAbstractFactory
+                = new SessionManagerFactoryHttp();
 
-        WACContext WACContext = new WACContext(logger, roleRegistry, loginHandlerAbstractFactory, sessionManagerAbstractFactory);
+        WACContext WACContext
+                = new WACContext(logger, roleRegistry, loginHandlerAbstractFactory, sessionManagerAbstractFactory);
+
         WACContextRegistry.initialize(WACContext);
-    }
 
+    }
 
 }
