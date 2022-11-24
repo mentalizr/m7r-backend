@@ -124,9 +124,6 @@ public class EndpointSession {
     public SessionStatusSO sessionStatus(@Context HttpServletRequest httpServletRequest) {
         logger.debug("[sessionStatus]");
 
-//        if (!SessionManager.hasSessionInAnyStaging(httpServletRequest))
-//            return SessionStatusFactory.getInstanceForInvalidSession();
-
         Authorization authorization;
         try {
             authorization = new Authorization(httpServletRequest);
@@ -144,29 +141,6 @@ public class EndpointSession {
                     authorization.getRoleName(),
                     authorization.getSessionId());
         }
-
-//        if (SessionManager.hasIntermediateSession(httpServletRequest)) {
-//            IntermediateAuthentication intermediateAuthentication;
-//            try {
-//                intermediateAuthentication = new IntermediateAuthentication(httpServletRequest);
-//            } catch (UnauthorizedException e) {
-//                throw new IllegalStateException("Session expected to be staged as INTERMEDIATE.");
-//            }
-//            return SessionStatusFactory.getInstanceForIntermediateSession(
-//                    intermediateAuthentication.getRoleName(),
-//                    intermediateAuthentication.getSessionId(),
-//                    intermediateAuthentication.getNextRequirement());
-//        }
-//
-//        if (SessionManager.hasValidSession(httpServletRequest)) {
-//            try {
-//                Authentication authentication = new Authentication(httpServletRequest);
-//                String sessionId = authentication.getSessionId();
-//                return SessionStatusFactory.getInstanceForValidSession(authentication.getRoleName(), sessionId);
-//            } catch (UnauthorizedException e) {
-//                throw new IllegalStateException("Session expected to be staged as VALID.");
-//            }
-//        }
 
         throw new IllegalStateException("Inconsistent session state.");
     }
