@@ -41,7 +41,7 @@ public class ProgramContentREST {
 
             @Override
             protected Authorization checkSecurityConstraints() throws UnauthorizedException {
-                return M7rAccessControl.assertValidSessionAsPatient(this.httpServletRequest);
+                return M7rAccessControl.assertValidSessionAsPatientAbstract(this.httpServletRequest);
             }
 
             @Override

@@ -36,14 +36,14 @@ public class AppConfigREST {
 
             @Override
             protected Authorization checkSecurityConstraints() throws UnauthorizedException {
-                return M7rAccessControl.assertValidSessionAsPatient(this.httpServletRequest);
+                return M7rAccessControl.assertValidSessionAsPatientAbstract(this.httpServletRequest);
             }
 
             @Override
             protected ApplicationConfigPatientSO workLoad() {
                 BrandingConfiguration brandingConfiguration = ApplicationContext.getBrandingConfiguration();
                 M7rAuthorization m7rAuthorization = new M7rAuthorization(this.authorization);
-                String programId = m7rAuthorization.getUserAsPatientAnonymous().getPatientProgramVO().getProgramId();
+                String programId = m7rAuthorization.getUserAsPatientAbstract().getPatientProgramVO().getProgramId();
                 return brandingConfiguration.getApplicationConfigPatientSO(programId);
             }
 

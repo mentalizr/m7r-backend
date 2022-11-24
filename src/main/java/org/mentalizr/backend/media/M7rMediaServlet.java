@@ -1,7 +1,6 @@
 package org.mentalizr.backend.media;
 
 import de.arthurpicht.utils.core.strings.Strings;
-import de.arthurpicht.webAccessControl.auth.AccessControl;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.M7rAccessControl;
@@ -21,11 +20,13 @@ import java.nio.file.Path;
 
 public class M7rMediaServlet extends MediaServlet {
 
+    private static final long serialVersionUID = 8738566128735601223L;
+
     @Override
     public Path getMediaPath(HttpServletRequest httpServletRequest) throws ProcessException {
         Authorization authorization;
         try {
-            authorization = M7rAccessControl.assertValidSessionAsPatient(httpServletRequest);
+            authorization = M7rAccessControl.assertValidSessionAsPatientAbstract(httpServletRequest);
         } catch (UnauthorizedException e) {
             throw new ProcessException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized access.");
         }

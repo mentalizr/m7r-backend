@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public class M7rAccessControl {
 
-    public static Authorization assertValidSessionAsPatient(HttpServletRequest httpServletRequest)
+    public static Authorization assertValidSessionAsPatientAbstract(HttpServletRequest httpServletRequest)
             throws UnauthorizedException {
         return AccessControl.assertValidSession(
                 Sets.newHashSet(PatientAnonymous.ROLE_NAME, PatientLogin.ROLE_NAME), httpServletRequest);

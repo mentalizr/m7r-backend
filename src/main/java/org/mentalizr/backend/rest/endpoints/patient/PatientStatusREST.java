@@ -3,7 +3,6 @@ package org.mentalizr.backend.rest.endpoints.patient;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.M7rAccessControl;
-import org.mentalizr.backend.accessControl.M7rAuthorization;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.patientStatus.PatientStatusDAO;
 import org.mentalizr.serviceObjects.frontend.patient.PatientStatusSO;
@@ -35,7 +34,7 @@ public class PatientStatusREST {
 
             @Override
             protected Authorization checkSecurityConstraints() throws UnauthorizedException {
-                return M7rAccessControl.assertValidSessionAsPatient(this.httpServletRequest);
+                return M7rAccessControl.assertValidSessionAsPatientAbstract(this.httpServletRequest);
             }
 
             @Override
