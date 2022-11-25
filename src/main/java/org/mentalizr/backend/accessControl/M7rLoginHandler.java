@@ -7,6 +7,7 @@ import de.arthurpicht.webAccessControl.securityAttribute.User;
 import de.arthurpicht.webAccessControl.securityAttribute.requirements.Requirements;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
+import org.mentalizr.backend.accessControl.roles.PatientAnonymous;
 import org.mentalizr.backend.accessControl.roles.UserFactory;
 import org.mentalizr.backend.utils.CredentialsSanity;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
@@ -23,51 +24,92 @@ public class M7rLoginHandler extends LoginHandler {
         try {
             CredentialsSanity.checkUsernameSanity(username);
             CredentialsSanity.checkPasswordSanity(password);
+            UserLoginCompositeVO userLoginCompositeVO = obtainUserLoginCompositeVOByUsername(username);
+
+            checkPasswordHash(userLoginCompositeVO, password);
+
+            User user = UserFactory.createLoginUserForRole(userLoginCompositeVO);
+            Requirements requirements = RequirementsFactory.createRequirements(userLoginCompositeVO);
+
+            return new SecurityAttribute(user, requirements);
+
         } catch (CredentialsSanity.BadCredentialsException e) {
             throw new UnauthorizedException(e.getMessage(), e);
+        } catch (EntityNotFoundException e) {
+            throw new UnauthorizedException("[" + username + "] Login rejected. UserLogin unknown.");
         }
-        UserLoginCompositeVO userLoginCompositeVO = obtainUserLoginCompositeVO(username);
 
-        checkPasswordHash(userLoginCompositeVO, password);
-
-        User user = UserFactory.createUserForRole(userLoginCompositeVO);
-        Requirements requirements = RequirementsFactory.createRequirements(userLoginCompositeVO);
-
-        return new SecurityAttribute(user, requirements);
     }
 
     public SecurityAttribute checkCredentials(String accessKey) throws UnauthorizedException {
-
         try {
             CredentialsSanity.checkUsernameSanity(accessKey);
+            UserAccessKeyCompositeVO userAccessKeyCompositeVO = obtainUserAccessKeyCompositeVOByAccessKey(accessKey);
+
+            User user = UserFactory.createAnonymousUser(userAccessKeyCompositeVO);
+            Requirements requirements = RequirementsFactory.createRequirements(userAccessKeyCompositeVO);
+
+            return new SecurityAttribute(user, requirements);
+
+        } catch (EntityNotFoundException e) {
+            throw new UnauthorizedException("Login by access key [" + accessKey + "] rejected. Unrecognized.");
         } catch (CredentialsSanity.BadCredentialsException e) {
             throw new UnauthorizedException(e.getMessage(), e);
         }
-        UserAccessKeyCompositeVO userAccessKeyCompositeVO = obtainUserAccessKeyCompositeVO(accessKey);
-
-        User user = UserFactory.createUserSessionForAccessKeyUser(userAccessKeyCompositeVO);
-        Requirements requirements = RequirementsFactory.createRequirements(userAccessKeyCompositeVO);
-
-        return new SecurityAttribute(user, requirements);
     }
 
-    private static UserLoginCompositeVO obtainUserLoginCompositeVO(String username) throws UnauthorizedException {
+    @Override
+    public SecurityAttribute refreshSecurityAttribute(SecurityAttribute securityAttribute) {
+
+        String userId = securityAttribute.getUser().getUserId();
+        User user;
+        Requirements requirements;
+
+        try {
+            if (securityAttribute.isInRole(PatientAnonymous.class)) {
+                UserAccessKeyCompositeVO userAccessKeyCompositeVO = obtainUserAccessKeyCompositeVOByUserId(userId);
+                user = UserFactory.createAnonymousUser(userAccessKeyCompositeVO);
+                requirements = RequirementsFactory.createRequirements(userAccessKeyCompositeVO);
+            } else {
+                UserLoginCompositeVO loginCompositeVO = obtainUserLoginCompositeVOByUserId(userId);
+                user = UserFactory.createLoginUserForRole(loginCompositeVO);
+                requirements = RequirementsFactory.createRequirements(loginCompositeVO);
+            }
+            return new SecurityAttribute(user, requirements);
+        } catch (EntityNotFoundException e) {
+            throw new IllegalStateException("Unknown userId [" + userId + "].");
+        }
+    }
+
+    private static UserLoginCompositeVO obtainUserLoginCompositeVOByUsername(String username) throws EntityNotFoundException {
         try {
             return UserLoginCompositeDAO.findByUk_username(username);
         } catch (DataSourceException e) {
             throw new RuntimeException(e);
-        } catch (EntityNotFoundException e) {
-            throw new UnauthorizedException("[" + username + "] Login rejected. UserLogin unknown.");
         }
     }
 
-    private static UserAccessKeyCompositeVO obtainUserAccessKeyCompositeVO(String accessKey) throws UnauthorizedException {
+    private static UserLoginCompositeVO obtainUserLoginCompositeVOByUserId(String userId) throws EntityNotFoundException {
+        try {
+            return UserLoginCompositeDAO.load(userId);
+        } catch (DataSourceException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static UserAccessKeyCompositeVO obtainUserAccessKeyCompositeVOByAccessKey(String accessKey) throws EntityNotFoundException {
         try {
             return UserAccessKeyCompositeDAO.findByAccessKey(accessKey);
         } catch (DataSourceException e) {
             throw new RuntimeException(e);
-        } catch (EntityNotFoundException e) {
-            throw new UnauthorizedException("Login by access key [" + accessKey + "] rejected. Unrecognized.");
+        }
+    }
+
+    private static UserAccessKeyCompositeVO obtainUserAccessKeyCompositeVOByUserId(String userId) throws EntityNotFoundException {
+        try {
+            return UserAccessKeyCompositeDAO.load(userId);
+        } catch (DataSourceException e) {
+            throw new RuntimeException(e);
         }
     }
 

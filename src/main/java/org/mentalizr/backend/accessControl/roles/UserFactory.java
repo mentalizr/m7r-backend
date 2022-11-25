@@ -7,7 +7,7 @@ import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
 
 public class UserFactory {
 
-    public static User createUserForRole(UserLoginCompositeVO userLoginCompositeVO) {
+    public static User createLoginUserForRole(UserLoginCompositeVO userLoginCompositeVO) {
         try {
             if (userLoginCompositeVO.isInRolePatient()) {
                 return new PatientLogin(userLoginCompositeVO);
@@ -23,7 +23,7 @@ public class UserFactory {
         }
     }
 
-    public static User createUserSessionForAccessKeyUser(UserAccessKeyCompositeVO userAccessKeyCompositeVO) {
+    public static User createAnonymousUser(UserAccessKeyCompositeVO userAccessKeyCompositeVO) {
         try {
             return new PatientAnonymous(userAccessKeyCompositeVO);
         } catch (DataSourceException e) {

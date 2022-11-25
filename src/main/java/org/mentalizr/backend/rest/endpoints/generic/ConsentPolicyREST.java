@@ -3,9 +3,15 @@ package org.mentalizr.backend.rest.endpoints.generic;
 import de.arthurpicht.webAccessControl.auth.AccessControl;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
-import org.mentalizr.backend.exceptions.IllegalServiceInputException;
+import de.arthurpicht.webAccessControl.securityAttribute.requirements.PolicyConsentRequirement;
+import de.arthurpicht.webAccessControl.securityAttribute.requirements.Requirement;
+import org.mentalizr.backend.accessControl.RequirementsFulfill;
+import org.mentalizr.backend.accessControl.roles.M7rUser;
 import org.mentalizr.backend.rest.service.Service;
+import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
+import org.mentalizr.persistence.rdbms.barnacle.dao.UserDAO;
+import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.serviceObjects.frontend.application.ChangePasswordSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,21 +52,26 @@ public class ConsentPolicyREST {
             }
 
             @Override
-            protected Object workLoad() throws IllegalServiceInputException, DataSourceException {
+            protected void checkPreconditions() throws ServicePreconditionFailedException {
+                Requirement requirement = this.authorization.getNextRequirement();
+                if (!(requirement instanceof PolicyConsentRequirement))
+                    throw new ServicePreconditionFailedException("Inconsistency check failed. Staging does not " +
+                            "require policy consent.");
 
-                // TODO
-                throw new RuntimeException("NIY");
+                M7rUser m7rUser = (M7rUser) this.authorization.getUser();
+                UserVO userVO = m7rUser.getUserVO();
+                if (userVO.getPolicyConsent() != null && userVO.getPolicyConsent() > 0)
+                    throw new ServicePreconditionFailedException("Inconsistency check failed. " +
+                            "Policy consent already done.");
 
-//                char[] newPassword = changePasswordSO.getPassword().toCharArray();
-//                CredentialsSanity.checkPasswordSanity(newPassword);
-//
-//                String hash = Argon2Hash.getHash(newPassword);
-//                UserVO userVO = this.userHttpSessionAttribute.getUserVO();
-//
-//                UserLoginEDAO.updatePasswordHash(userVO.getId(), hash);
-//                UserLoginEDAO.unsetRenewPasswordRequired(userVO.getId());
+            }
 
-//                return null;
+            @Override
+            protected Object workLoad() throws DataSourceException {
+                M7rUser m7rUser = (M7rUser) this.authorization.getUser();
+                RequirementsFulfill.policyConsent(m7rUser);
+                AccessControl.updateSession(this.httpServletRequest);
+                return null;
             }
         }.call();
 
