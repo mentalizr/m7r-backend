@@ -1,5 +1,6 @@
 package org.mentalizr.backend.accessControl;
 
+import de.arthurpicht.webAccessControl.WACContextRegistry;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import de.arthurpicht.webAccessControl.handler.LoginHandler;
 import de.arthurpicht.webAccessControl.securityAttribute.SecurityAttribute;
@@ -16,11 +17,20 @@ import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserAccessKeyComposit
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserLoginCompositeDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
+import org.slf4j.Logger;
 
 public class M7rLoginHandler extends LoginHandler {
 
-    public SecurityAttribute checkCredentials(String username, char[] password) throws UnauthorizedException {
+    private static final Logger authLogger = WACContextRegistry.getContext().getLogger();
 
+    private static class BadPasswordHash extends Exception {
+        private static final long serialVersionUID = -5562282437669888157L;
+        public BadPasswordHash(String message) {
+            super(message);
+        }
+    }
+
+    public SecurityAttribute checkCredentials(String username, char[] password) throws UnauthorizedException {
         try {
             CredentialsSanity.checkUsernameSanity(username);
             CredentialsSanity.checkPasswordSanity(password);
@@ -34,11 +44,16 @@ public class M7rLoginHandler extends LoginHandler {
             return new SecurityAttribute(user, requirements);
 
         } catch (CredentialsSanity.BadCredentialsException e) {
+            authLogger.warn(e.getMessage());
             throw new UnauthorizedException(e.getMessage(), e);
         } catch (EntityNotFoundException e) {
-            throw new UnauthorizedException("[" + username + "] Login rejected. UserLogin unknown.");
+            String message = "[" + username + "] Login rejected. UserLogin unknown.";
+            authLogger.warn(message);
+            throw new UnauthorizedException(message);
+        } catch (BadPasswordHash e) {
+            authLogger.warn(e.getMessage());
+            throw new UnauthorizedException(e);
         }
-
     }
 
     public SecurityAttribute checkCredentials(String accessKey) throws UnauthorizedException {
@@ -52,8 +67,11 @@ public class M7rLoginHandler extends LoginHandler {
             return new SecurityAttribute(user, requirements);
 
         } catch (EntityNotFoundException e) {
-            throw new UnauthorizedException("Login by access key [" + accessKey + "] rejected. Unrecognized.");
+            String message = "Login by access key [" + accessKey + "] rejected. Unrecognized.";
+            authLogger.warn(message);
+            throw new UnauthorizedException(message);
         } catch (CredentialsSanity.BadCredentialsException e) {
+            authLogger.warn(e.getMessage());
             throw new UnauthorizedException(e.getMessage(), e);
         }
     }
@@ -113,11 +131,11 @@ public class M7rLoginHandler extends LoginHandler {
         }
     }
 
-    private static void checkPasswordHash(UserLoginCompositeVO userLoginCompositeVO, char[] password) throws UnauthorizedException {
+    private static void checkPasswordHash(UserLoginCompositeVO userLoginCompositeVO, char[] password) throws BadPasswordHash {
         Argon2 argon2 = Argon2Factory.create();
         try {
             if (!argon2.verify(userLoginCompositeVO.getUserLoginVO().getPasswordHash(), password)) {
-                throw new UnauthorizedException(
+                throw new BadPasswordHash(
                         "[" + userLoginCompositeVO.getUserLoginVO().getUsername() + "] login rejected. Wrong password."
                 );
             }

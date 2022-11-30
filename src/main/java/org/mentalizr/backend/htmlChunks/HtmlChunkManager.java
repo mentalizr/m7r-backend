@@ -37,6 +37,8 @@ public class HtmlChunkManager {
 
         if (chunkName.equals(HtmlChunkLoginVoucher.NAME)) return getLoginVoucherChunk();
 
+        if (chunkName.equals(HtmlChunkPolicy.NAME)) return getPolicyChunk();
+
         Authorization authorization = AccessControl.assertValidSessionForAnyRole(this.httpServletRequest);
         String roleName = authorization.getRoleName();
 
@@ -74,6 +76,10 @@ public class HtmlChunkManager {
 
     private InputStream getLoginVoucherChunk() throws IOException {
         return this.htmlChunkRegistry.getChunk(HtmlChunkLoginVoucher.NAME).asInputStream();
+    }
+
+    private InputStream getPolicyChunk() throws IOException {
+        return this.htmlChunkRegistry.getChunk(HtmlChunkPolicy.NAME).asInputStream();
     }
 
 }
