@@ -1,8 +1,7 @@
 package org.mentalizr.backend.htmlChunks;
 
 import org.mentalizr.backend.applicationContext.ApplicationContext;
-import org.mentalizr.backend.config.BrandingConfiguration;
-import org.mentalizr.backend.config.Configuration;
+import org.mentalizr.backend.config.instance.InstanceConfiguration;
 
 import javax.servlet.ServletContext;
 import java.io.IOException;
@@ -29,8 +28,8 @@ public class HtmlChunkInit extends HtmlChunk {
     public String modifyChunk(String chunk) {
         HtmlChunkModifierInit htmlChunkModifierInit = new HtmlChunkModifierInit(chunk);
 
-        BrandingConfiguration brandingConfiguration = ApplicationContext.getBrandingConfiguration();
-        String titel = brandingConfiguration.getApplicationConfigGenericSO().getTitle();
+        InstanceConfiguration instanceConfiguration = ApplicationContext.getBrandingConfiguration();
+        String titel = instanceConfiguration.getApplicationConfigGenericSO().getTitle();
         htmlChunkModifierInit.addTitle(titel);
 
         return htmlChunkModifierInit.getModifiedChunk();

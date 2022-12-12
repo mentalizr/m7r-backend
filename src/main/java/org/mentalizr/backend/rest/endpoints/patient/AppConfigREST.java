@@ -5,7 +5,7 @@ import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.M7rAccessControl;
 import org.mentalizr.backend.accessControl.M7rAuthorization;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
-import org.mentalizr.backend.config.BrandingConfiguration;
+import org.mentalizr.backend.config.instance.InstanceConfiguration;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.serviceObjects.frontend.patient.ApplicationConfigPatientSO;
 
@@ -41,10 +41,10 @@ public class AppConfigREST {
 
             @Override
             protected ApplicationConfigPatientSO workLoad() {
-                BrandingConfiguration brandingConfiguration = ApplicationContext.getBrandingConfiguration();
+                InstanceConfiguration instanceConfiguration = ApplicationContext.getBrandingConfiguration();
                 M7rAuthorization m7rAuthorization = new M7rAuthorization(this.authorization);
                 String programId = m7rAuthorization.getUserAsPatientAbstract().getPatientProgramVO().getProgramId();
-                return brandingConfiguration.getApplicationConfigPatientSO(programId);
+                return instanceConfiguration.getApplicationConfigPatientSO(programId);
             }
 
         }.call();

@@ -5,7 +5,7 @@ import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Therapist;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
-import org.mentalizr.backend.config.BrandingConfiguration;
+import org.mentalizr.backend.config.instance.InstanceConfiguration;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.serviceObjects.frontend.therapist.ApplicationConfigTherapistSO;
 
@@ -42,8 +42,8 @@ public class AppConfigREST {
 
             @Override
             protected ApplicationConfigTherapistSO workLoad() {
-                BrandingConfiguration brandingConfiguration = ApplicationContext.getBrandingConfiguration();
-                return brandingConfiguration.getApplicationConfigTherapistSO();
+                InstanceConfiguration instanceConfiguration = ApplicationContext.getBrandingConfiguration();
+                return instanceConfiguration.getApplicationConfigTherapistSO();
             }
 
         }.call();

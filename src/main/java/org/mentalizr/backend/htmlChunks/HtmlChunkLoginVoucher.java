@@ -1,7 +1,7 @@
 package org.mentalizr.backend.htmlChunks;
 
 import org.mentalizr.backend.applicationContext.ApplicationContext;
-import org.mentalizr.backend.config.BrandingConfiguration;
+import org.mentalizr.backend.config.instance.InstanceConfiguration;
 
 import javax.servlet.ServletContext;
 import java.io.IOException;
@@ -26,8 +26,8 @@ public class HtmlChunkLoginVoucher extends HtmlChunk {
 
     @Override
     public String modifyChunk(String chunk) {
-        BrandingConfiguration brandingConfiguration = ApplicationContext.getBrandingConfiguration();
-        String logo = brandingConfiguration.getApplicationConfigGenericSO().getLogo();
+        InstanceConfiguration instanceConfiguration = ApplicationContext.getBrandingConfiguration();
+        String logo = instanceConfiguration.getApplicationConfigGenericSO().getLogo();
         HtmlChunkModifierLogin htmlChunkModifierLogin = new HtmlChunkModifierLogin(chunk);
         htmlChunkModifierLogin.addLogo(logo);
         return htmlChunkModifierLogin.getModifiedChunk();

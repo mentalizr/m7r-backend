@@ -1,9 +1,8 @@
 package org.mentalizr.backend.front;
 
 import org.mentalizr.backend.applicationContext.ApplicationContext;
-import org.mentalizr.backend.config.BrandingConfiguration;
-import org.mentalizr.backend.config.Configuration;
-import org.mentalizr.backend.config.DefaultLoginScreen;
+import org.mentalizr.backend.config.instance.InstanceConfiguration;
+import org.mentalizr.backend.config.instance.DefaultLoginScreen;
 import org.mentalizr.backend.htmlChunks.*;
 import org.mentalizr.serviceObjects.frontend.application.ApplicationConfigGenericSO;
 import org.slf4j.Logger;
@@ -16,6 +15,7 @@ import java.io.IOException;
 
 public class FrontControllerServlet extends HttpServlet {
 
+    private static final long serialVersionUID = 6075496058761817700L;
     private static final Logger logger = LoggerFactory.getLogger(FrontControllerServlet.class);
 
     @Override
@@ -28,8 +28,8 @@ public class FrontControllerServlet extends HttpServlet {
         HtmlChunkRegistry htmlChunkRegistry = new HtmlChunkRegistry(httpServletRequest.getServletContext());
         String initChunk = htmlChunkRegistry.getChunk(HtmlChunkInit.NAME).asString();
 
-        BrandingConfiguration brandingConfiguration = ApplicationContext.getBrandingConfiguration();
-        ApplicationConfigGenericSO applicationConfigGenericSO = brandingConfiguration.getApplicationConfigGenericSO();
+        InstanceConfiguration instanceConfiguration = ApplicationContext.getBrandingConfiguration();
+        ApplicationConfigGenericSO applicationConfigGenericSO = instanceConfiguration.getApplicationConfigGenericSO();
         DefaultLoginScreen defaultLoginScreen = new DefaultLoginScreen(applicationConfigGenericSO.getDefaultLoginScreen());
         HtmlChunkModifierInit htmlChunkModifierInit = new HtmlChunkModifierInit(initChunk);
         if (defaultLoginScreen.isAccessKey()) {
