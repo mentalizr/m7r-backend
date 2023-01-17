@@ -28,7 +28,7 @@ public class FrontControllerServlet extends HttpServlet {
         HtmlChunkRegistry htmlChunkRegistry = new HtmlChunkRegistry(httpServletRequest.getServletContext());
         String initChunk = htmlChunkRegistry.getChunk(HtmlChunkInit.NAME).asString();
 
-        InstanceConfiguration instanceConfiguration = ApplicationContext.getBrandingConfiguration();
+        InstanceConfiguration instanceConfiguration = ApplicationContext.getInstanceConfiguration();
         ApplicationConfigGenericSO applicationConfigGenericSO = instanceConfiguration.getApplicationConfigGenericSO();
         DefaultLoginScreen defaultLoginScreen = new DefaultLoginScreen(applicationConfigGenericSO.getDefaultLoginScreen());
         HtmlChunkModifierInit htmlChunkModifierInit = new HtmlChunkModifierInit(initChunk);

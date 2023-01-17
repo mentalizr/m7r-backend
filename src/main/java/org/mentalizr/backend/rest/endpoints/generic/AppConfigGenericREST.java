@@ -38,7 +38,7 @@ public class AppConfigGenericREST {
 
             @Override
             protected ApplicationConfigGenericSO workLoad() {
-                InstanceConfiguration instanceConfiguration = ApplicationContext.getBrandingConfiguration();
+                InstanceConfiguration instanceConfiguration = ApplicationContext.getInstanceConfiguration();
                 return instanceConfiguration.getApplicationConfigGenericSO();
             }
 

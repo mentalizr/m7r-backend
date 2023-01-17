@@ -42,7 +42,7 @@ public class AppConfigREST {
 
             @Override
             protected ApplicationConfigTherapistSO workLoad() {
-                InstanceConfiguration instanceConfiguration = ApplicationContext.getBrandingConfiguration();
+                InstanceConfiguration instanceConfiguration = ApplicationContext.getInstanceConfiguration();
                 return instanceConfiguration.getApplicationConfigTherapistSO();
             }
 

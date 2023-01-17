@@ -4,6 +4,7 @@ import org.mentalizr.backend.accessControl.WACContextInitializer;
 import org.mentalizr.backend.config.instance.InstanceConfiguration;
 import org.mentalizr.backend.config.instance.InstanceConfigurationFactory;
 import org.mentalizr.commons.paths.container.TomcatContainerContentDir;
+import org.mentalizr.commons.paths.host.hostDir.M7rHostPolicyDir;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ public class ApplicationContext {
     private static final Logger logger = LoggerFactory.getLogger(ApplicationContext.class);
     private static InstanceConfiguration instanceConfiguration;
     private static ContentManager contentManager;
+    private static PolicyCache policyCache;
     private static boolean isInitialized = false;
 
     public static void initialize() {
@@ -27,6 +29,7 @@ public class ApplicationContext {
         try {
             WACContextInitializer.init();
             instanceConfiguration = InstanceConfigurationFactory.createProjectConfigurationFromClasspath();
+            policyCache = PolicyCache.createInstance(instanceConfiguration);
             contentManager = initContentManager();
         } catch (RuntimeException e) {
             logger.error("Initialization failed: " + e.getMessage());
@@ -46,7 +49,7 @@ public class ApplicationContext {
         }
     }
 
-    public static InstanceConfiguration getBrandingConfiguration() {
+    public static InstanceConfiguration getInstanceConfiguration() {
         if (!isInitialized) throw new IllegalStateException("ApplicationContext not yet initialized.");
         return instanceConfiguration;
     }
@@ -54,6 +57,11 @@ public class ApplicationContext {
     public static ContentManager getContentManager() {
         if (!isInitialized) throw new IllegalStateException("ApplicationContext not yet initialized.");
         return contentManager;
+    }
+
+    public static PolicyCache getPolicyCache() {
+        if (!isInitialized) throw new IllegalStateException("ApplicationContext not yet initialized.");
+        return policyCache;
     }
 
 }

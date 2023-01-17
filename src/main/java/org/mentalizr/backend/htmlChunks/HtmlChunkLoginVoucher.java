@@ -26,7 +26,7 @@ public class HtmlChunkLoginVoucher extends HtmlChunk {
 
     @Override
     public String modifyChunk(String chunk) {
-        InstanceConfiguration instanceConfiguration = ApplicationContext.getBrandingConfiguration();
+        InstanceConfiguration instanceConfiguration = ApplicationContext.getInstanceConfiguration();
         String logo = instanceConfiguration.getApplicationConfigGenericSO().getLogo();
         HtmlChunkModifierLogin htmlChunkModifierLogin = new HtmlChunkModifierLogin(chunk);
         htmlChunkModifierLogin.addLogo(logo);

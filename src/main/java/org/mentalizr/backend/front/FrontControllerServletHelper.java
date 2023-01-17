@@ -7,7 +7,7 @@ import org.mentalizr.backend.htmlChunks.HtmlChunkModifierInit;
 public class FrontControllerServletHelper {
 
     public static void addTitle(HtmlChunkModifierInit htmlChunkModifierInit) {
-        InstanceConfiguration instanceConfiguration = ApplicationContext.getBrandingConfiguration();
+        InstanceConfiguration instanceConfiguration = ApplicationContext.getInstanceConfiguration();
         String titel = instanceConfiguration.getApplicationConfigGenericSO().getTitle();
         htmlChunkModifierInit.addTitle(titel);
     }

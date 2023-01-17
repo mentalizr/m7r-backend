@@ -41,7 +41,7 @@ public class AppConfigREST {
 
             @Override
             protected ApplicationConfigPatientSO workLoad() {
-                InstanceConfiguration instanceConfiguration = ApplicationContext.getBrandingConfiguration();
+                InstanceConfiguration instanceConfiguration = ApplicationContext.getInstanceConfiguration();
                 M7rAuthorization m7rAuthorization = new M7rAuthorization(this.authorization);
                 String programId = m7rAuthorization.getUserAsPatientAbstract().getPatientProgramVO().getProgramId();
                 return instanceConfiguration.getApplicationConfigPatientSO(programId);

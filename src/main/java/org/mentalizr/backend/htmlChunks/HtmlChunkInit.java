@@ -28,7 +28,7 @@ public class HtmlChunkInit extends HtmlChunk {
     public String modifyChunk(String chunk) {
         HtmlChunkModifierInit htmlChunkModifierInit = new HtmlChunkModifierInit(chunk);
 
-        InstanceConfiguration instanceConfiguration = ApplicationContext.getBrandingConfiguration();
+        InstanceConfiguration instanceConfiguration = ApplicationContext.getInstanceConfiguration();
         String titel = instanceConfiguration.getApplicationConfigGenericSO().getTitle();
         htmlChunkModifierInit.addTitle(titel);
 
