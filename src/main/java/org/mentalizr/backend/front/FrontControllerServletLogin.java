@@ -1,6 +1,5 @@
 package org.mentalizr.backend.front;
 
-import org.mentalizr.backend.htmlChunks.producer.InitChunkProducer;
 import org.mentalizr.backend.htmlChunks.producer.InitLoginHtmlChunkProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
