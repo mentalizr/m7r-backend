@@ -1,10 +1,6 @@
-package org.mentalizr.backend.htmlChunks;
+package org.mentalizr.backend.htmlChunks.modifier;
 
-public class HtmlChunkModifierInit extends HtmlChunkModifier{
-
-    public HtmlChunkModifierInit(String chunk) {
-        super(chunk);
-    }
+public class InitHtmlChunkModifier extends HtmlChunkModifier{
 
     public void addEntry(String chunkName) {
         this.chunk = this.chunk.replace(

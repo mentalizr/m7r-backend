@@ -1,9 +1,11 @@
 package org.mentalizr.backend.front;
 
 import org.mentalizr.backend.applicationContext.ApplicationContext;
-import org.mentalizr.backend.config.instance.InstanceConfiguration;
 import org.mentalizr.backend.config.instance.DefaultLoginScreen;
-import org.mentalizr.backend.htmlChunks.*;
+import org.mentalizr.backend.config.instance.InstanceConfiguration;
+import org.mentalizr.backend.htmlChunks.producer.InitHtmlChunkProducer;
+import org.mentalizr.backend.htmlChunks.producer.InitLoginHtmlChunkProducer;
+import org.mentalizr.backend.htmlChunks.producer.InitLoginVoucherHtmlChunkProducer;
 import org.mentalizr.serviceObjects.frontend.application.ApplicationConfigGenericSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,20 +27,22 @@ public class FrontControllerServlet extends HttpServlet {
 
         httpServletResponse.setContentType("text/html");
 
-        HtmlChunkRegistry htmlChunkRegistry = new HtmlChunkRegistry(httpServletRequest.getServletContext());
-        String initChunk = htmlChunkRegistry.getChunk(HtmlChunkInit.NAME).asString();
-
         InstanceConfiguration instanceConfiguration = ApplicationContext.getInstanceConfiguration();
         ApplicationConfigGenericSO applicationConfigGenericSO = instanceConfiguration.getApplicationConfigGenericSO();
         DefaultLoginScreen defaultLoginScreen = new DefaultLoginScreen(applicationConfigGenericSO.getDefaultLoginScreen());
-        HtmlChunkModifierInit htmlChunkModifierInit = new HtmlChunkModifierInit(initChunk);
+
+        InitHtmlChunkProducer initHtmlChunkProducer;
         if (defaultLoginScreen.isAccessKey()) {
-            htmlChunkModifierInit.addEntry(HtmlChunkLoginVoucher.NAME);
+            initHtmlChunkProducer = new InitLoginVoucherHtmlChunkProducer();
+        } else if (defaultLoginScreen.isLogin()) {
+            initHtmlChunkProducer = new InitLoginHtmlChunkProducer();
         } else {
-            htmlChunkModifierInit.addEntry(HtmlChunkLogin.NAME);
+            throw new IllegalStateException("Unknown defaultLoginScreen: [" + defaultLoginScreen + "]");
         }
 
-        httpServletResponse.getWriter().println(htmlChunkModifierInit.getModifiedChunk());
+        String initChunkAsString = initHtmlChunkProducer.getHtml();
+
+        httpServletResponse.getWriter().println(initChunkAsString);
     }
 
     @Override

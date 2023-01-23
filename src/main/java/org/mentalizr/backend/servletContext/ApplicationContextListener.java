@@ -17,7 +17,7 @@ public class ApplicationContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         logger.info("ServletContext initialized: initialize ApplicationContext");
-        ApplicationContext.initialize();
+        ApplicationContext.initialize(servletContextEvent.getServletContext());
     }
 
     @Override
