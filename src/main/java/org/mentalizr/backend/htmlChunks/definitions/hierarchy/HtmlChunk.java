@@ -1,25 +1,26 @@
-package org.mentalizr.backend.htmlChunks.types;
+package org.mentalizr.backend.htmlChunks.definitions.hierarchy;
 
 import org.mentalizr.backend.htmlChunks.modifier.HtmlChunkModifier;
-import org.mentalizr.backend.htmlChunks.producer.HtmlChunkProducer;
+import org.mentalizr.backend.htmlChunks.modifier.NoopModifier;
 import org.mentalizr.backend.htmlChunks.reader.HtmlChunkReader;
 
-import javax.servlet.ServletContext;
 import java.util.Objects;
 
 public abstract class HtmlChunk {
 
-    public abstract String getName();
+    protected final HtmlChunkReader htmlChunkReader;
 
-    public abstract String getFileName();
-
-    public abstract HtmlChunkReader getReader(ServletContext servletContext);
-
-    public HtmlChunkModifier getModifier() {
-        throw new IllegalStateException("Intentionally not implemented. Override if necessary.");
+    public HtmlChunk(HtmlChunkReader htmlChunkReader) {
+        this.htmlChunkReader = htmlChunkReader;
     }
 
-    public abstract HtmlChunkProducer getProducer();
+    public abstract String getName();
+
+    public abstract String asString();
+
+    public HtmlChunkModifier getModifier() {
+        return new NoopModifier();
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -33,4 +34,5 @@ public abstract class HtmlChunk {
     public int hashCode() {
         return Objects.hash(getName());
     }
+
 }

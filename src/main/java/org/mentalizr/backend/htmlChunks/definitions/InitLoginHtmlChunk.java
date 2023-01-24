@@ -1,13 +1,17 @@
 package org.mentalizr.backend.htmlChunks.definitions;
 
+import org.mentalizr.backend.htmlChunks.definitions.hierarchy.InternalHtmlChunk;
 import org.mentalizr.backend.htmlChunks.modifier.InitHtmlChunkModifier;
-import org.mentalizr.backend.htmlChunks.producer.HtmlChunkProducer;
-import org.mentalizr.backend.htmlChunks.producer.InitLoginHtmlChunkProducer;
-import org.mentalizr.backend.htmlChunks.types.InternalHtmlChunk;
+import org.mentalizr.backend.htmlChunks.modifier.InitLoginHtmlChunkModifier;
+import org.mentalizr.backend.htmlChunks.reader.HtmlChunkReader;
 
 public class InitLoginHtmlChunk extends InternalHtmlChunk {
 
-    public static final String NAME = "INIT";
+    public static final String NAME = "INIT_LOGIN";
+
+    public InitLoginHtmlChunk(HtmlChunkReader htmlChunkReader) {
+        super(htmlChunkReader);
+    }
 
     @Override
     public String getName() {
@@ -21,12 +25,7 @@ public class InitLoginHtmlChunk extends InternalHtmlChunk {
 
     @Override
     public InitHtmlChunkModifier getModifier() {
-        return new InitHtmlChunkModifier();
-    }
-
-    @Override
-    public HtmlChunkProducer getProducer() {
-        return new InitLoginHtmlChunkProducer();
+        return new InitLoginHtmlChunkModifier();
     }
 
 }

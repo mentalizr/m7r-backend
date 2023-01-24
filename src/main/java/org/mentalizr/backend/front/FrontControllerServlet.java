@@ -3,9 +3,9 @@ package org.mentalizr.backend.front;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.config.instance.DefaultLoginScreen;
 import org.mentalizr.backend.config.instance.InstanceConfiguration;
-import org.mentalizr.backend.htmlChunks.producer.InitHtmlChunkProducer;
-import org.mentalizr.backend.htmlChunks.producer.InitLoginHtmlChunkProducer;
-import org.mentalizr.backend.htmlChunks.producer.InitLoginVoucherHtmlChunkProducer;
+import org.mentalizr.backend.htmlChunks.HtmlChunkCache;
+import org.mentalizr.backend.htmlChunks.definitions.InitLoginHtmlChunk;
+import org.mentalizr.backend.htmlChunks.definitions.InitVoucherHtmlChunk;
 import org.mentalizr.serviceObjects.frontend.application.ApplicationConfigGenericSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,18 +31,17 @@ public class FrontControllerServlet extends HttpServlet {
         ApplicationConfigGenericSO applicationConfigGenericSO = instanceConfiguration.getApplicationConfigGenericSO();
         DefaultLoginScreen defaultLoginScreen = new DefaultLoginScreen(applicationConfigGenericSO.getDefaultLoginScreen());
 
-        InitHtmlChunkProducer initHtmlChunkProducer;
+        HtmlChunkCache htmlChunkCache = ApplicationContext.getHtmlChunkCache();
+        String initHtmlChunk;
         if (defaultLoginScreen.isAccessKey()) {
-            initHtmlChunkProducer = new InitLoginVoucherHtmlChunkProducer();
+            initHtmlChunk = htmlChunkCache.getChunkAsString(InitVoucherHtmlChunk.NAME);
         } else if (defaultLoginScreen.isLogin()) {
-            initHtmlChunkProducer = new InitLoginHtmlChunkProducer();
+            initHtmlChunk = htmlChunkCache.getChunkAsString(InitLoginHtmlChunk.NAME);
         } else {
             throw new IllegalStateException("Unknown defaultLoginScreen: [" + defaultLoginScreen + "]");
         }
 
-        String initChunkAsString = initHtmlChunkProducer.getHtml();
-
-        httpServletResponse.getWriter().println(initChunkAsString);
+        httpServletResponse.getWriter().println(initHtmlChunk);
     }
 
     @Override

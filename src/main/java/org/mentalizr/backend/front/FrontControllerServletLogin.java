@@ -1,6 +1,8 @@
 package org.mentalizr.backend.front;
 
-import org.mentalizr.backend.htmlChunks.producer.InitLoginHtmlChunkProducer;
+import org.mentalizr.backend.applicationContext.ApplicationContext;
+import org.mentalizr.backend.htmlChunks.HtmlChunkCache;
+import org.mentalizr.backend.htmlChunks.definitions.InitLoginHtmlChunk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +20,8 @@ public class FrontControllerServletLogin extends HttpServlet {
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         logger.debug("FrontController (Login) called.");
         httpServletResponse.setContentType("text/html");
-        String initChunkAsString = new InitLoginHtmlChunkProducer().getHtml();
+        HtmlChunkCache htmlChunkCache = ApplicationContext.getHtmlChunkCache();
+        String initChunkAsString = htmlChunkCache.getChunkAsString(InitLoginHtmlChunk.NAME);
         httpServletResponse.getWriter().println(initChunkAsString);
     }
 

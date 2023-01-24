@@ -1,15 +1,19 @@
 package org.mentalizr.backend.htmlChunks.modifier;
 
-public abstract class HtmlChunkModifier {
+import org.mentalizr.serviceObjects.frontend.application.ApplicationConfigGenericSO;
 
-    protected String chunk;
+public interface HtmlChunkModifier {
 
-    public void setRawChunk(String chunk) {
-        this.chunk = chunk;
-    }
+    public String modify(String htmlChunkString, ApplicationConfigGenericSO applicationConfigGenericSO);
 
-    public String getModifiedChunk() {
-        return this.chunk;
-    }
+//    protected String chunk;
+//
+//    public void setRawChunk(String chunk) {
+//        this.chunk = chunk;
+//    }
+//
+//    public String getModifiedChunk() {
+//        return this.chunk;
+//    }
 
 }

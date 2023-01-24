@@ -1,20 +1,27 @@
 package org.mentalizr.backend.htmlChunks.modifier;
 
-public class InitHtmlChunkModifier extends HtmlChunkModifier{
+import org.mentalizr.serviceObjects.frontend.application.ApplicationConfigGenericSO;
 
-    public void addEntry(String chunkName) {
-        this.chunk = this.chunk.replace(
+public abstract class InitHtmlChunkModifier implements HtmlChunkModifier {
+
+    @Override
+    public String modify(String htmlChunkString, ApplicationConfigGenericSO applicationConfigGenericSO) {
+        htmlChunkString = addTitle(htmlChunkString, applicationConfigGenericSO.getTitle());
+        return htmlChunkString;
+    }
+
+    protected String addEntry(String htmlChunkString, String entryChunkName) {
+        return htmlChunkString.replace(
                 "<meta name=\"entry\" content=\"\">",
-                "<meta name=\"entry\" content=\"" + chunkName + "\">"
+                "<meta name=\"entry\" content=\"" + entryChunkName + "\">"
         );
     }
 
-    public void addTitle(String title) {
-        this.chunk = this.chunk.replace(
+    private String addTitle(String htmlChunkString, String title) {
+        return htmlChunkString.replace(
                 "<title></title>",
                 "<title>" + title + "</title>"
         );
-
     }
 
 }

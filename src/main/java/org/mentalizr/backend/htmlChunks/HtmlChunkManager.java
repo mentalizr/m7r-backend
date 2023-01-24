@@ -38,11 +38,14 @@ public class HtmlChunkManager {
 
 //        if (chunkName.equals(HtmlChunkInit.NAME)) return getInitChunk();
 
-        if (chunkName.equals(LoginHtmlChunk.NAME)) return getChunk(LoginHtmlChunk.NAME);
+        if (chunkName.equals(LoginHtmlChunk.NAME))
+            return this.htmlChunkCache.getChunkAsInputStream(chunkName);
 
-        if (chunkName.equals(LoginVoucherHtmlChunk.NAME)) return getChunk(LoginVoucherHtmlChunk.NAME);
+        if (chunkName.equals(LoginVoucherHtmlChunk.NAME))
+            return this.htmlChunkCache.getChunkAsInputStream(chunkName);
 
-        if (chunkName.equals(PolicyHtmlChunk.NAME)) return getChunk(PolicyHtmlChunk.NAME);
+        if (chunkName.equals(PolicyHtmlChunk.NAME))
+            this.htmlChunkCache.getChunkAsInputStream(chunkName);
 
         Authorization authorization = AccessControl.assertValidSessionForAnyRole(this.httpServletRequest);
         String roleName = authorization.getRoleName();
@@ -50,60 +53,16 @@ public class HtmlChunkManager {
         if (chunkName.equals(PatientHtmlChunk.NAME)) {
             if (!(roleName.equals(PatientAnonymous.ROLE_NAME) || roleName.equals(PatientLogin.ROLE_NAME)))
                 throw new UnauthorizedException("UserLogin not in required role PATIENT.");
-            return getChunk(PatientHtmlChunk.NAME);
+            return this.htmlChunkCache.getChunkAsInputStream(chunkName);
         }
 
         if (chunkName.equals(TherapistHtmlChunk.NAME)) {
             if (!(roleName.equals(Therapist.ROLE_NAME)))
                 throw new UnauthorizedException("UserLogin not in required role THERAPIST.");
-            return getChunk(TherapistHtmlChunk.NAME);
+            return this.htmlChunkCache.getChunkAsInputStream(chunkName);
         }
 
         throw new RuntimeException("Implementation missing for HtmlChunk: " + chunkName);
     }
-
-//    private InputStream getInitChunk() {
-//        String htmlChunk = this.htmlChunkCache.getHtmlChunk(HtmlChunkInit.NAME);
-//        return StringUtils.asInputStream(htmlChunk, StandardCharsets.UTF_8);
-//    }
-
-    private InputStream getChunk(String chunkName) {
-        HtmlChunkProducer htmlChunkProducer = this.htmlChunkCache.getHtmlChunk(chunkName).getProducer();
-        String htmlChunk = htmlChunkProducer.getHtml();
-        return StringUtils.asInputStream(htmlChunk, StandardCharsets.UTF_8);
-    }
-
-//    private InputStream getPatientChunk() {
-//        PatientHtmlChunkProducer patientHtmlChunkProducer = new PatientHtmlChunkProducer();
-//        String htmlChunk = patientHtmlChunkProducer.getHtml();
-//        return StringUtils.asInputStream(htmlChunk, StandardCharsets.UTF_8);
-//    }
-
-//    private InputStream getTherapistChunk() {
-//        String htmlChunk = this.htmlChunkCache.getHtmlChunkAsString(HtmlChunkTherapist.NAME);
-//        return StringUtils.asInputStream(htmlChunk, StandardCharsets.UTF_8);
-//    }
-
-//    private InputStream getLoginChunk() {
-//        String htmlChunk = this.htmlChunkCache.getHtmlChunkAsString(LoginHtmlChunk.NAME);
-//
-//        LoginHtmlChunkModifier loginHtmlChunkModifier = new LoginHtmlChunkModifier();
-//        loginHtmlChunkModifier.setRawChunk(htmlChunk);
-//        InstanceConfiguration instanceConfiguration = ApplicationContext.getInstanceConfiguration();
-//        String logo = instanceConfiguration.getApplicationConfigGenericSO().getLogo();
-//        loginHtmlChunkModifier.addLogo(logo);
-//
-//        return StringUtils.asInputStream(htmlChunk, StandardCharsets.UTF_8);
-//    }
-
-//    private InputStream getLoginVoucherChunk() {
-//        String htmlChunk = this.htmlChunkCache.getHtmlChunk(HtmlChunkLoginVoucher.NAME);
-//        return StringUtils.asInputStream(htmlChunk, StandardCharsets.UTF_8);
-//    }
-
-//    private InputStream getPolicyChunk() {
-//        String htmlChunk = this.htmlChunkCache.getHtmlChunkAsString(PolicyHtmlChunk.NAME);
-//        return StringUtils.asInputStream(htmlChunk, StandardCharsets.UTF_8);
-//    }
 
 }

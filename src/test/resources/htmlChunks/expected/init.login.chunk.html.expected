@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="entry" content="LOGIN">
+
+    <title>test title</title>
+
+    <link rel="shortcut icon" href="../resrc/img/gostress-favicon.png" type="image/png">
+
+    <link href="../resrc/fontawesome/css/fontawesome-free-all.min.css" rel="stylesheet" type="text/css">
+    <link href="../resrc/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" type="text/css">
+    <link href="../resrc/css/m7r-fonts.css" rel="stylesheet" type="text/css"/>
+    <link href="../resrc/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="../resrc/css/m7r-frontend.css" rel="stylesheet">
+    <link href="../resrc/css/m7r-web-components.css" rel="stylesheet"/>
+
+    <script src="../resrc/js/m7r_spa.js"></script>
+</head>
+
+<body id="page-top" class="bg-gradient-primary">
+
+</body>
+
+</html>

@@ -3,8 +3,8 @@ package org.mentalizr.backend.rest.service;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.Const;
-import org.mentalizr.backend.exceptions.IllegalServiceInputException;
-import org.mentalizr.backend.exceptions.InfrastructureException;
+import org.mentalizr.backend.exceptions.M7rIllegalServiceInputException;
+import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.ResponseFactory;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
@@ -51,10 +51,10 @@ public abstract  class Service {
      * @throws DataSourceException
      * @throws ServicePreconditionFailedException
      */
-    protected void checkPreconditions() throws ServicePreconditionFailedException, InfrastructureException {
+    protected void checkPreconditions() throws ServicePreconditionFailedException, M7rInfrastructureException {
     }
 
-    protected abstract Object workLoad() throws RESTException, ContentManagerException, InfrastructureException, IOException, DataSourceException, EntityNotFoundException, IllegalServiceInputException;
+    protected abstract Object workLoad() throws RESTException, ContentManagerException, M7rInfrastructureException, IOException, DataSourceException, EntityNotFoundException, M7rIllegalServiceInputException;
 
     protected void updateActivityStatus(){
     }
@@ -90,7 +90,7 @@ public abstract  class Service {
             String message = "Service precondition failed for service [" + getServiceId() + "]: " + e.getMessage();
             logger.error(message, e);
             return ResponseFactory.preconditionFailed(message);
-        } catch (InfrastructureException e) {
+        } catch (M7rInfrastructureException e) {
             logger.error(e.getMessage(), e);
             return ResponseFactory.internalServerError(e);
         }
@@ -98,7 +98,7 @@ public abstract  class Service {
         Object responseSO;
         try {
             responseSO = workLoad();
-        } catch (RESTException | ContentManagerException | IOException | InfrastructureException |
+        } catch (RESTException | ContentManagerException | IOException | M7rInfrastructureException |
                  DataSourceException e) {
             logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
                     + getServiceId() + "]: " + e.getMessage(), e);
@@ -107,7 +107,7 @@ public abstract  class Service {
             logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
                     + getServiceId() + "]: " + e.getMessage());
             return ResponseFactory.entityNotFound(e);
-        } catch (IllegalServiceInputException e) {
+        } catch (M7rIllegalServiceInputException e) {
             logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
                     + getServiceId() + "]: " + e.getMessage());
             return ResponseFactory.badRequestError(e);

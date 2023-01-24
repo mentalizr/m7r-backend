@@ -4,7 +4,7 @@ import de.arthurpicht.webAccessControl.auth.AccessControl;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
-import org.mentalizr.backend.exceptions.InfrastructureException;
+import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
@@ -58,7 +58,7 @@ public class RestorePatientREST {
             }
 
             @Override
-            protected void checkPreconditions() throws ServicePreconditionFailedException, InfrastructureException {
+            protected void checkPreconditions() throws ServicePreconditionFailedException, M7rInfrastructureException {
                 AssertUser.existsNot(
                         patientRestoreSO.getUserId(),
                         "User with specified UUID [%s] is preexisting."

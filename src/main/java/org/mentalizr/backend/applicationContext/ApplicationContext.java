@@ -4,6 +4,7 @@ import org.mentalizr.backend.accessControl.WACContextInitializer;
 import org.mentalizr.backend.config.instance.InstanceConfiguration;
 import org.mentalizr.backend.config.instance.InstanceConfigurationFactory;
 import org.mentalizr.backend.htmlChunks.HtmlChunkCache;
+import org.mentalizr.backend.htmlChunks.reader.ProductionHtmlChunkReader;
 import org.mentalizr.commons.paths.container.TomcatContainerContentDir;
 import org.mentalizr.commons.paths.host.hostDir.M7rHostPolicyDir;
 import org.mentalizr.contentManager.ContentManager;
@@ -33,7 +34,9 @@ public class ApplicationContext {
             WACContextInitializer.init();
             instanceConfiguration = InstanceConfigurationFactory.createProjectConfigurationFromClasspath();
             policyCache = PolicyCache.createInstance(instanceConfiguration);
-            htmlChunkCache = new HtmlChunkCache(servletContext);
+            htmlChunkCache = new HtmlChunkCache(
+                    new ProductionHtmlChunkReader(servletContext, policyCache),
+                    instanceConfiguration.getApplicationConfigGenericSO());
             contentManager = initContentManager();
         } catch (RuntimeException e) {
             logger.error("Initialization failed: " + e.getMessage());

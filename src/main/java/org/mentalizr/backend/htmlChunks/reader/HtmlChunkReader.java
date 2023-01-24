@@ -1,20 +1,11 @@
 package org.mentalizr.backend.htmlChunks.reader;
 
-import org.mentalizr.backend.htmlChunks.types.HtmlChunk;
+import org.mentalizr.backend.htmlChunks.definitions.hierarchy.HtmlChunk;
 
-import javax.servlet.ServletContext;
-import java.io.InputStream;
+public interface HtmlChunkReader {
 
-public abstract class HtmlChunkReader {
+    public abstract String fromWebAppResource(HtmlChunk htmlChunk);
 
-    protected final HtmlChunk htmlChunk;
-    protected final ServletContext servletContext;
-
-    public HtmlChunkReader(HtmlChunk htmlChunk, ServletContext servletContext) {
-        this.htmlChunk = htmlChunk;
-        this.servletContext = servletContext;
-    }
-
-    public abstract String asString();
+    public abstract String fromPolicyConfiguration();
 
 }

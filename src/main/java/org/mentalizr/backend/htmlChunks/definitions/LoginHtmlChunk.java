@@ -1,13 +1,16 @@
 package org.mentalizr.backend.htmlChunks.definitions;
 
+import org.mentalizr.backend.htmlChunks.definitions.hierarchy.InternalHtmlChunk;
 import org.mentalizr.backend.htmlChunks.modifier.LoginHtmlChunkModifier;
-import org.mentalizr.backend.htmlChunks.producer.HtmlChunkProducer;
-import org.mentalizr.backend.htmlChunks.producer.LoginHtmlChunkProducer;
-import org.mentalizr.backend.htmlChunks.types.InternalHtmlChunk;
+import org.mentalizr.backend.htmlChunks.reader.HtmlChunkReader;
 
 public class LoginHtmlChunk extends InternalHtmlChunk {
 
     public static final String NAME = "LOGIN";
+
+    public LoginHtmlChunk(HtmlChunkReader htmlChunkReader) {
+        super(htmlChunkReader);
+    }
 
     @Override
     public String getName() {
@@ -23,24 +26,5 @@ public class LoginHtmlChunk extends InternalHtmlChunk {
     public LoginHtmlChunkModifier getModifier() {
         return new LoginHtmlChunkModifier();
     }
-
-    @Override
-    public HtmlChunkProducer getProducer() {
-        return new LoginHtmlChunkProducer();
-    }
-
-//    @Override
-//    public String asString(ServletContext servletContext) {
-//        HtmlChunkReader htmlChunkReader = this.getReader(servletContext);
-//        String chunk = htmlChunkReader.asString();
-//
-//        HtmlChunkModifierLogin htmlChunkModifierLogin = this.getModifier();
-//        htmlChunkModifierLogin.setRawChunk(chunk);
-//        InstanceConfiguration instanceConfiguration = ApplicationContext.getInstanceConfiguration();
-//        String logo = instanceConfiguration.getApplicationConfigGenericSO().getLogo();
-//        htmlChunkModifierLogin.addLogo(logo);
-//
-//        return htmlChunkModifierLogin.getModifiedChunk();
-//    }
 
 }

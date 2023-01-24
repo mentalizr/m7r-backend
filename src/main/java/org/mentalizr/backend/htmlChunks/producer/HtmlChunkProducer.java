@@ -1,36 +1,32 @@
 package org.mentalizr.backend.htmlChunks.producer;
 
-import org.mentalizr.backend.applicationContext.ApplicationContext;
-import org.mentalizr.backend.htmlChunks.HtmlChunkCache;
+import org.mentalizr.backend.htmlChunks.definitions.hierarchy.HtmlChunk;
 import org.mentalizr.backend.htmlChunks.modifier.HtmlChunkModifier;
-import org.mentalizr.backend.htmlChunks.types.HtmlChunk;
+import org.mentalizr.serviceObjects.frontend.application.ApplicationConfigGenericSO;
 
 public abstract class HtmlChunkProducer {
 
     protected final String chunkName;
+    protected final ApplicationConfigGenericSO applicationConfigGenericSO;
     protected final HtmlChunkModifier htmlChunkModifier;
     protected final String templateHtml;
     protected final String productHtml;
 
-    public HtmlChunkProducer(String chunkName) {
-        this.chunkName = chunkName;
+    public HtmlChunkProducer(HtmlChunk htmlChunk, ApplicationConfigGenericSO applicationConfigGenericSO) {
 
-        HtmlChunkCache htmlChunkCache = ApplicationContext.getHtmlChunkCache();
-        HtmlChunk htmlChunk = htmlChunkCache.getHtmlChunk(chunkName);
-
-        this.templateHtml = htmlChunkCache.getHtmlChunkAsString(chunkName);
+        this.chunkName = htmlChunk.getName();
+        this.applicationConfigGenericSO = applicationConfigGenericSO;
+        this.templateHtml = htmlChunk.asString();
         this.htmlChunkModifier = htmlChunk.getModifier();
-        this.htmlChunkModifier.setRawChunk(templateHtml);
+        this.productHtml = this.htmlChunkModifier.modify(this.templateHtml, applicationConfigGenericSO);
+    }
 
-        modify();
-
-        this.productHtml = this.htmlChunkModifier.getModifiedChunk();
+    public String getChunkName() {
+        return this.chunkName;
     }
 
     public String getHtml() {
         return this.productHtml;
     }
-
-    public abstract void modify();
 
 }
