@@ -7,7 +7,6 @@ import org.mentalizr.serviceObjects.frontend.application.ApplicationConfigGeneri
 public abstract class HtmlChunkProducer {
 
     protected final String chunkName;
-    protected final ApplicationConfigGenericSO applicationConfigGenericSO;
     protected final HtmlChunkModifier htmlChunkModifier;
     protected final String templateHtml;
     protected final String productHtml;
@@ -15,7 +14,6 @@ public abstract class HtmlChunkProducer {
     public HtmlChunkProducer(HtmlChunk htmlChunk, ApplicationConfigGenericSO applicationConfigGenericSO) {
 
         this.chunkName = htmlChunk.getName();
-        this.applicationConfigGenericSO = applicationConfigGenericSO;
         this.templateHtml = htmlChunk.asString();
         this.htmlChunkModifier = htmlChunk.getModifier();
         this.productHtml = this.htmlChunkModifier.modify(this.templateHtml, applicationConfigGenericSO);

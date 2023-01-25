@@ -11,6 +11,11 @@ import java.nio.file.Path;
 
 public class TestHtmlChunkReader implements HtmlChunkReader {
 
+    public static final String POLICY =
+            "<html>\n" +
+            "    <h1>This is a policy</h2>\n" +
+            "</html>\n";
+
     @Override
     public String fromWebAppResource(HtmlChunk htmlChunk) {
         InternalHtmlChunk internalHtmlChunk = (InternalHtmlChunk) htmlChunk;
@@ -29,9 +34,7 @@ public class TestHtmlChunkReader implements HtmlChunkReader {
 
     @Override
     public String fromPolicyConfiguration() {
-        return "<html>\n" +
-                "    <h1>This is a policy</h2>\n" +
-                "</html>\n";
+        return POLICY;
     }
 
 }

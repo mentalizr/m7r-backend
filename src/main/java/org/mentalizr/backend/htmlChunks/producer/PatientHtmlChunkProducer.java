@@ -10,9 +10,4 @@ public class PatientHtmlChunkProducer extends HtmlChunkProducer {
         super(new PatientHtmlChunk(htmlChunkReader), applicationConfigGenericSO);
     }
 
-//    @Override
-//    public void modify() {
-//        // din
-//    }
-
 }

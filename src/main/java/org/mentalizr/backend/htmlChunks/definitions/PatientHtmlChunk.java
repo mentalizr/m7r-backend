@@ -1,8 +1,6 @@
 package org.mentalizr.backend.htmlChunks.definitions;
 
 import org.mentalizr.backend.htmlChunks.definitions.hierarchy.InternalHtmlChunk;
-import org.mentalizr.backend.htmlChunks.producer.HtmlChunkProducer;
-import org.mentalizr.backend.htmlChunks.producer.PatientHtmlChunkProducer;
 import org.mentalizr.backend.htmlChunks.reader.HtmlChunkReader;
 
 public class PatientHtmlChunk extends InternalHtmlChunk {

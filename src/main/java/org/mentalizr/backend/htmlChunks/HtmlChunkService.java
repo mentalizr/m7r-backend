@@ -5,7 +5,6 @@ import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.io.InputStream;
 
 public class HtmlChunkService {
@@ -16,8 +15,6 @@ public class HtmlChunkService {
             return htmlChunkManager.getHtmlChunk(chunkName);
         } catch (UnauthorizedException e) {
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-        } catch (IOException e) {
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 

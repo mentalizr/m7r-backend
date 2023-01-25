@@ -1,9 +1,8 @@
 package org.mentalizr.backend.htmlChunks.definitions;
 
-import org.mentalizr.backend.htmlChunks.producer.HtmlChunkProducer;
-import org.mentalizr.backend.htmlChunks.producer.LoginVoucherHtmlChunkProducer;
-import org.mentalizr.backend.htmlChunks.reader.HtmlChunkReader;
 import org.mentalizr.backend.htmlChunks.definitions.hierarchy.InternalHtmlChunk;
+import org.mentalizr.backend.htmlChunks.modifier.LoginHtmlChunkModifier;
+import org.mentalizr.backend.htmlChunks.reader.HtmlChunkReader;
 
 public class LoginVoucherHtmlChunk extends InternalHtmlChunk {
 
@@ -21,6 +20,11 @@ public class LoginVoucherHtmlChunk extends InternalHtmlChunk {
     @Override
     public String getFileName() {
         return "WEB-INF/loginVoucher.chunk.html";
+    }
+
+    @Override
+    public LoginHtmlChunkModifier getModifier() {
+        return new LoginHtmlChunkModifier();
     }
 
 }

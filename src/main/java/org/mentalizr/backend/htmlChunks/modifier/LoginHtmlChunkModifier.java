@@ -1,10 +1,7 @@
 package org.mentalizr.backend.htmlChunks.modifier;
 
 import org.mentalizr.backend.exceptions.M7rInconsistencyException;
-import org.mentalizr.backend.htmlChunks.HtmlChunkManager;
 import org.mentalizr.serviceObjects.frontend.application.ApplicationConfigGenericSO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LoginHtmlChunkModifier implements HtmlChunkModifier {
 

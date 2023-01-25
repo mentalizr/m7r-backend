@@ -115,17 +115,17 @@ task copyWebAppConf(type: Copy) {
     outputs.file("$rootDir/conf/logback.xml")
     from file(logbackConf)
 
-    def m7rConf = configDir.resolve("common/m7r.conf").toFile()
-    if (!m7rConf.exists()) throw new GradleException(m7rConf.absolutePath + ' not found.')
-    inputs.file(m7rConf)
-    outputs.file("$rootDir/conf/m7r.conf")
-    from file(m7rConf)
+//    def m7rConf = configDir.resolve("common/m7r.conf").toFile()
+//    if (!m7rConf.exists()) throw new GradleException(m7rConf.absolutePath + ' not found.')
+//    inputs.file(m7rConf)
+//    outputs.file("$rootDir/conf/m7r.conf")
+//    from file(m7rConf)
 
-    def m7rInstanceConf = configDir.resolve("m7r-instance.conf").toFile()
-    if (!m7rInstanceConf.exists()) throw new GradleException(m7rInstanceConf.absolutePath + ' not found.')
-    inputs.file(m7rInstanceConf)
-    outputs.file("$rootDir/conf/m7r-instance.conf")
-    from file(m7rInstanceConf)
+//    def m7rInstanceConf = configDir.resolve("m7r-instance.conf").toFile()
+//    if (!m7rInstanceConf.exists()) throw new GradleException(m7rInstanceConf.absolutePath + ' not found.')
+//    inputs.file(m7rInstanceConf)
+//    outputs.file("$rootDir/conf/m7r-instance.conf")
+//    from file(m7rInstanceConf)
 
     into "$rootDir/conf"
 }

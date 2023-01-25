@@ -10,9 +10,4 @@ public class TherapistHtmlChunkProducer extends HtmlChunkProducer {
         super(new TherapistHtmlChunk(htmlChunkReader), applicationConfigGenericSO);
     }
 
-//    @Override
-//    public void modify() {
-//        // din
-//    }
-
 }

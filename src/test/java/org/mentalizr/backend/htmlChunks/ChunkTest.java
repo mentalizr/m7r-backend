@@ -3,8 +3,7 @@ package org.mentalizr.backend.htmlChunks;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mentalizr.backend.htmlChunks.definitions.InitLoginHtmlChunk;
-import org.mentalizr.backend.htmlChunks.definitions.InitVoucherHtmlChunk;
+import org.mentalizr.backend.htmlChunks.definitions.*;
 import org.mentalizr.backend.htmlChunks.testResources.ApplicationConfigGenericSOFactory;
 import org.mentalizr.backend.htmlChunks.testResources.TestHtmlChunkReader;
 
@@ -15,6 +14,7 @@ import java.nio.file.Paths;
 public class ChunkTest {
 
     private static HtmlChunkCache htmlChunkCache;
+    private static final boolean outputActualChunk = true;
 
     @BeforeAll
     public static void setUp() {
@@ -40,7 +40,44 @@ public class ChunkTest {
         Assertions.assertEquals(expected, actual);
     }
 
-    
+    @Test
+    public void loginChunk() throws IOException {
+        String expected = Files.readString(Paths.get("src/test/resources/htmlChunks/expected/login.chunk.begin.html.expected"));
+        String actual = htmlChunkCache.getChunkAsString(LoginHtmlChunk.NAME);
+        if (outputActualChunk) System.out.println(actual);
+        Assertions.assertTrue(actual.startsWith(expected));
+    }
 
+    @Test
+    public void loginVoucherChunk() throws IOException {
+        String expected = Files.readString(Paths.get("src/test/resources/htmlChunks/expected/login.chunk.begin.html.expected"));
+        String actual = htmlChunkCache.getChunkAsString(LoginVoucherHtmlChunk.NAME);
+        if (outputActualChunk) System.out.println(actual);
+        Assertions.assertTrue(actual.startsWith(expected));
+    }
+
+    @Test
+    public void patientChunk() throws IOException {
+        String expected = Files.readString(Paths.get("src/main/webapp/WEB-INF/patient.chunk.html"));
+        String actual = htmlChunkCache.getChunkAsString(PatientHtmlChunk.NAME);
+        if (outputActualChunk) System.out.println(actual);
+        Assertions.assertTrue(actual.startsWith(expected));
+    }
+
+    @Test
+    public void therapistChunk() throws IOException {
+        String expected = Files.readString(Paths.get("src/main/webapp/WEB-INF/therapist.chunk.html"));
+        String actual = htmlChunkCache.getChunkAsString(TherapistHtmlChunk.NAME);
+        if (outputActualChunk) System.out.println(actual);
+        Assertions.assertTrue(actual.startsWith(expected));
+    }
+
+    @Test
+    public void policyChunk() {
+        String expected = TestHtmlChunkReader.POLICY;
+        String actual = htmlChunkCache.getChunkAsString(PolicyHtmlChunk.NAME);
+        if (outputActualChunk) System.out.println(actual);
+        Assertions.assertTrue(actual.startsWith(expected));
+    }
 
 }

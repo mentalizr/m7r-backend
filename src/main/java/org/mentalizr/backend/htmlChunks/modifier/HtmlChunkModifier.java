@@ -4,16 +4,6 @@ import org.mentalizr.serviceObjects.frontend.application.ApplicationConfigGeneri
 
 public interface HtmlChunkModifier {
 
-    public String modify(String htmlChunkString, ApplicationConfigGenericSO applicationConfigGenericSO);
-
-//    protected String chunk;
-//
-//    public void setRawChunk(String chunk) {
-//        this.chunk = chunk;
-//    }
-//
-//    public String getModifiedChunk() {
-//        return this.chunk;
-//    }
+    String modify(String htmlChunkString, ApplicationConfigGenericSO applicationConfigGenericSO);
 
 }

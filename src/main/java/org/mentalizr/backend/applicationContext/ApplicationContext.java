@@ -1,14 +1,19 @@
 package org.mentalizr.backend.applicationContext;
 
+import de.arthurpicht.utils.io.nio2.FileUtils;
 import org.mentalizr.backend.accessControl.WACContextInitializer;
+import org.mentalizr.backend.config.infraUser.InfraUserConfiguration;
 import org.mentalizr.backend.config.instance.InstanceConfiguration;
 import org.mentalizr.backend.config.instance.InstanceConfigurationFactory;
 import org.mentalizr.backend.htmlChunks.HtmlChunkCache;
 import org.mentalizr.backend.htmlChunks.reader.ProductionHtmlChunkReader;
 import org.mentalizr.commons.paths.container.TomcatContainerContentDir;
 import org.mentalizr.commons.paths.host.hostDir.M7rHostPolicyDir;
+import org.mentalizr.commons.paths.host.hostDir.M7rInfraUserConfigFile;
+import org.mentalizr.commons.paths.host.hostDir.M7rInstanceConfigFile;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
+import org.mentalizr.persistence.mongo.MongoDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,11 +22,11 @@ import java.nio.file.Path;
 
 public class ApplicationContext {
 
-    // TODO Rebuild Configuration to flat object, include here
     // TODO Include EventProcessor here?
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationContext.class);
     private static InstanceConfiguration instanceConfiguration;
+    private static InfraUserConfiguration infraUserConfiguration;
     private static ContentManager contentManager;
     private static PolicyCache policyCache;
     private static HtmlChunkCache htmlChunkCache;
@@ -32,19 +37,28 @@ public class ApplicationContext {
 
         try {
             WACContextInitializer.init();
-            instanceConfiguration = InstanceConfigurationFactory.createProjectConfigurationFromClasspath();
+            instanceConfiguration = loadInstanceConfiguration();
+            infraUserConfiguration = new InfraUserConfiguration(M7rInfraUserConfigFile.createInstance());
+            MongoDB.initialize(infraUserConfiguration);
             policyCache = PolicyCache.createInstance(instanceConfiguration);
             htmlChunkCache = new HtmlChunkCache(
                     new ProductionHtmlChunkReader(servletContext, policyCache),
                     instanceConfiguration.getApplicationConfigGenericSO());
             contentManager = initContentManager();
         } catch (RuntimeException e) {
-            logger.error("Initialization failed: " + e.getMessage());
-            throw e;
+            logger.error("Initialization failed. " + e.getMessage());
+            throw new InitializationException(e.getMessage(), e);
         }
 
         isInitialized = true;
         logger.info("ApplicationContext initialized successfully.");
+    }
+
+    private static InstanceConfiguration loadInstanceConfiguration() {
+        Path path = M7rInstanceConfigFile.createInstance().asPath();
+        if (!FileUtils.isExistingRegularFile(path)) throw new InitializationException(
+                "Config file [" + M7rInstanceConfigFile.NAME + "] not found. [" + path.toAbsolutePath() + "].");
+        return InstanceConfigurationFactory.createProjectConfigurationByPath(path);
     }
 
     private static ContentManager initContentManager() {
@@ -59,6 +73,11 @@ public class ApplicationContext {
     public static InstanceConfiguration getInstanceConfiguration() {
         assertIsInitialized();
         return instanceConfiguration;
+    }
+
+    public static InfraUserConfiguration getInfraUserConfiguration() {
+        assertIsInitialized();
+        return infraUserConfiguration;
     }
 
     public static ContentManager getContentManager() {

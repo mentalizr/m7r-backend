@@ -8,15 +8,11 @@ import org.mentalizr.backend.accessControl.roles.PatientLogin;
 import org.mentalizr.backend.accessControl.roles.Therapist;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.htmlChunks.definitions.*;
-import org.mentalizr.backend.htmlChunks.producer.HtmlChunkProducer;
-import org.mentalizr.backend.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 public class HtmlChunkManager {
 
@@ -25,12 +21,12 @@ public class HtmlChunkManager {
     private final HttpServletRequest httpServletRequest;
     private final HtmlChunkCache htmlChunkCache;
 
-    public HtmlChunkManager(HttpServletRequest httpRequest) throws IOException {
+    public HtmlChunkManager(HttpServletRequest httpRequest) {
         this.httpServletRequest = httpRequest;
         this.htmlChunkCache = ApplicationContext.getHtmlChunkCache();
     }
 
-    public InputStream getHtmlChunk(String chunkName) throws UnauthorizedException, IOException {
+    public InputStream getHtmlChunk(String chunkName) throws UnauthorizedException {
 
         logger.debug("getHtmlChunk for name: [" + chunkName + "]");
 
