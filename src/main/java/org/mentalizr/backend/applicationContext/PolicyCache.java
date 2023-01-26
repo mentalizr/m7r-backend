@@ -3,7 +3,7 @@ package org.mentalizr.backend.applicationContext;
 import de.arthurpicht.utils.core.strings.Strings;
 import de.arthurpicht.utils.io.nio2.FileUtils;
 import org.mentalizr.backend.config.instance.InstanceConfiguration;
-import org.mentalizr.commons.paths.host.hostDir.M7rHostPolicyDir;
+import org.mentalizr.commons.paths.container.TomcatContainerM7rHostConfigDir;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,9 +16,9 @@ public class PolicyCache {
     private final String policyHtml;
 
     public static PolicyCache createInstance(InstanceConfiguration instanceConfiguration) {
-        Path policyDir = M7rHostPolicyDir.createInstance().asPath();
+        Path dir = new TomcatContainerM7rHostConfigDir().asPath();
         String version = instanceConfiguration.getApplicationConfigGenericSO().getPolicyVersion();
-        return new PolicyCache(policyDir, version);
+        return new PolicyCache(dir, version);
     }
 
     public PolicyCache(Path policyDir, String version) {

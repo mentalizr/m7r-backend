@@ -38,20 +38,31 @@ public class ApplicationContext {
         try {
             WACContextInitializer.init();
             instanceConfiguration = loadInstanceConfiguration();
-            infraUserConfiguration = new InfraUserConfiguration(M7rInfraUserConfigFile.createInstance());
+            infraUserConfiguration = loadInfraUserConfiguration();
             MongoDB.initialize(infraUserConfiguration);
             policyCache = PolicyCache.createInstance(instanceConfiguration);
             htmlChunkCache = new HtmlChunkCache(
                     new ProductionHtmlChunkReader(servletContext, policyCache),
                     instanceConfiguration.getApplicationConfigGenericSO());
             contentManager = initContentManager();
-        } catch (RuntimeException e) {
+        } catch (InitializationException e) {
             logger.error("Initialization failed. " + e.getMessage());
+            throw new InitializationException(e.getMessage(), e);
+        } catch (RuntimeException e) {
+            logger.error("Initialization failed. " + e.getMessage(), e);
             throw new InitializationException(e.getMessage(), e);
         }
 
         isInitialized = true;
         logger.info("ApplicationContext initialized successfully.");
+    }
+
+    private static InfraUserConfiguration loadInfraUserConfiguration() {
+        M7rInfraUserConfigFile m7rInfraUserConfigFile = M7rInfraUserConfigFile.createInstance();
+        Path path = m7rInfraUserConfigFile.asPath();
+        if (!FileUtils.isExistingRegularFile(path)) throw new InitializationException(
+                "Config file [" + M7rInfraUserConfigFile.NAME + "] not found. [" + path.toAbsolutePath() + "].");
+        return new InfraUserConfiguration(m7rInfraUserConfigFile);
     }
 
     private static InstanceConfiguration loadInstanceConfiguration() {
@@ -66,7 +77,7 @@ public class ApplicationContext {
         try {
             return ContentManager.getInstanceForContentRoot(contentRoot);
         } catch (ContentManagerException e) {
-            throw new RuntimeException("Initialization of ContentManager failed. Cause: " + e.getMessage(), e);
+            throw new InitializationException("Initialization of ContentManager failed. Cause: " + e.getMessage(), e);
         }
     }
 
