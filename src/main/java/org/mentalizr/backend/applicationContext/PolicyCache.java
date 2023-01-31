@@ -3,7 +3,9 @@ package org.mentalizr.backend.applicationContext;
 import de.arthurpicht.utils.core.strings.Strings;
 import de.arthurpicht.utils.io.nio2.FileUtils;
 import org.mentalizr.backend.config.instance.InstanceConfiguration;
-import org.mentalizr.commons.paths.container.TomcatContainerM7rHostConfigDir;
+import org.mentalizr.commons.paths.host.hostDir.M7rHostConfigDir;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,10 +15,11 @@ import java.util.stream.Stream;
 
 public class PolicyCache {
 
+    private static final Logger logger = LoggerFactory.getLogger(PolicyCache.class);
     private final String policyHtml;
 
     public static PolicyCache createInstance(InstanceConfiguration instanceConfiguration) {
-        Path dir = new TomcatContainerM7rHostConfigDir().asPath();
+        Path dir = new M7rHostConfigDir().asPath();
         String version = instanceConfiguration.getApplicationConfigGenericSO().getPolicyVersion();
         return new PolicyCache(dir, version);
     }
@@ -28,6 +31,8 @@ public class PolicyCache {
         Path policyHtmlFile = policyDir.resolve("policy-" + version + ".html");
         if (!FileUtils.isExistingRegularFile(policyHtmlFile))
             throw new InitializationException("Policy file not found. [" + policyHtmlFile.toAbsolutePath() + "].");
+
+        logger.info("Load policy file [" + policyHtmlFile.toAbsolutePath() + "].");
 
         policyHtml = readFileToString(policyHtmlFile);
     }

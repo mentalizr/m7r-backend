@@ -1,6 +1,5 @@
 package org.mentalizr.backend.applicationContext;
 
-import de.arthurpicht.utils.io.nio2.FileUtils;
 import org.mentalizr.backend.accessControl.WACContextInitializer;
 import org.mentalizr.backend.config.infraUser.InfraUserConfiguration;
 import org.mentalizr.backend.config.instance.InstanceConfiguration;
@@ -8,12 +7,11 @@ import org.mentalizr.backend.config.instance.InstanceConfigurationFactory;
 import org.mentalizr.backend.htmlChunks.HtmlChunkCache;
 import org.mentalizr.backend.htmlChunks.reader.ProductionHtmlChunkReader;
 import org.mentalizr.commons.paths.container.TomcatContainerContentDir;
-import org.mentalizr.commons.paths.host.hostDir.M7rHostPolicyDir;
-import org.mentalizr.commons.paths.host.hostDir.M7rInfraUserConfigFile;
 import org.mentalizr.commons.paths.host.hostDir.M7rInstanceConfigFile;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.persistence.mongo.MongoDB;
+import org.mentalizr.persistence.mongo.PersistenceMongoContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +37,7 @@ public class ApplicationContext {
             WACContextInitializer.init();
             instanceConfiguration = loadInstanceConfiguration();
             infraUserConfiguration = loadInfraUserConfiguration();
-            MongoDB.initialize(infraUserConfiguration);
+            PersistenceMongoContext.initialize(infraUserConfiguration);
             policyCache = PolicyCache.createInstance(instanceConfiguration);
             htmlChunkCache = new HtmlChunkCache(
                     new ProductionHtmlChunkReader(servletContext, policyCache),
@@ -58,18 +56,16 @@ public class ApplicationContext {
     }
 
     private static InfraUserConfiguration loadInfraUserConfiguration() {
-        M7rInfraUserConfigFile m7rInfraUserConfigFile = M7rInfraUserConfigFile.createInstance();
-        Path path = m7rInfraUserConfigFile.asPath();
-        if (!FileUtils.isExistingRegularFile(path)) throw new InitializationException(
-                "Config file [" + M7rInfraUserConfigFile.NAME + "] not found. [" + path.toAbsolutePath() + "].");
-        return new InfraUserConfiguration(m7rInfraUserConfigFile);
+        return new InfraUserConfiguration();
     }
 
     private static InstanceConfiguration loadInstanceConfiguration() {
-        Path path = M7rInstanceConfigFile.createInstance().asPath();
-        if (!FileUtils.isExistingRegularFile(path)) throw new InitializationException(
-                "Config file [" + M7rInstanceConfigFile.NAME + "] not found. [" + path.toAbsolutePath() + "].");
-        return InstanceConfigurationFactory.createProjectConfigurationByPath(path);
+        M7rInstanceConfigFile m7rInstanceConfigFile = new M7rInstanceConfigFile();
+        if (!m7rInstanceConfigFile.exists())
+            throw new InitializationException(
+                "Config file [" + m7rInstanceConfigFile.getFileName() + "] not found. " +
+                        "[" + m7rInstanceConfigFile.toAbsolutePathString() + "].");
+        return InstanceConfigurationFactory.createProjectConfigurationByPath(m7rInstanceConfigFile.asPath());
     }
 
     private static ContentManager initContentManager() {
