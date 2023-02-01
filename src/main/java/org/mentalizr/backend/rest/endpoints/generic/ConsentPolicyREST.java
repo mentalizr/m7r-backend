@@ -7,10 +7,12 @@ import de.arthurpicht.webAccessControl.securityAttribute.requirements.PolicyCons
 import de.arthurpicht.webAccessControl.securityAttribute.requirements.Requirement;
 import org.mentalizr.backend.accessControl.RequirementsFulfill;
 import org.mentalizr.backend.accessControl.roles.M7rUser;
+import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
+import org.mentalizr.persistence.rdbms.barnacle.vob.UserVOB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,14 +52,21 @@ public class ConsentPolicyREST {
             protected void checkPreconditions() throws ServicePreconditionFailedException {
                 Requirement requirement = this.authorization.getNextRequirement();
                 if (!(requirement instanceof PolicyConsentRequirement))
-                    throw new ServicePreconditionFailedException("Inconsistency check failed. Staging does not " +
-                            "require policy consent.");
+                    throw new ServicePreconditionFailedException(
+                            "Inconsistency check failed. Staging does not require policy consent.");
 
                 M7rUser m7rUser = (M7rUser) this.authorization.getUser();
-                UserVO userVO = m7rUser.getUserVO();
-                if (userVO.getPolicyConsent() != null && userVO.getPolicyConsent() > 0)
-                    throw new ServicePreconditionFailedException("Inconsistency check failed. " +
-                            "Policy consent already done.");
+                UserVOB userVOB = new UserVOB(m7rUser.getUserId());
+                String policyVersion = ApplicationContext.getCurrentPolicyVersion();
+                boolean policyConsented;
+                try {
+                    policyConsented = userVOB.hasPolicy(policyVersion);
+                } catch (DataSourceException e) {
+                    throw new RuntimeException(e);
+                }
+                if (policyConsented)
+                    throw new ServicePreconditionFailedException(
+                            "Inconsistency check failed. Policy consent already done.");
             }
 
             @Override

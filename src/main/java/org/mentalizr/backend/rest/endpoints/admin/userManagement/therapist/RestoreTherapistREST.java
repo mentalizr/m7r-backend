@@ -62,7 +62,6 @@ public class RestoreTherapistREST {
                         therapistRestoreSO.isActive(),
                         therapistRestoreSO.getFirstActive(),
                         therapistRestoreSO.getLastActive(),
-                        therapistRestoreSO.getPolicyConsent(),
                         therapistRestoreSO.getUsername(),
                         therapistRestoreSO.getPasswordHash(),
                         therapistRestoreSO.getEmail(),

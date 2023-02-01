@@ -13,6 +13,7 @@ import org.mentalizr.persistence.rdbms.barnacle.dao.UserDAO;
 import org.mentalizr.persistence.rdbms.barnacle.dao.UserLoginDAO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserLoginVO;
+import org.mentalizr.persistence.rdbms.edao.PolicyConsentEDAO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -54,6 +55,7 @@ public class DeletePatientREST {
                 PatientProgramDAO.delete(patientProgramVO.getPK());
                 RolePatientDAO.delete(userLoginVO.getUserId());
                 UserLoginDAO.delete(userLoginVO.getUserId());
+                PolicyConsentEDAO.deleteAllForUser(userLoginVO.getUserId());
                 UserDAO.delete(userLoginVO.getUserId());
 
                 return null;

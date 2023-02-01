@@ -22,7 +22,6 @@ public class TherapistRestoreSOAdapter {
         therapistRestoreSO.setActive(userVO.getActive());
         therapistRestoreSO.setFirstActive(userVO.getFirstActive());
         therapistRestoreSO.setLastActive(userVO.getLastActive());
-        therapistRestoreSO.setPolicyConsent(userVO.getPolicyConsent());
 
         therapistRestoreSO.setUsername(userLoginVO.getUsername());
         therapistRestoreSO.setPasswordHash(userLoginVO.getPasswordHash());

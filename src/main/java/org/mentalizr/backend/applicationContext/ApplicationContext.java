@@ -10,7 +10,6 @@ import org.mentalizr.commons.paths.container.TomcatContainerContentDir;
 import org.mentalizr.commons.paths.host.hostDir.M7rInstanceConfigFile;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
-import org.mentalizr.persistence.mongo.MongoDB;
 import org.mentalizr.persistence.mongo.PersistenceMongoContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,6 +99,11 @@ public class ApplicationContext {
     public static HtmlChunkCache getHtmlChunkCache() {
         assertIsInitialized();
         return htmlChunkCache;
+    }
+
+    public static String getCurrentPolicyVersion() {
+        assertIsInitialized();
+        return instanceConfiguration.getApplicationConfigGenericSO().getPolicyVersion();
     }
 
     private static void assertIsInitialized() {

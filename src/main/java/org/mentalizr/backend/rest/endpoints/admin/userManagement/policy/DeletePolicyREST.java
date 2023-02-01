@@ -7,8 +7,8 @@ import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
-import org.mentalizr.persistence.rdbms.barnacle.dao.PolicyDAO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.PolicyPK;
+import org.mentalizr.persistence.rdbms.barnacle.dao.PolicyConsentDAO;
+import org.mentalizr.persistence.rdbms.barnacle.vo.PolicyConsentPK;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -45,9 +45,9 @@ public class DeletePolicyREST {
 
             @Override
             protected Object workLoad() throws DataSourceException, EntityNotFoundException {
-                PolicyPK policyPK = new PolicyPK(userId, version);
-                PolicyDAO.load(policyPK);
-                PolicyDAO.delete(policyPK);
+                PolicyConsentPK policyPK = new PolicyConsentPK(userId, version);
+                PolicyConsentDAO.load(policyPK);
+                PolicyConsentDAO.delete(policyPK);
                 return null;
             }
 

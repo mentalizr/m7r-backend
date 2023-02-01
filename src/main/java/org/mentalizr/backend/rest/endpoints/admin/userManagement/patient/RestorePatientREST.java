@@ -85,7 +85,6 @@ public class RestorePatientREST {
                         patientRestoreSO.isActive(),
                         patientRestoreSO.getFirstActive(),
                         patientRestoreSO.getLastActive(),
-                        patientRestoreSO.getPolicyConsent(),
                         patientRestoreSO.getUsername(),
                         patientRestoreSO.getPasswordHash(),
                         patientRestoreSO.getEmail(),

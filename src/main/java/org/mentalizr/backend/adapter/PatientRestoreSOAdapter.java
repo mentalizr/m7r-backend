@@ -15,7 +15,6 @@ public class PatientRestoreSOAdapter {
         patientRestoreSO.setActive(userVO.getActive());
         patientRestoreSO.setFirstActive(userVO.getFirstActive());
         patientRestoreSO.setLastActive(userVO.getLastActive());
-        patientRestoreSO.setPolicyConsent(userVO.getPolicyConsent());
 
         UserLoginVO userLoginVO = userLoginCompositeVO.getUserLoginVO();
         patientRestoreSO.setUsername(userLoginVO.getUsername());

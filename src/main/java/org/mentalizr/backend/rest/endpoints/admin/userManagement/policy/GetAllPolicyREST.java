@@ -6,8 +6,8 @@ import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
-import org.mentalizr.persistence.rdbms.barnacle.dao.PolicyDAO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.PolicyVO;
+import org.mentalizr.persistence.rdbms.barnacle.dao.PolicyConsentDAO;
+import org.mentalizr.persistence.rdbms.barnacle.vo.PolicyConsentVO;
 import org.mentalizr.serviceObjects.userManagement.PolicyCollectionSO;
 import org.mentalizr.serviceObjects.userManagement.PolicySO;
 
@@ -47,14 +47,14 @@ public class GetAllPolicyREST {
 
             @Override
             protected PolicyCollectionSO workLoad() throws DataSourceException {
-                List<PolicyVO> policyVOList = PolicyDAO.findAll();
+                List<PolicyConsentVO> policyVOList = PolicyConsentDAO.findAll();
 
                 List<PolicySO> collection = new ArrayList<>();
-                for (PolicyVO policyVO : policyVOList) {
+                for (PolicyConsentVO policyConsentVO : policyVOList) {
                     PolicySO policySO = new PolicySO();
-                    policySO.setUserId(policyVO.getUserId());
-                    policySO.setVersion(policyVO.getVersion());
-                    policySO.setConsent(policyVO.getConsent());
+                    policySO.setUserId(policyConsentVO.getUserId());
+                    policySO.setVersion(policyConsentVO.getVersion());
+                    policySO.setConsent(policyConsentVO.getConsent());
 
                     collection.add(policySO);
                 }
