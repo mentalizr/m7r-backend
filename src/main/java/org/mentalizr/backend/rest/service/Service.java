@@ -43,7 +43,7 @@ public abstract  class Service {
         logger.trace("[" + getServiceId() + "] called.");
     }
 
-    protected abstract Authorization checkSecurityConstraints() throws UnauthorizedException;
+    protected abstract Authorization checkSecurityConstraints() throws UnauthorizedException, M7rIllegalServiceInputException;
 
     /**
      * Check business preconditions that are not yet checked as security constraints.
@@ -82,6 +82,8 @@ public abstract  class Service {
         } catch (UnauthorizedException e) {
             authLogger.warn("Authorization failed for service [" + getServiceId() + "]: " + e.getMessage());
             return ResponseFactory.unauthorized();
+        } catch (M7rIllegalServiceInputException e) {
+            return handleIllegalServiceInput(e);
         }
 
         try {
@@ -108,9 +110,7 @@ public abstract  class Service {
                     + getServiceId() + "]: " + e.getMessage());
             return ResponseFactory.entityNotFound(e);
         } catch (M7rIllegalServiceInputException e) {
-            logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
-                    + getServiceId() + "]: " + e.getMessage());
-            return ResponseFactory.badRequestError(e);
+            return handleIllegalServiceInput(e);
         }
 
         try {
@@ -128,6 +128,12 @@ public abstract  class Service {
         }
 
         return ResponseFactory.ok(responseSO);
+    }
+
+    private Response handleIllegalServiceInput(M7rIllegalServiceInputException e) {
+        logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
+                + getServiceId() + "]: " + e.getMessage());
+        return ResponseFactory.badRequestError(e);
     }
 
 }

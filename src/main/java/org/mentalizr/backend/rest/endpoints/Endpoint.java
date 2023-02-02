@@ -6,7 +6,6 @@ import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.M7rAuthorization;
 import org.mentalizr.backend.accessControl.roles.M7rUser;
-import org.mentalizr.backend.htmlChunks.HtmlChunkService;
 import org.mentalizr.backend.rest.entities.UserFactory;
 import org.mentalizr.commons.paths.container.TomcatContainerImgBaseTmpDir;
 import org.mentalizr.serviceObjects.frontend.application.UserSO;
@@ -14,7 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -62,20 +64,20 @@ public class Endpoint {
 //        return "Content reloaded!";
 //    }
 
-    @GET
-    @Path("htmlChunk/{chunkName}")
-    @Produces(MediaType.TEXT_HTML)
-    public Response htmlChunk(
-            @PathParam("chunkName") String chunkName,
-            @Context HttpServletRequest httpServletRequest) {
-
-        logger.debug("[htmlChunk] ...");
-
-        logger.debug("[htmlChunk] requested Chunk is: " + chunkName);
-
-        InputStream inputStream = HtmlChunkService.getHtmlChunk(chunkName, httpServletRequest);
-        return Response.ok(inputStream).build();
-    }
+//    @GET
+//    @Path("htmlChunk/{chunkName}")
+//    @Produces(MediaType.TEXT_HTML)
+//    public Response htmlChunk(
+//            @PathParam("chunkName") String chunkName,
+//            @Context HttpServletRequest httpServletRequest) {
+//
+//        logger.debug("[htmlChunk] ...");
+//
+//        logger.debug("[htmlChunk] requested Chunk is: " + chunkName);
+//
+//        InputStream inputStream = HtmlChunkService.getHtmlChunk(chunkName, httpServletRequest);
+//        return Response.ok(inputStream).build();
+//    }
 
     @GET
     @Path("user")
