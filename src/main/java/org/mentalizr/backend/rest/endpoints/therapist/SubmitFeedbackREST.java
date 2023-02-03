@@ -4,6 +4,7 @@ import de.arthurpicht.webAccessControl.auth.AccessControl;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Therapist;
+import org.mentalizr.backend.activity.PersistentUserActivity;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.commons.Dates;
@@ -23,7 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("v1")
-public class SubmitFeedback {
+public class SubmitFeedbackREST {
 
     private static final String SERVICE_ID = "therapist/submitFeedback";
 
@@ -80,6 +81,11 @@ public class SubmitFeedback {
                 FormDataDAO.createOrUpdate(this.formDataSO);
 
                 return null;
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                PersistentUserActivity.update(this.authorization);
             }
 
         }.call();

@@ -64,21 +64,6 @@ public class Endpoint {
 //        return "Content reloaded!";
 //    }
 
-//    @GET
-//    @Path("htmlChunk/{chunkName}")
-//    @Produces(MediaType.TEXT_HTML)
-//    public Response htmlChunk(
-//            @PathParam("chunkName") String chunkName,
-//            @Context HttpServletRequest httpServletRequest) {
-//
-//        logger.debug("[htmlChunk] ...");
-//
-//        logger.debug("[htmlChunk] requested Chunk is: " + chunkName);
-//
-//        InputStream inputStream = HtmlChunkService.getHtmlChunk(chunkName, httpServletRequest);
-//        return Response.ok(inputStream).build();
-//    }
-
     @GET
     @Path("user")
     @Produces(MediaType.APPLICATION_JSON)

@@ -4,6 +4,7 @@ import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.bson.Document;
 import org.mentalizr.backend.accessControl.M7rAccessControl;
+import org.mentalizr.backend.activity.PersistentUserActivity;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.commons.Dates;
@@ -69,6 +70,11 @@ public class SendFormDataREST {
                 FormDataMongoHandler.createOrUpdate(document);
 
                 return null;
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                PersistentUserActivity.update(this.authorization);
             }
 
             @Override

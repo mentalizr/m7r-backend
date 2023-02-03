@@ -2,6 +2,7 @@ package org.mentalizr.backend.rest.endpoints;
 
 import de.arthurpicht.webAccessControl.auth.*;
 import org.mentalizr.backend.Const;
+import org.mentalizr.backend.activity.PersistentUserActivity;
 import org.mentalizr.backend.rest.entities.factories.SessionStatusFactory;
 import org.mentalizr.backend.utils.HttpSessions;
 import org.mentalizr.serviceObjects.SessionStatusSO;
@@ -47,7 +48,7 @@ public class EndpointSession {
 
             AccessControl.login(httpServletRequest, username, passwordCharArray);
             if (rememberMe) HttpSessions.rememberMe(httpServletRequest);
-
+            PersistentUserActivity.updateByUsername(username);
             return "success";
 
         } catch (UnauthorizedException e) {
@@ -80,6 +81,7 @@ public class EndpointSession {
 
             AccessControl.loginWithAccessKey(httpServletRequest, accessKey);
             if (rememberMe) HttpSessions.rememberMe(httpServletRequest);
+            PersistentUserActivity.updateByAccessKey(accessKey);
             return "success";
 
         } catch (UnauthorizedException e) {

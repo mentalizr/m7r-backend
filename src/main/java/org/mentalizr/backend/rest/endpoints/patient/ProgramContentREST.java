@@ -3,6 +3,7 @@ package org.mentalizr.backend.rest.endpoints.patient;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.M7rAccessControl;
+import org.mentalizr.backend.activity.PersistentUserActivity;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.contentManager.ContentManager;
@@ -55,6 +56,7 @@ public class ProgramContentREST {
             protected void updateActivityStatus() {
                 String userId = this.authorization.getUserId();
                 PatientStatusDAO.updateLastContentId(userId, contentId);
+                PersistentUserActivity.update(this.authorization);
             }
 
             @Override

@@ -36,6 +36,7 @@ public class M7rLoginHandler extends LoginHandler {
             CredentialsSanity.checkPasswordSanity(password);
             UserLoginCompositeVO userLoginCompositeVO = obtainUserLoginCompositeVOByUsername(username);
 
+            assertIsActivated(userLoginCompositeVO);
             checkPasswordHash(userLoginCompositeVO, password);
 
             User user = UserFactory.createLoginUserForRole(userLoginCompositeVO);
@@ -60,6 +61,7 @@ public class M7rLoginHandler extends LoginHandler {
         try {
             CredentialsSanity.checkUsernameSanity(accessKey);
             UserAccessKeyCompositeVO userAccessKeyCompositeVO = obtainUserAccessKeyCompositeVOByAccessKey(accessKey);
+            assertIsActivated(userAccessKeyCompositeVO);
 
             User user = UserFactory.createAnonymousUser(userAccessKeyCompositeVO);
             Requirements requirements = RequirementsFactory.createRequirements(userAccessKeyCompositeVO);
@@ -128,6 +130,24 @@ public class M7rLoginHandler extends LoginHandler {
             return UserAccessKeyCompositeDAO.load(userId);
         } catch (DataSourceException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static void assertIsActivated(UserLoginCompositeVO userLoginCompositeVO) throws UnauthorizedException {
+        if (!userLoginCompositeVO.getUserVO().getActive()) {
+            String message =
+                    "[" + userLoginCompositeVO.getUserLoginVO().getUsername() + "] Login rejected. User deactivated.";
+            authLogger.warn(message);
+            throw new UnauthorizedException(message);
+        }
+    }
+
+    private static void assertIsActivated(UserAccessKeyCompositeVO userAccessKeyCompositeVO) throws UnauthorizedException {
+        if (!userAccessKeyCompositeVO.getUserVO().getActive()) {
+            String message =
+                    "[" + userAccessKeyCompositeVO.getAccessKey() + "] Login (accessKey) rejected. User deactivated.";
+            authLogger.warn(message);
+            throw new UnauthorizedException(message);
         }
     }
 
