@@ -8,8 +8,10 @@ import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserAccessKeyPatientC
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserAccessKeyVO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyDeleteSO;
 
+@Deprecated
 public class PatientAccessKeyDelete {
 
+    @Deprecated
     public static void delete(AccessKeyDeleteSO accessKeyDeleteSO) throws M7rInfrastructureException {
         try {
             String accessKey = accessKeyDeleteSO.getAccessKey();

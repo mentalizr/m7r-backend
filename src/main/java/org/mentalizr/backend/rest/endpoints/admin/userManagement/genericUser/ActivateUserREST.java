@@ -7,14 +7,8 @@ import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
-import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
-import org.mentalizr.persistence.rdbms.barnacle.dao.RolePatientDAO;
 import org.mentalizr.persistence.rdbms.barnacle.dao.UserDAO;
-import org.mentalizr.persistence.rdbms.barnacle.dao.UserLoginDAO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.UserLoginVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
-import org.mentalizr.persistence.rdbms.edao.PolicyConsentEDAO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -31,7 +25,7 @@ public class ActivateUserREST {
     @Path(SERVICE_ID + "/{userId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(
+    public Response activate(
             @PathParam("userId") String userId,
             @Context HttpServletRequest httpServletRequest
     ) {

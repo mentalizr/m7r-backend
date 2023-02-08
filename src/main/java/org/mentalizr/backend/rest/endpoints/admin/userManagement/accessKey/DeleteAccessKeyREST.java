@@ -8,7 +8,15 @@ import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertAccessKey;
-import org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey.PatientAccessKeyDelete;
+import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
+import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
+import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
+import org.mentalizr.persistence.rdbms.barnacle.dao.RolePatientDAO;
+import org.mentalizr.persistence.rdbms.barnacle.dao.UserAccessKeyDAO;
+import org.mentalizr.persistence.rdbms.barnacle.dao.UserDAO;
+import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
+import org.mentalizr.persistence.rdbms.barnacle.vo.UserAccessKeyVO;
+import org.mentalizr.persistence.rdbms.edao.PolicyConsentEDAO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyDeleteSO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,8 +60,17 @@ public class DeleteAccessKeyREST {
             }
 
             @Override
-            protected Object workLoad() throws M7rInfrastructureException {
-                PatientAccessKeyDelete.delete(getAccessKeyDeleteSO());
+            protected Object workLoad() throws DataSourceException, EntityNotFoundException {
+                String accessKey = accessKeyDeleteSO.getAccessKey();
+                UserAccessKeyVO userAccessKeyVO = UserAccessKeyDAO.findByUk_accessKey(accessKey);
+                PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userAccessKeyVO.getUserId());
+
+                PatientProgramDAO.delete(patientProgramVO.getPK());
+                RolePatientDAO.delete(userAccessKeyVO.getUserId());
+                UserAccessKeyDAO.delete(userAccessKeyVO.getUserId());
+                PolicyConsentEDAO.deleteAllForUser(userAccessKeyVO.getUserId());
+                UserDAO.delete(userAccessKeyVO.getUserId());
+
                 return null;
             }
 
