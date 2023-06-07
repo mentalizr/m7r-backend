@@ -31,7 +31,7 @@ dependencies {
     implementation 'org.mentalizr:m7r-service-objects:0.0.1-SNAPSHOT'
     implementation 'org.mentalizr:m7r-content-manager:0.1-SNAPSHOT'
 
-    implementation 'com.github.arthurpicht:utils-core:1.11.0'
+    implementation 'com.github.arthurpicht:utils-core:1.13.0'
     implementation 'com.github.arthurpicht:utils-io:0.0.17'
     implementation 'com.github.arthurpicht:ap-webAccessControl:0.0.1-SNAPSHOT'
 
@@ -44,10 +44,10 @@ dependencies {
 
     implementation 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.3'
 
-    implementation 'ch.qos.logback:logback-classic:1.4.5'
+    implementation 'ch.qos.logback:logback-classic:1.4.7'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
 }
 
 test {
@@ -73,12 +73,12 @@ war() {
     }
 }
 
-task createBuildDateFile() {
+tasks.register('createBuildDateFile') {
     new File("src/main/resources/", "builddate.txt").text = """${new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date())}"""
 }
 
 
-task copyResourcesFromFrontend(type: Copy) {
+tasks.register('copyResourcesFromFrontend', Copy) {
     def frontendProjectHtml = Paths.get("$rootDir").resolve("../m7r-frontend-project/html").toFile()
     if (!frontendProjectHtml.exists()) throw new GradleException("Project m7r-frontend-project not found.");
 
@@ -89,7 +89,7 @@ task copyResourcesFromFrontend(type: Copy) {
     into "$rootDir/src/main/webapp/WEB-INF"
 }
 
-task copyBarnacleConf(type: Copy) {
+tasks.register('copyBarnacleConf', Copy) {
     def userHome = System.getProperty("user.home")
     def configDir = Paths.get(userHome).resolve(".m7r-host/config").normalize()
     if (!Files.exists(configDir)) throw new GradleException(configDir.toAbsolutePath().toString() + ' not found.')
@@ -104,10 +104,10 @@ task copyBarnacleConf(type: Copy) {
     into "$rootDir/src/main/resources"
 }
 
-task copyWebAppConf(type: Copy) {
+tasks.register('copyWebAppConf', Copy) {
     def userHome = System.getProperty("user.home")
     def configDir = Paths.get(userHome).resolve(".m7r-host/config").normalize()
-    if (!Files.exists(configDir)) throw new GradleException(configDir.toAbsolutePath() + " not found.")
+    if (!Files.exists(configDir)) throw new GradleException(configDir.toAbsolutePath().toString() + " not found." as String)
 
     def logbackConf = configDir.resolve("common/logback.xml").toFile()
     if (!logbackConf.exists()) throw new GradleException(logbackConf.absolutePath + ' not found.')
