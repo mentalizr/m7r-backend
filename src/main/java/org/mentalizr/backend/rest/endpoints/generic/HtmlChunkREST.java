@@ -47,15 +47,17 @@ public class HtmlChunkREST {
             protected Authorization checkSecurityConstraints()
                     throws UnauthorizedException, M7rIllegalServiceInputException {
 
-                if (Strings.isOneOf(chunkName, LoginHtmlChunk.NAME, LoginVoucherHtmlChunk.NAME, PolicyHtmlChunk.NAME))
+                String chunkNameUpperCase = chunkName.toUpperCase();
+
+                if (Strings.isOneOf(chunkNameUpperCase, LoginHtmlChunk.NAME, LoginVoucherHtmlChunk.NAME, PolicyHtmlChunk.NAME))
                     return null;
 
-                if (chunkName.equals(PatientHtmlChunk.NAME))
+                if (chunkNameUpperCase.equals(PatientHtmlChunk.NAME))
                     return AccessControl.assertValidSession(
                             Sets.newHashSet(PatientAnonymous.ROLE_NAME, PatientLogin.ROLE_NAME),
                             this.httpServletRequest);
 
-                if (chunkName.equals(TherapistHtmlChunk.NAME))
+                if (chunkNameUpperCase.equals(TherapistHtmlChunk.NAME))
                     return AccessControl.assertValidSession(Therapist.ROLE_NAME, this.httpServletRequest);
 
                 throw new M7rIllegalServiceInputException("Unrecognized HtmlChunk requested: [" + chunkName + "].");
@@ -64,7 +66,7 @@ public class HtmlChunkREST {
             @Override
             protected String workLoad() {
                 HtmlChunkCache htmlChunkCache = ApplicationContext.getHtmlChunkCache();
-                return htmlChunkCache.getChunkAsString(chunkName);
+                return htmlChunkCache.getChunkAsString(chunkName.toUpperCase());
             }
 
         }.call();
