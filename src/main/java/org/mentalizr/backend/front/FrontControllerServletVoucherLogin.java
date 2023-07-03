@@ -3,6 +3,7 @@ package org.mentalizr.backend.front;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.htmlChunks.HtmlChunkCache;
 import org.mentalizr.backend.htmlChunks.definitions.InitLoginHtmlChunk;
+import org.mentalizr.backend.htmlChunks.definitions.InitVoucherHtmlChunk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,7 @@ public class FrontControllerServletVoucherLogin extends HttpServlet {
         logger.debug("FrontController (Voucher) called.");
         httpServletResponse.setContentType("text/html");
         HtmlChunkCache htmlChunkCache = ApplicationContext.getHtmlChunkCache();
-        String initChunkAsString = htmlChunkCache.getChunkAsString(InitLoginHtmlChunk.NAME);
+        String initChunkAsString = htmlChunkCache.getChunkAsString(InitVoucherHtmlChunk.NAME);
         httpServletResponse.getWriter().println(initChunkAsString);
     }
 
