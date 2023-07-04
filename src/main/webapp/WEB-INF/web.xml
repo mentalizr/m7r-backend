@@ -23,6 +23,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>frontControllerImprint</servlet-name>
+        <servlet-class>org.mentalizr.backend.front.FrontControllerServletImprint</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>frontControllerVoucherLogin</servlet-name>
         <servlet-class>org.mentalizr.backend.front.FrontControllerServletVoucherLogin</servlet-class>
     </servlet>
@@ -45,6 +50,11 @@
     <servlet-mapping>
         <servlet-name>frontController</servlet-name>
         <url-pattern>/app/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>frontControllerImprint</servlet-name>
+        <url-pattern>/imprint/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

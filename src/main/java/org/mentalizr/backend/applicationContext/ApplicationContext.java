@@ -26,6 +26,7 @@ public class ApplicationContext {
     private static InfraUserConfiguration infraUserConfiguration;
     private static ContentManager contentManager;
     private static PolicyCache policyCache;
+    private static ImprintCache imprintCache;
     private static HtmlChunkCache htmlChunkCache;
     private static boolean isInitialized = false;
 
@@ -38,8 +39,9 @@ public class ApplicationContext {
             infraUserConfiguration = loadInfraUserConfiguration();
             PersistenceMongoContext.initialize(infraUserConfiguration);
             policyCache = PolicyCache.createInstance(instanceConfiguration);
+            imprintCache = ImprintCache.createInstance(instanceConfiguration);
             htmlChunkCache = new HtmlChunkCache(
-                    new ProductionHtmlChunkReader(servletContext, policyCache),
+                    new ProductionHtmlChunkReader(servletContext, policyCache, imprintCache),
                     instanceConfiguration.getApplicationConfigGenericSO());
             contentManager = initContentManager();
         } catch (InitializationException e) {

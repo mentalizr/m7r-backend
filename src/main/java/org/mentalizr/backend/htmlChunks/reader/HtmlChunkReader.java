@@ -8,4 +8,6 @@ public interface HtmlChunkReader {
 
     String fromPolicyConfiguration();
 
+    String fromImprintConfiguration();
+
 }

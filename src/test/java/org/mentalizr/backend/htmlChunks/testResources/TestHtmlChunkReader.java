@@ -16,6 +16,12 @@ public class TestHtmlChunkReader implements HtmlChunkReader {
             "    <h1>This is a policy</h2>\n" +
             "</html>\n";
 
+    public static final String IMPRINT =
+            "<html>\n" +
+                    "    <h1>This is a imprint</h2>\n" +
+                    "</html>\n";
+
+
     @Override
     public String fromWebAppResource(HtmlChunk htmlChunk) {
         InternalHtmlChunk internalHtmlChunk = (InternalHtmlChunk) htmlChunk;
@@ -35,6 +41,11 @@ public class TestHtmlChunkReader implements HtmlChunkReader {
     @Override
     public String fromPolicyConfiguration() {
         return POLICY;
+    }
+
+    @Override
+    public String fromImprintConfiguration() {
+        return IMPRINT;
     }
 
 }

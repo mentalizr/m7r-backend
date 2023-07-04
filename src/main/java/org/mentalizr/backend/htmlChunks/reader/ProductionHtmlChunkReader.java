@@ -1,5 +1,6 @@
 package org.mentalizr.backend.htmlChunks.reader;
 
+import org.mentalizr.backend.applicationContext.ImprintCache;
 import org.mentalizr.backend.applicationContext.PolicyCache;
 import org.mentalizr.backend.exceptions.M7rInconsistencyException;
 import org.mentalizr.backend.exceptions.M7rInfrastructureRuntimeException;
@@ -18,10 +19,12 @@ public class ProductionHtmlChunkReader implements HtmlChunkReader {
 
     private final ServletContext servletContext;
     private final PolicyCache policyCache;
+    private final ImprintCache imprintCache;
 
-    public ProductionHtmlChunkReader(ServletContext servletContext, PolicyCache policyCache) {
+    public ProductionHtmlChunkReader(ServletContext servletContext, PolicyCache policyCache, ImprintCache imprintCache) {
         this.servletContext = servletContext;
         this.policyCache = policyCache;
+        this.imprintCache = imprintCache;
     }
 
     @Override
@@ -42,6 +45,11 @@ public class ProductionHtmlChunkReader implements HtmlChunkReader {
     @Override
     public String fromPolicyConfiguration() {
         return this.policyCache.getPolicyHtml();
+    }
+
+    @Override
+    public String fromImprintConfiguration() {
+        return this.imprintCache.getImprintHtml();
     }
 
     private static String toStringWithNormalizedLineDelimiter(InputStream inputStream) throws IOException {

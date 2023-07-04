@@ -80,4 +80,12 @@ public class ChunkTest {
         Assertions.assertTrue(actual.startsWith(expected));
     }
 
+    @Test
+    public void imprintChunk() {
+        String expected = TestHtmlChunkReader.IMPRINT;
+        String actual = htmlChunkCache.getChunkAsString(ImprintHtmlChunk.NAME);
+        if (outputActualChunk) System.out.println(actual);
+        Assertions.assertTrue(actual.startsWith(expected));
+    }
+
 }

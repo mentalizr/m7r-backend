@@ -20,6 +20,7 @@ public class HtmlChunkCache {
         putHtmlChunk(new LoginHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
         putHtmlChunk(new LoginVoucherHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
         putHtmlChunk(new PolicyHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
+        putHtmlChunk(new ImprintHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
         putHtmlChunk(new PatientHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
         putHtmlChunk(new TherapistHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
     }
