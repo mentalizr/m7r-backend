@@ -50,7 +50,8 @@ public class HtmlChunkREST {
                 String chunkNameUpperCase = chunkName.toUpperCase();
 
                 if (Strings.isOneOf(chunkNameUpperCase,
-                        LoginHtmlChunk.NAME, LoginVoucherHtmlChunk.NAME, PolicyHtmlChunk.NAME, ImprintHtmlChunk.NAME))
+                        LoginHtmlChunk.NAME, LoginVoucherHtmlChunk.NAME, PolicyConsentHtmlChunk.NAME,
+                        PolicyModalHtmlChunk.NAME, ImprintHtmlChunk.NAME))
                     return null;
 
                 if (chunkNameUpperCase.equals(PatientHtmlChunk.NAME))

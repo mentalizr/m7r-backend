@@ -17,7 +17,8 @@ public class PolicyCache {
 
     private static final Logger logger = LoggerFactory.getLogger(PolicyCache.class);
     private final String policyFileName;
-    private final String policyHtml;
+    private final String policyHtmlCore;
+    private final String policyHtmlContainerized;
 
     public static PolicyCache createInstance(InstanceConfiguration instanceConfiguration) {
         Path dir = new M7rHostConfigDir().asPath();
@@ -35,16 +36,28 @@ public class PolicyCache {
             throw new InitializationException("Policy file not found. [" + policyHtmlFile.toAbsolutePath() + "].");
 
         logger.info("Load policy file [" + policyHtmlFile.toAbsolutePath() + "].");
+        this.policyHtmlCore = readFileToString(policyHtmlFile);
 
-        policyHtml = readFileToString(policyHtmlFile);
+        Path policyContainerHtmlFile = policyDir.resolve("policy-container.html");
+        if (!FileUtils.isExistingRegularFile(policyContainerHtmlFile))
+            throw new InitializationException("Policy container file not found. [" + policyContainerHtmlFile.toAbsolutePath() + "].");
+
+        logger.info("Load policy container file [" + policyContainerHtmlFile.toAbsolutePath() + "].");
+        String policyContainerHtml = readFileToString(policyContainerHtmlFile);
+
+        this.policyHtmlContainerized = policyContainerHtml.replace("<!-- INCLUDE -->", policyHtmlCore);
     }
 
     public String getPolicyFileName() {
         return this.policyFileName;
     }
 
-    public String getPolicyHtml() {
-        return this.policyHtml;
+    public String getPolicyHtmlContainerized() {
+        return this.policyHtmlContainerized;
+    }
+
+    public String getPolicyHtmlModal() {
+        return this.policyHtmlCore;
     }
 
     private String readFileToString(Path file) {

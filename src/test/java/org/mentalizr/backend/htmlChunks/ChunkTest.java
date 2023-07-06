@@ -76,7 +76,7 @@ public class ChunkTest {
     @Test
     public void policyChunk() {
         String expected = TestHtmlChunkReader.POLICY;
-        String actual = htmlChunkCache.getChunkAsString(PolicyHtmlChunk.NAME);
+        String actual = htmlChunkCache.getChunkAsString(PolicyConsentHtmlChunk.NAME);
         if (outputActualChunk) System.out.println(actual);
         Assertions.assertTrue(actual.startsWith(expected));
     }

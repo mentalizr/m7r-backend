@@ -20,7 +20,8 @@ public class HtmlChunkCache {
         putHtmlChunk(new InitLoginVoucherHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
         putHtmlChunk(new LoginHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
         putHtmlChunk(new LoginVoucherHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
-        putHtmlChunk(new PolicyHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO, policyCache));
+        putHtmlChunk(new PolicyConsentHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO, policyCache));
+        putHtmlChunk(new PolicyModalHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO, policyCache));
         putHtmlChunk(new ImprintHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
         putHtmlChunk(new PatientHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
         putHtmlChunk(new TherapistHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
@@ -30,15 +31,6 @@ public class HtmlChunkCache {
         if (this.chunkCacheMap.contains(name))
             return this.chunkCacheMap.getChunkAsString(name);
 
-        throw new RuntimeException("Unknown HtmlChunk: [" + name + "].");
-    }
-
-    public InputStream getChunkAsInputStream(String name) {
-        String htmlChunkString;
-        if (this.chunkCacheMap.contains(name)) {
-            htmlChunkString = this.chunkCacheMap.getChunkAsString(name);
-            return StringUtils.asInputStream(htmlChunkString, StandardCharsets.UTF_8);
-        }
         throw new RuntimeException("Unknown HtmlChunk: [" + name + "].");
     }
 

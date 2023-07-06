@@ -2,7 +2,7 @@ package org.mentalizr.backend.htmlChunks.testResources;
 
 import de.arthurpicht.utils.io.nio2.FileUtils;
 import org.mentalizr.backend.htmlChunks.definitions.ImprintHtmlChunk;
-import org.mentalizr.backend.htmlChunks.definitions.PolicyHtmlChunk;
+import org.mentalizr.backend.htmlChunks.definitions.PolicyConsentHtmlChunk;
 import org.mentalizr.backend.htmlChunks.definitions.hierarchy.HtmlChunk;
 import org.mentalizr.backend.htmlChunks.definitions.hierarchy.InternalHtmlChunk;
 import org.mentalizr.backend.htmlChunks.reader.HtmlChunkReader;
@@ -27,7 +27,7 @@ public class TestHtmlChunkReader implements HtmlChunkReader {
     public String asString(HtmlChunk htmlChunk) {
         if (htmlChunk instanceof InternalHtmlChunk) {
             return fromWebAppResource(htmlChunk);
-        } else if (htmlChunk instanceof PolicyHtmlChunk) {
+        } else if (htmlChunk instanceof PolicyConsentHtmlChunk) {
             return POLICY;
         } else if (htmlChunk instanceof ImprintHtmlChunk) {
             return IMPRINT;

@@ -5,7 +5,8 @@ import org.mentalizr.backend.applicationContext.PolicyCache;
 import org.mentalizr.backend.exceptions.M7rInconsistencyException;
 import org.mentalizr.backend.exceptions.M7rInfrastructureRuntimeException;
 import org.mentalizr.backend.htmlChunks.definitions.ImprintHtmlChunk;
-import org.mentalizr.backend.htmlChunks.definitions.PolicyHtmlChunk;
+import org.mentalizr.backend.htmlChunks.definitions.PolicyConsentHtmlChunk;
+import org.mentalizr.backend.htmlChunks.definitions.PolicyModalHtmlChunk;
 import org.mentalizr.backend.htmlChunks.definitions.hierarchy.ExternalHtmlChunk;
 import org.mentalizr.backend.htmlChunks.definitions.hierarchy.HtmlChunk;
 import org.mentalizr.backend.htmlChunks.definitions.hierarchy.InternalHtmlChunk;
@@ -35,8 +36,10 @@ public class ProductionHtmlChunkReader implements HtmlChunkReader {
         if (htmlChunk instanceof InternalHtmlChunk) {
             return fromWebAppResource(htmlChunk);
         } else if (htmlChunk instanceof ExternalHtmlChunk) {
-            if (htmlChunk instanceof PolicyHtmlChunk) {
-                return this.policyCache.getPolicyHtml();
+            if (htmlChunk instanceof PolicyConsentHtmlChunk) {
+                return this.policyCache.getPolicyHtmlContainerized();
+            } else if (htmlChunk instanceof PolicyModalHtmlChunk) {
+                return this.policyCache.getPolicyHtmlModal();
             } else if (htmlChunk instanceof ImprintHtmlChunk) {
                 return this.imprintCache.getImprintHtml();
             }

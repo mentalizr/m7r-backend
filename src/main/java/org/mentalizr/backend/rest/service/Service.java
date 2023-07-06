@@ -84,6 +84,10 @@ public abstract  class Service {
             return ResponseFactory.unauthorized();
         } catch (M7rIllegalServiceInputException e) {
             return handleIllegalServiceInput(e);
+        } catch (RuntimeException e) {
+            logger.error("A RuntimeExceptioni occurred on executing method checkSecurityConstraints for service ["
+                    + getServiceId() + "]: " + e.getMessage(), e);
+            return ResponseFactory.internalServerError(e);
         }
 
         try {
@@ -95,13 +99,17 @@ public abstract  class Service {
         } catch (M7rInfrastructureException e) {
             logger.error(e.getMessage(), e);
             return ResponseFactory.internalServerError(e);
+        } catch (RuntimeException e) {
+            logger.error("A RuntimeException occurred on executing method checkSecurityConstraints for service ["
+                    + getServiceId() + "]: " + e.getMessage(), e);
+            return ResponseFactory.internalServerError(e);
         }
 
         Object responseSO;
         try {
             responseSO = workLoad();
         } catch (RESTException | ContentManagerException | IOException | M7rInfrastructureException |
-                 DataSourceException e) {
+                 DataSourceException | RuntimeException e) {
             logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
                     + getServiceId() + "]: " + e.getMessage(), e);
             return ResponseFactory.internalServerError(e);
