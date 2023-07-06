@@ -1,14 +1,16 @@
 package org.mentalizr.backend.htmlChunks.definitions;
 
-import org.mentalizr.backend.htmlChunks.definitions.hierarchy.HtmlChunk;
-import org.mentalizr.backend.htmlChunks.reader.HtmlChunkReader;
+import org.mentalizr.backend.applicationContext.PolicyCache;
+import org.mentalizr.backend.htmlChunks.definitions.hierarchy.ExternalHtmlChunk;
 
-public class PolicyHtmlChunk extends HtmlChunk {
+public class PolicyHtmlChunk extends ExternalHtmlChunk {
 
     public static final String NAME = "POLICY";
 
-    public PolicyHtmlChunk(HtmlChunkReader htmlChunkReader) {
-        super(htmlChunkReader);
+    private final PolicyCache policyCache;
+
+    public PolicyHtmlChunk(PolicyCache policyCache) {
+        this.policyCache = policyCache;
     }
 
     @Override
@@ -17,8 +19,8 @@ public class PolicyHtmlChunk extends HtmlChunk {
     }
 
     @Override
-    public String asString() {
-        return this.htmlChunkReader.fromPolicyConfiguration();
+    public String getFileName() {
+        return this.policyCache.getPolicyFileName();
     }
 
 }

@@ -2,21 +2,14 @@ package org.mentalizr.backend.htmlChunks.definitions.hierarchy;
 
 import org.mentalizr.backend.htmlChunks.modifier.HtmlChunkModifier;
 import org.mentalizr.backend.htmlChunks.modifier.NoopModifier;
-import org.mentalizr.backend.htmlChunks.reader.HtmlChunkReader;
 
 import java.util.Objects;
 
 public abstract class HtmlChunk {
 
-    protected final HtmlChunkReader htmlChunkReader;
-
-    public HtmlChunk(HtmlChunkReader htmlChunkReader) {
-        this.htmlChunkReader = htmlChunkReader;
-    }
-
     public abstract String getName();
 
-    public abstract String asString();
+    public abstract String getFileName();
 
     public HtmlChunkModifier getModifier() {
         return new NoopModifier();

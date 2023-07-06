@@ -42,7 +42,8 @@ public class ApplicationContext {
             imprintCache = ImprintCache.createInstance(instanceConfiguration);
             htmlChunkCache = new HtmlChunkCache(
                     new ProductionHtmlChunkReader(servletContext, policyCache, imprintCache),
-                    instanceConfiguration.getApplicationConfigGenericSO());
+                    instanceConfiguration.getApplicationConfigGenericSO(),
+                    policyCache);
             contentManager = initContentManager();
         } catch (InitializationException e) {
             logger.error("Initialization failed. " + e.getMessage());

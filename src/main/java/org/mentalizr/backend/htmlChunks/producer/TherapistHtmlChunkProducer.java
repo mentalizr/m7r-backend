@@ -7,7 +7,7 @@ import org.mentalizr.serviceObjects.frontend.application.ApplicationConfigGeneri
 public class TherapistHtmlChunkProducer extends HtmlChunkProducer {
 
     public TherapistHtmlChunkProducer(HtmlChunkReader htmlChunkReader, ApplicationConfigGenericSO applicationConfigGenericSO) {
-        super(new TherapistHtmlChunk(htmlChunkReader), applicationConfigGenericSO);
+        super(new TherapistHtmlChunk(), htmlChunkReader, applicationConfigGenericSO);
     }
 
 }

@@ -3,15 +3,10 @@ package org.mentalizr.backend.htmlChunks.definitions;
 import org.mentalizr.backend.htmlChunks.definitions.hierarchy.InternalHtmlChunk;
 import org.mentalizr.backend.htmlChunks.modifier.InitHtmlChunkModifier;
 import org.mentalizr.backend.htmlChunks.modifier.InitLoginHtmlChunkModifier;
-import org.mentalizr.backend.htmlChunks.reader.HtmlChunkReader;
 
 public class InitLoginHtmlChunk extends InternalHtmlChunk {
 
     public static final String NAME = "INIT_LOGIN";
-
-    public InitLoginHtmlChunk(HtmlChunkReader htmlChunkReader) {
-        super(htmlChunkReader);
-    }
 
     @Override
     public String getName() {

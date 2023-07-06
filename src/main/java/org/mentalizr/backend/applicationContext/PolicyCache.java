@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 public class PolicyCache {
 
     private static final Logger logger = LoggerFactory.getLogger(PolicyCache.class);
+    private final String policyFileName;
     private final String policyHtml;
 
     public static PolicyCache createInstance(InstanceConfiguration instanceConfiguration) {
@@ -28,7 +29,8 @@ public class PolicyCache {
         if (Strings.containsWhitespace(version))
             throw new InitializationException("Policy version string contains whitespace: [" + version + "].");
 
-        Path policyHtmlFile = policyDir.resolve("policy-" + version + ".html");
+        this.policyFileName = "policy-" + version + ".html";
+        Path policyHtmlFile = policyDir.resolve(this.policyFileName);
         if (!FileUtils.isExistingRegularFile(policyHtmlFile))
             throw new InitializationException("Policy file not found. [" + policyHtmlFile.toAbsolutePath() + "].");
 
@@ -37,8 +39,12 @@ public class PolicyCache {
         policyHtml = readFileToString(policyHtmlFile);
     }
 
+    public String getPolicyFileName() {
+        return this.policyFileName;
+    }
+
     public String getPolicyHtml() {
-        return policyHtml;
+        return this.policyHtml;
     }
 
     private String readFileToString(Path file) {

@@ -4,6 +4,9 @@ import org.mentalizr.backend.applicationContext.ImprintCache;
 import org.mentalizr.backend.applicationContext.PolicyCache;
 import org.mentalizr.backend.exceptions.M7rInconsistencyException;
 import org.mentalizr.backend.exceptions.M7rInfrastructureRuntimeException;
+import org.mentalizr.backend.htmlChunks.definitions.ImprintHtmlChunk;
+import org.mentalizr.backend.htmlChunks.definitions.PolicyHtmlChunk;
+import org.mentalizr.backend.htmlChunks.definitions.hierarchy.ExternalHtmlChunk;
 import org.mentalizr.backend.htmlChunks.definitions.hierarchy.HtmlChunk;
 import org.mentalizr.backend.htmlChunks.definitions.hierarchy.InternalHtmlChunk;
 
@@ -28,7 +31,20 @@ public class ProductionHtmlChunkReader implements HtmlChunkReader {
     }
 
     @Override
-    public String fromWebAppResource(HtmlChunk htmlChunk) {
+    public String asString(HtmlChunk htmlChunk) {
+        if (htmlChunk instanceof InternalHtmlChunk) {
+            return fromWebAppResource(htmlChunk);
+        } else if (htmlChunk instanceof ExternalHtmlChunk) {
+            if (htmlChunk instanceof PolicyHtmlChunk) {
+                return this.policyCache.getPolicyHtml();
+            } else if (htmlChunk instanceof ImprintHtmlChunk) {
+                return this.imprintCache.getImprintHtml();
+            }
+        }
+        throw new RuntimeException("Unknown super type of HtmlChunk: [" + htmlChunk.getClass().getCanonicalName() + "].");
+    }
+
+    private String fromWebAppResource(HtmlChunk htmlChunk) {
         InternalHtmlChunk internalHtmlChunk = (InternalHtmlChunk) htmlChunk;
         String fileName = internalHtmlChunk.getFileName();
         try (InputStream inputStream = servletContext.getResourceAsStream(fileName)) {
@@ -40,16 +56,6 @@ public class ProductionHtmlChunkReader implements HtmlChunkReader {
                     "Could not read HtmlChunk [" + fileName + "] from WebApp Resources: "
                     + e.getMessage(), e);
         }
-    }
-
-    @Override
-    public String fromPolicyConfiguration() {
-        return this.policyCache.getPolicyHtml();
-    }
-
-    @Override
-    public String fromImprintConfiguration() {
-        return this.imprintCache.getImprintHtml();
     }
 
     private static String toStringWithNormalizedLineDelimiter(InputStream inputStream) throws IOException {

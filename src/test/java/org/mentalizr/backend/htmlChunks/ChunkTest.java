@@ -20,7 +20,8 @@ public class ChunkTest {
     public static void setUp() {
         htmlChunkCache = new HtmlChunkCache(
                 new TestHtmlChunkReader(),
-                ApplicationConfigGenericSOFactory.create()
+                ApplicationConfigGenericSOFactory.create(),
+                null
         );
     }
 

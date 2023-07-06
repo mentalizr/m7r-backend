@@ -7,7 +7,7 @@ import org.mentalizr.serviceObjects.frontend.application.ApplicationConfigGeneri
 public class LoginVoucherHtmlChunkProducer extends HtmlChunkProducer {
 
     public LoginVoucherHtmlChunkProducer(HtmlChunkReader htmlChunkReader, ApplicationConfigGenericSO applicationConfigGenericSO) {
-        super(new LoginVoucherHtmlChunk(htmlChunkReader), applicationConfigGenericSO);
+        super(new LoginVoucherHtmlChunk(), htmlChunkReader, applicationConfigGenericSO);
     }
 
 }

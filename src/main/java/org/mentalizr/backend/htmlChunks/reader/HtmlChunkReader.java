@@ -4,10 +4,12 @@ import org.mentalizr.backend.htmlChunks.definitions.hierarchy.HtmlChunk;
 
 public interface HtmlChunkReader {
 
-    String fromWebAppResource(HtmlChunk htmlChunk);
+    String asString(HtmlChunk htmlChunk);
 
-    String fromPolicyConfiguration();
-
-    String fromImprintConfiguration();
+//    String fromWebAppResource(HtmlChunk htmlChunk);
+//
+//    String fromPolicyConfiguration();
+//
+//    String fromImprintConfiguration();
 
 }

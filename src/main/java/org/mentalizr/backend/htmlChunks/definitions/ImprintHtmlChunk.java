@@ -1,15 +1,10 @@
 package org.mentalizr.backend.htmlChunks.definitions;
 
-import org.mentalizr.backend.htmlChunks.definitions.hierarchy.HtmlChunk;
-import org.mentalizr.backend.htmlChunks.reader.HtmlChunkReader;
+import org.mentalizr.backend.htmlChunks.definitions.hierarchy.ExternalHtmlChunk;
 
-public class ImprintHtmlChunk extends HtmlChunk {
+public class ImprintHtmlChunk extends ExternalHtmlChunk {
 
     public static final String NAME = "IMPRINT";
-
-    public ImprintHtmlChunk(HtmlChunkReader htmlChunkReader) {
-        super(htmlChunkReader);
-    }
 
     @Override
     public String getName() {
@@ -17,8 +12,8 @@ public class ImprintHtmlChunk extends HtmlChunk {
     }
 
     @Override
-    public String asString() {
-        return this.htmlChunkReader.fromImprintConfiguration();
+    public String getFileName() {
+        return "imprint.html";
     }
 
 }

@@ -1,5 +1,6 @@
 package org.mentalizr.backend.htmlChunks;
 
+import org.mentalizr.backend.applicationContext.PolicyCache;
 import org.mentalizr.backend.htmlChunks.producer.*;
 import org.mentalizr.backend.htmlChunks.reader.HtmlChunkReader;
 import org.mentalizr.backend.utils.StringUtils;
@@ -12,14 +13,14 @@ public class HtmlChunkCache {
 
     private final HtmlChunkMap chunkCacheMap;
 
-    public HtmlChunkCache(HtmlChunkReader htmlChunkReader, ApplicationConfigGenericSO applicationConfigGenericSO) {
+    public HtmlChunkCache(HtmlChunkReader htmlChunkReader, ApplicationConfigGenericSO applicationConfigGenericSO, PolicyCache policyCache) {
         this.chunkCacheMap = new HtmlChunkMap();
 
         putHtmlChunk(new InitLoginHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
         putHtmlChunk(new InitLoginVoucherHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
         putHtmlChunk(new LoginHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
         putHtmlChunk(new LoginVoucherHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
-        putHtmlChunk(new PolicyHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
+        putHtmlChunk(new PolicyHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO, policyCache));
         putHtmlChunk(new ImprintHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
         putHtmlChunk(new PatientHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));
         putHtmlChunk(new TherapistHtmlChunkProducer(htmlChunkReader, applicationConfigGenericSO));

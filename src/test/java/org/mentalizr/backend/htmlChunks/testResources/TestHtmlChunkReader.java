@@ -1,6 +1,8 @@
 package org.mentalizr.backend.htmlChunks.testResources;
 
 import de.arthurpicht.utils.io.nio2.FileUtils;
+import org.mentalizr.backend.htmlChunks.definitions.ImprintHtmlChunk;
+import org.mentalizr.backend.htmlChunks.definitions.PolicyHtmlChunk;
 import org.mentalizr.backend.htmlChunks.definitions.hierarchy.HtmlChunk;
 import org.mentalizr.backend.htmlChunks.definitions.hierarchy.InternalHtmlChunk;
 import org.mentalizr.backend.htmlChunks.reader.HtmlChunkReader;
@@ -13,16 +15,27 @@ public class TestHtmlChunkReader implements HtmlChunkReader {
 
     public static final String POLICY =
             "<html>\n" +
-            "    <h1>This is a policy</h2>\n" +
-            "</html>\n";
+                    "    <h1>This is a policy</h2>\n" +
+                    "</html>\n";
 
     public static final String IMPRINT =
             "<html>\n" +
                     "    <h1>This is a imprint</h2>\n" +
                     "</html>\n";
 
-
     @Override
+    public String asString(HtmlChunk htmlChunk) {
+        if (htmlChunk instanceof InternalHtmlChunk) {
+            return fromWebAppResource(htmlChunk);
+        } else if (htmlChunk instanceof PolicyHtmlChunk) {
+            return POLICY;
+        } else if (htmlChunk instanceof ImprintHtmlChunk) {
+            return IMPRINT;
+        }
+        throw new RuntimeException("Not implemented.");
+    }
+
+
     public String fromWebAppResource(HtmlChunk htmlChunk) {
         InternalHtmlChunk internalHtmlChunk = (InternalHtmlChunk) htmlChunk;
         String fileName = internalHtmlChunk.getFileName();
@@ -36,16 +49,6 @@ public class TestHtmlChunkReader implements HtmlChunkReader {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public String fromPolicyConfiguration() {
-        return POLICY;
-    }
-
-    @Override
-    public String fromImprintConfiguration() {
-        return IMPRINT;
     }
 
 }
