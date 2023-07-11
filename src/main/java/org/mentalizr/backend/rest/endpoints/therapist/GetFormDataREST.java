@@ -1,7 +1,9 @@
 package org.mentalizr.backend.rest.endpoints.therapist;
 
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.roles.Therapist;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.formData.FormDataDAO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
@@ -15,8 +17,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsTherapist;
 
 @Path("v1")
 public class GetFormDataREST {
@@ -39,8 +39,8 @@ public class GetFormDataREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return assertIsLoggedInAsTherapist(httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return AccessControl.assertValidSession(Therapist.ROLE_NAME, httpServletRequest);
             }
 
             @Override

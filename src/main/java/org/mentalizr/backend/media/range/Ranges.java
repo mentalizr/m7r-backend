@@ -1,9 +1,9 @@
 package org.mentalizr.backend.media.range;
 
-import de.arthurpicht.utils.core.assertion.AssertMethodPrecondition;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import static de.arthurpicht.utils.core.assertion.MethodPreconditions.assertArgumentNotNull;
 
 public class Ranges {
 
@@ -14,7 +14,7 @@ public class Ranges {
     }
 
     public Ranges(List<Range> rangeList) {
-        AssertMethodPrecondition.parameterNotNull("rangeList", rangeList);
+        assertArgumentNotNull("rangeList", rangeList);
         this.rangeList = rangeList;
     }
 

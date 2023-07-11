@@ -1,8 +1,10 @@
 package org.mentalizr.backend.rest.endpoints.admin.userManagement.patient;
 
-import org.mentalizr.backend.auth.AuthorizationService;
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.roles.Admin;
+import org.mentalizr.backend.adapter.PatientRestoreSOAdapter;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
@@ -19,7 +21,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Date;
 
 @Path("v1")
 public class GetPatientREST {
@@ -43,8 +44,8 @@ public class GetPatientREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return AuthorizationService.assertIsLoggedInAsAdmin(httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return AccessControl.assertValidSession(Admin.ROLE_NAME, httpServletRequest);
             }
 
             @Override
@@ -54,19 +55,7 @@ public class GetPatientREST {
                 RolePatientVO rolePatientVO = RolePatientDAO.load(userId);
                 PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userId);
 
-                PatientRestoreSO patientRestoreSO = new PatientRestoreSO();
-                patientRestoreSO.setUserId(userLoginCompositeVO.getUserId());
-                patientRestoreSO.setActive(userLoginCompositeVO.isActive());
-                Date firstActive = userLoginCompositeVO.getFirstActive();
-                patientRestoreSO.setFirstActive(firstActive != null ? firstActive.toString() : null);
-                Date lastActive = userLoginCompositeVO.getLastActive();
-                patientRestoreSO.setLastActive(lastActive != null ? lastActive.toString() : null);
-                patientRestoreSO.setUsername(userLoginCompositeVO.getUsername());
-                patientRestoreSO.setPasswordHash(userLoginCompositeVO.getPasswordHash());
-                patientRestoreSO.setEmail(userLoginCompositeVO.getEmail());
-                patientRestoreSO.setFirstname(userLoginCompositeVO.getFirstName());
-                patientRestoreSO.setLastname(userLoginCompositeVO.getLastName());
-                patientRestoreSO.setGender(userLoginCompositeVO.getGender());
+                PatientRestoreSO patientRestoreSO = PatientRestoreSOAdapter.from(userLoginCompositeVO);
 
                 patientRestoreSO.setProgramId(patientProgramVO.getProgramId());
                 patientRestoreSO.setBlocking(patientProgramVO.getBlocking());

@@ -1,10 +1,11 @@
 package org.mentalizr.backend.rest.endpoints.patient;
 
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.M7rAccessControl;
+import org.mentalizr.backend.accessControl.M7rAuthorization;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
-import org.mentalizr.backend.config.BrandingConfiguration;
-import org.mentalizr.backend.config.BrandingConfigurationFactory;
+import org.mentalizr.backend.config.instance.InstanceConfiguration;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.serviceObjects.frontend.patient.ApplicationConfigPatientSO;
 
@@ -15,8 +16,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsPatient;
 
 @Path("v1")
 public class AppConfigREST {
@@ -36,15 +35,16 @@ public class AppConfigREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return assertIsLoggedInAsPatient(httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return M7rAccessControl.assertValidSessionAsPatientAbstract(this.httpServletRequest);
             }
 
             @Override
             protected ApplicationConfigPatientSO workLoad() {
-                BrandingConfiguration brandingConfiguration = ApplicationContext.getBrandingConfiguration();
-                String programId = getPatientHttpSessionAttribute().getPatientProgramVO().getProgramId();
-                return brandingConfiguration.getApplicationConfigPatientSO(programId);
+                InstanceConfiguration instanceConfiguration = ApplicationContext.getInstanceConfiguration();
+                M7rAuthorization m7rAuthorization = new M7rAuthorization(this.authorization);
+                String programId = m7rAuthorization.getUserAsPatientAbstract().getPatientProgramVO().getProgramId();
+                return instanceConfiguration.getApplicationConfigPatientSO(programId);
             }
 
         }.call();

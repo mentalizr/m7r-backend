@@ -1,15 +1,15 @@
 package org.mentalizr.backend.rest.endpoints.admin.userManagement.accessKey;
 
-import org.mentalizr.backend.auth.AuthorizationService;
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
-import org.mentalizr.backend.exceptions.InfrastructureException;
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.roles.Admin;
+import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertProgram;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertRoleTherapist;
 import org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey.PatientAccessKeyCreate;
-import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyCollectionSO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyCreateSO;
 
@@ -42,12 +42,12 @@ public class CreateAccessKeyREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return AuthorizationService.assertIsLoggedInAsAdmin(this.httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return AccessControl.assertValidSession(Admin.ROLE_NAME, this.httpServletRequest);
             }
 
             @Override
-            protected void checkPreconditions() throws ServicePreconditionFailedException, InfrastructureException {
+            protected void checkPreconditions() throws ServicePreconditionFailedException, M7rInfrastructureException {
                 AssertRoleTherapist.exists(
                         getAccessKeyCreateSO().getTherapistId(),
                         "Referenced therapist [%s] does not exist."
@@ -59,7 +59,7 @@ public class CreateAccessKeyREST {
             }
 
             @Override
-            protected AccessKeyCollectionSO workLoad() throws InfrastructureException {
+            protected AccessKeyCollectionSO workLoad() throws M7rInfrastructureException {
                 return PatientAccessKeyCreate.create(getAccessKeyCreateSO());
             }
 

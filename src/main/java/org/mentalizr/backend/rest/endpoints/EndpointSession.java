@@ -1,12 +1,10 @@
 package org.mentalizr.backend.rest.endpoints;
 
-import org.mentalizr.backend.auth.Authentication;
-import org.mentalizr.backend.auth.AuthenticationService;
-import org.mentalizr.backend.auth.Authorization;
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.exceptions.InfrastructureException;
+import de.arthurpicht.webAccessControl.auth.*;
+import org.mentalizr.backend.Const;
+import org.mentalizr.backend.activity.PersistentUserActivity;
 import org.mentalizr.backend.rest.entities.factories.SessionStatusFactory;
-import org.mentalizr.backend.utils.HttpSessionHelper;
+import org.mentalizr.backend.utils.HttpSessions;
 import org.mentalizr.serviceObjects.SessionStatusSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +19,7 @@ import javax.ws.rs.core.Response;
 public class EndpointSession {
 
     private static final Logger logger = LoggerFactory.getLogger(EndpointSession.class);
-    private static final Logger authLogger = LoggerFactory.getLogger("m7r-auth");
+    private static final Logger authLogger = Const.authLogger;
     private static final int DELAY_ON_NEXT_CONTENT = 0;
 
     @POST
@@ -48,18 +46,18 @@ public class EndpointSession {
             // https://www.igorkromin.net/index.php/2017/05/05/posting-array-data-from-a-web-form-to-a-jersey-rest-service/
             char[] passwordCharArray = password.toCharArray();
 
-            AuthenticationService.login(httpServletRequest, username, passwordCharArray);
-            if (rememberMe) HttpSessionHelper.rememberMe(httpServletRequest);
-
+            AccessControl.login(httpServletRequest, username, passwordCharArray);
+            if (rememberMe) HttpSessions.rememberMe(httpServletRequest);
+            PersistentUserActivity.updateByUsername(username);
             return "success";
 
         } catch (UnauthorizedException e) {
             authLogger.warn(e.getMessage());
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-
-        } catch (InfrastructureException | RuntimeException e) {
+        } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
             throw new WebApplicationException((Response.Status.INTERNAL_SERVER_ERROR));
+
         }
     }
 
@@ -81,17 +79,18 @@ public class EndpointSession {
 
         try {
 
-            AuthenticationService.loginWithAccessKey(httpServletRequest, accessKey);
-            if (rememberMe) HttpSessionHelper.rememberMe(httpServletRequest);
+            AccessControl.loginWithAccessKey(httpServletRequest, accessKey);
+            if (rememberMe) HttpSessions.rememberMe(httpServletRequest);
+            PersistentUserActivity.updateByAccessKey(accessKey);
             return "success";
 
         } catch (UnauthorizedException e) {
             authLogger.warn(e.getMessage());
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
 
-        } catch (InfrastructureException | RuntimeException e) {
+        } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
-            throw new WebApplicationException((Response.Status.INTERNAL_SERVER_ERROR));
+            throw new WebApplicationException(e.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -99,12 +98,9 @@ public class EndpointSession {
     @Path("logout")
     @Produces(MediaType.TEXT_PLAIN)
     public String logout(@Context HttpServletRequest httpServletRequest) {
-
         logger.debug("[logout]");
-
-        AuthenticationService.logout(httpServletRequest);
+        AccessControl.logout(httpServletRequest);
         return "logout";
-
     }
 
     @GET
@@ -112,8 +108,16 @@ public class EndpointSession {
     @Produces(MediaType.TEXT_PLAIN)
     public String noop(@Context HttpServletRequest httpServletRequest) {
         logger.debug("[noop]");
-        Authentication authentication = AuthenticationService.assertIsLoggedIn(httpServletRequest, "noop", false);
-        return authentication.getHttpSession().getId();
+        try {
+            AccessControl.assertHasSessionInAnyStaging(httpServletRequest);
+        } catch (UnauthorizedException e) {
+            authLogger.warn(e.getMessage());
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        } catch (RuntimeException e) {
+            logger.error(e.getMessage(), e);
+            throw new WebApplicationException(e.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
+        }
+        return "noop";
     }
 
     @GET
@@ -122,16 +126,25 @@ public class EndpointSession {
     public SessionStatusSO sessionStatus(@Context HttpServletRequest httpServletRequest) {
         logger.debug("[sessionStatus]");
 
-        Authentication authentication;
+        Authorization authorization;
         try {
-            authentication = new Authentication(httpServletRequest);
+            authorization = new Authorization(httpServletRequest);
         } catch (UnauthorizedException e) {
             return SessionStatusFactory.getInstanceForInvalidSession();
         }
 
-        Authorization authorization = new Authorization(authentication);
-        String sessionId = authentication.getHttpSession().getId();
-        return SessionStatusFactory.getInstanceForValidSession(authorization.getUserRole(), sessionId);
+        if (authorization.isIntermediate()) {
+            return SessionStatusFactory.getInstanceForIntermediateSession(
+                    authorization.getRoleName(),
+                    authorization.getSessionId(),
+                    authorization.getNextRequirement().getName());
+        } else if (authorization.isValid()) {
+            return SessionStatusFactory.getInstanceForValidSession(
+                    authorization.getRoleName(),
+                    authorization.getSessionId());
+        }
+
+        throw new IllegalStateException("Inconsistent session state.");
     }
 
 }

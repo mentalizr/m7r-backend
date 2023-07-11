@@ -1,9 +1,10 @@
 package org.mentalizr.backend.rest.endpoints.admin.userManagement.therapist;
 
-import org.mentalizr.backend.auth.AuthorizationService;
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
-import org.mentalizr.backend.exceptions.InfrastructureException;
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.roles.Admin;
+import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertUser;
@@ -42,12 +43,12 @@ public class RestoreTherapistREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return AuthorizationService.assertIsLoggedInAsAdmin(httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return AccessControl.assertValidSession(Admin.ROLE_NAME, httpServletRequest);
             }
 
             @Override
-            protected void checkPreconditions() throws ServicePreconditionFailedException, InfrastructureException {
+            protected void checkPreconditions() throws ServicePreconditionFailedException, M7rInfrastructureException {
                 AssertUser.existsNot(
                         therapistRestoreSO.getUserId(),
                         "User with specified UUID [%s] is preexisting."
@@ -59,12 +60,19 @@ public class RestoreTherapistREST {
                 UserLogin.restore(
                         therapistRestoreSO.getUserId(),
                         therapistRestoreSO.isActive(),
+                        therapistRestoreSO.getFirstActive(),
+                        therapistRestoreSO.getLastActive(),
                         therapistRestoreSO.getUsername(),
                         therapistRestoreSO.getPasswordHash(),
                         therapistRestoreSO.getEmail(),
                         therapistRestoreSO.getFirstname(),
                         therapistRestoreSO.getLastname(),
-                        therapistRestoreSO.getGender()
+                        therapistRestoreSO.getGender(),
+                        therapistRestoreSO.isSecondFA(),
+                        therapistRestoreSO.getEmailConfirmation(),
+                        therapistRestoreSO.getEmailConfToken(),
+                        therapistRestoreSO.getEmailConfCode(),
+                        therapistRestoreSO.isRenewPasswordRequired()
                 );
                 RoleTherapistVO roleTherapistVO = new RoleTherapistVO(therapistRestoreSO.getUserId());
                 RoleTherapistDAO.create(roleTherapistVO);

@@ -1,8 +1,9 @@
 package org.mentalizr.backend.rest.endpoints.admin.userManagement.accessKey;
 
-import org.mentalizr.backend.auth.AuthorizationService;
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey.PatientAccessKeyGetAll;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
@@ -35,8 +36,8 @@ public class GetAllAccessKeysREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return AuthorizationService.assertIsLoggedInAsAdmin(this.httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return AccessControl.assertValidSession(Admin.ROLE_NAME, this.httpServletRequest);
             }
 
             @Override

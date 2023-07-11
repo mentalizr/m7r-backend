@@ -1,9 +1,10 @@
 package org.mentalizr.backend.rest.endpoints.therapist;
 
-import org.mentalizr.backend.auth.AuthorizationService;
-import org.mentalizr.backend.auth.TherapistHttpSessionAttribute;
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.M7rAuthorization;
+import org.mentalizr.backend.accessControl.roles.Therapist;
 import org.mentalizr.backend.patientsOverviewSOCreator.PatientsOverviewSOCreator;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.serviceObjects.frontend.therapist.PatientsOverviewSO;
@@ -15,8 +16,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsTherapist;
 
 @Path("v1")
 public class PatientsOverviewREST {
@@ -36,15 +35,16 @@ public class PatientsOverviewREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return assertIsLoggedInAsTherapist(httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return AccessControl.assertValidSession(Therapist.ROLE_NAME, this.httpServletRequest);
             }
 
             @Override
             protected PatientsOverviewSO workLoad() {
-                TherapistHttpSessionAttribute therapistHttpSessionAttribute = getTherapistHttpSessionAttribute();
+                M7rAuthorization m7rAuthorization = new M7rAuthorization(this.authorization);
+                Therapist therapist = m7rAuthorization.getUserAsTherapist();
                 PatientsOverviewSOCreator patientsOverviewSOCreator
-                        = new PatientsOverviewSOCreator(therapistHttpSessionAttribute.getRoleTherapistVO());
+                        = new PatientsOverviewSOCreator(therapist.getRoleTherapistVO());
                 return patientsOverviewSOCreator.create();
             }
 

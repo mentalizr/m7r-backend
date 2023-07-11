@@ -1,10 +1,12 @@
 package org.mentalizr.backend.media;
 
 import de.arthurpicht.utils.core.strings.Strings;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.M7rAccessControl;
+import org.mentalizr.backend.accessControl.M7rAuthorization;
+import org.mentalizr.backend.accessControl.roles.PatientAbstract;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
-import org.mentalizr.backend.auth.AuthorizationService;
-import org.mentalizr.backend.auth.PatientHttpSessionAttribute;
-import org.mentalizr.backend.auth.UnauthorizedException;
 import org.mentalizr.backend.media.exception.BadRequestException;
 import org.mentalizr.backend.media.exception.IllegalMediaSpecificationException;
 import org.mentalizr.backend.media.exception.ProcessException;
@@ -18,16 +20,19 @@ import java.nio.file.Path;
 
 public class M7rMediaServlet extends MediaServlet {
 
+    private static final long serialVersionUID = 8738566128735601223L;
+
     @Override
     public Path getMediaPath(HttpServletRequest httpServletRequest) throws ProcessException {
-        PatientHttpSessionAttribute patientHttpSessionAttribute;
+        Authorization authorization;
         try {
-            patientHttpSessionAttribute = AuthorizationService.assertIsLoggedInAsPatient(httpServletRequest);
+            authorization = M7rAccessControl.assertValidSessionAsPatientAbstract(httpServletRequest);
         } catch (UnauthorizedException e) {
             throw new ProcessException(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized access.");
         }
 
-        PatientProgramVO patientProgramVO = patientHttpSessionAttribute.getPatientProgramVO();
+        PatientAbstract patientAbstract = new M7rAuthorization(authorization).getUserAsPatientAbstract();
+        PatientProgramVO patientProgramVO = patientAbstract.getPatientProgramVO();
         String programId = patientProgramVO.getProgramId();
 
         String mediaName = getMediaName(httpServletRequest);

@@ -1,7 +1,12 @@
 package org.mentalizr.backend.rest.endpoints.patient.formData;
 
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import de.arthurpicht.utils.core.collection.Sets;
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.roles.PatientAbstract;
+import org.mentalizr.backend.accessControl.roles.PatientAnonymous;
+import org.mentalizr.backend.accessControl.roles.PatientLogin;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.formData.FormDataDAO;
 import org.mentalizr.persistence.mongo.formData.FormDataTimestampUpdater;
@@ -16,8 +21,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsPatient;
 
 @Path("v1")
 public class GetFormDataREST {
@@ -39,13 +42,16 @@ public class GetFormDataREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return assertIsLoggedInAsPatient(this.httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return AccessControl.assertValidSession(
+                        Sets.newHashSet(PatientAnonymous.ROLE_NAME, PatientLogin.ROLE_NAME),
+                        httpServletRequest);
             }
 
             @Override
             protected FormDataSO workLoad() {
-                UserVO userVO = getPatientHttpSessionAttribute().getUserVO();
+                PatientAbstract patientAbstract = (PatientAbstract) this.authorization.getUser();
+                UserVO userVO = patientAbstract.getUserVO();
 
                 FormDataSO formDataSO = FormDataDAO.obtain(userVO.getId(), contentId);
                 FormDataTimestampUpdater.markFeedbackAsSeenByPatient(formDataSO);
@@ -55,7 +61,7 @@ public class GetFormDataREST {
 
             @Override
             protected void logLeave() {
-                String userId = this.userHttpSessionAttribute.getUserVO().getId();
+                String userId = this.authorization.getUserId();
                 logger.debug("[" + SERVICE_ID + "][" + userId + "][" + contentId + "] completed.");
             }
 

@@ -1,8 +1,8 @@
 package org.mentalizr.backend.rest.endpoints.generic;
 
+import de.arthurpicht.webAccessControl.auth.Authorization;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
-import org.mentalizr.backend.config.BrandingConfiguration;
+import org.mentalizr.backend.config.instance.InstanceConfiguration;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.serviceObjects.frontend.application.ApplicationConfigGenericSO;
 
@@ -32,14 +32,14 @@ public class AppConfigGenericREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() {
+            protected Authorization checkSecurityConstraints() {
                 return null;
             }
 
             @Override
             protected ApplicationConfigGenericSO workLoad() {
-                BrandingConfiguration brandingConfiguration = ApplicationContext.getBrandingConfiguration();
-                return brandingConfiguration.getApplicationConfigGenericSO();
+                InstanceConfiguration instanceConfiguration = ApplicationContext.getInstanceConfiguration();
+                return instanceConfiguration.getApplicationConfigGenericSO();
             }
 
         }.call();

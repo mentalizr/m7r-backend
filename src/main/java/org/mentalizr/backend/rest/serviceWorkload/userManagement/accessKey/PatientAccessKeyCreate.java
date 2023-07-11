@@ -1,6 +1,6 @@
 package org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey;
 
-import org.mentalizr.backend.exceptions.InfrastructureException;
+import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.UserAccessKeyDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserAccessKeyPatientCompositeDAO;
@@ -24,11 +24,11 @@ public class PatientAccessKeyCreate {
 
     private static final int ACCESS_KEY_LENGTH = 12;
 
-    public static AccessKeyCollectionSO create(AccessKeyCreateSO accessKeyCreateSO) throws InfrastructureException {
+    public static AccessKeyCollectionSO create(AccessKeyCreateSO accessKeyCreateSO) throws M7rInfrastructureException {
         try {
             return createInternal(accessKeyCreateSO);
         } catch (DataSourceException e) {
-            throw new InfrastructureException(e.getMessage(), e);
+            throw new M7rInfrastructureException(e.getMessage(), e);
         }
     }
 

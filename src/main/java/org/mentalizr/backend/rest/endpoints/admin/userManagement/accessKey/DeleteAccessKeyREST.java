@@ -1,15 +1,22 @@
 package org.mentalizr.backend.rest.endpoints.admin.userManagement.accessKey;
 
-import org.mentalizr.backend.auth.AuthorizationService;
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
-import org.mentalizr.backend.exceptions.InfrastructureException;
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.roles.Admin;
+import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertAccessKey;
-import org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey.PatientAccessKeyDelete;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
+import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
+import org.mentalizr.persistence.rdbms.barnacle.dao.RolePatientDAO;
+import org.mentalizr.persistence.rdbms.barnacle.dao.UserAccessKeyDAO;
+import org.mentalizr.persistence.rdbms.barnacle.dao.UserDAO;
+import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
+import org.mentalizr.persistence.rdbms.barnacle.vo.UserAccessKeyVO;
+import org.mentalizr.persistence.rdbms.edao.PolicyConsentEDAO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyDeleteSO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,18 +50,27 @@ public class DeleteAccessKeyREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return AuthorizationService.assertIsLoggedInAsAdmin(this.httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return AccessControl.assertValidSession(Admin.ROLE_NAME, this.httpServletRequest);
             }
 
             @Override
-            protected void checkPreconditions() throws ServicePreconditionFailedException, InfrastructureException {
+            protected void checkPreconditions() throws ServicePreconditionFailedException, M7rInfrastructureException {
                 AssertAccessKey.isExistingWithAccessKey(getAccessKeyDeleteSO().getAccessKey());
             }
 
             @Override
-            protected Object workLoad() throws InfrastructureException {
-                PatientAccessKeyDelete.delete(getAccessKeyDeleteSO());
+            protected Object workLoad() throws DataSourceException, EntityNotFoundException {
+                String accessKey = accessKeyDeleteSO.getAccessKey();
+                UserAccessKeyVO userAccessKeyVO = UserAccessKeyDAO.findByUk_accessKey(accessKey);
+                PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userAccessKeyVO.getUserId());
+
+                PatientProgramDAO.delete(patientProgramVO.getPK());
+                RolePatientDAO.delete(userAccessKeyVO.getUserId());
+                UserAccessKeyDAO.delete(userAccessKeyVO.getUserId());
+                PolicyConsentEDAO.deleteAllForUser(userAccessKeyVO.getUserId());
+                UserDAO.delete(userAccessKeyVO.getUserId());
+
                 return null;
             }
 

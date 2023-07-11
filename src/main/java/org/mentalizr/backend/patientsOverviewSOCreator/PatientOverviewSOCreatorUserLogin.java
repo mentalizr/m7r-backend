@@ -1,7 +1,7 @@
 package org.mentalizr.backend.patientsOverviewSOCreator;
 
-import org.mentalizr.backend.auth.DisplayName;
-import org.mentalizr.backend.auth.Initials;
+import org.mentalizr.backend.accessControl.helper.DisplayName;
+import org.mentalizr.backend.accessControl.helper.Initials;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserLoginVO;
 import org.mentalizr.serviceObjects.frontend.therapist.PatientOverviewSO;
 

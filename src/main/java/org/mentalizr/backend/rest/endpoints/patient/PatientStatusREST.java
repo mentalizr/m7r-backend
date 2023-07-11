@@ -1,7 +1,8 @@
 package org.mentalizr.backend.rest.endpoints.patient;
 
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.M7rAccessControl;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.patientStatus.PatientStatusDAO;
 import org.mentalizr.serviceObjects.frontend.patient.PatientStatusSO;
@@ -13,8 +14,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsPatient;
 
 @Path("v1")
 public class PatientStatusREST {
@@ -34,13 +33,13 @@ public class PatientStatusREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return assertIsLoggedInAsPatient(httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return M7rAccessControl.assertValidSessionAsPatientAbstract(this.httpServletRequest);
             }
 
             @Override
             protected PatientStatusSO workLoad() {
-                String userId = this.userHttpSessionAttribute.getUserVO().getId();
+                String userId = this.authorization.getUserId();
                 return PatientStatusDAO.obtain(userId);
             }
 

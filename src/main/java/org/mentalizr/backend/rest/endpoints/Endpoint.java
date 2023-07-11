@@ -1,33 +1,32 @@
 package org.mentalizr.backend.rest.endpoints;
 
 import de.arthurpicht.utils.io.InputStreams;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
-import org.mentalizr.backend.config.Configuration;
-import org.mentalizr.backend.htmlChunks.HtmlChunkService;
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.M7rAuthorization;
+import org.mentalizr.backend.accessControl.roles.M7rUser;
 import org.mentalizr.backend.rest.entities.UserFactory;
 import org.mentalizr.commons.paths.container.TomcatContainerImgBaseTmpDir;
 import org.mentalizr.serviceObjects.frontend.application.UserSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.util.List;
 
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedIn;
-
 @Path("v1")
 public class Endpoint {
 
     private static final Logger logger = LoggerFactory.getLogger(Endpoint.class);
-
-    @Context
-    private ServletContext context;
 
     @GET
     public String defaultMessage() {
@@ -66,28 +65,20 @@ public class Endpoint {
 //    }
 
     @GET
-    @Path("htmlChunk/{chunkName}")
-    @Produces(MediaType.TEXT_HTML)
-    public Response htmlChunk(
-            @PathParam("chunkName") String chunkName,
-            @Context HttpServletRequest httpServletRequest) {
-
-        logger.debug("[htmlChunk] ...");
-
-        logger.debug("[htmlChunk] requested Chunk is: " + chunkName);
-
-        InputStream inputStream = HtmlChunkService.getHtmlChunk(chunkName, httpServletRequest);
-        return Response.ok(inputStream).build();
-    }
-
-    @GET
     @Path("user")
     @Produces(MediaType.APPLICATION_JSON)
     public UserSO user(@Context HttpServletRequest httpServletRequest) {
         logger.debug("[user]");
 
-        UserHttpSessionAttribute userHttpSessionAttribute = assertIsLoggedIn(httpServletRequest);
-        return UserFactory.getInstance(userHttpSessionAttribute);
+        try {
+            Authorization authorization = AccessControl.assertValidSessionForAnyRole(httpServletRequest);
+            M7rAuthorization m7rAuthorization = new M7rAuthorization(authorization);
+            M7rUser m7rUser = m7rAuthorization.getUserAsM7rUser();
+            return UserFactory.getInstance(m7rUser);
+        } catch (UnauthorizedException e) {
+            logger.warn(e.getMessage());
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        }
     }
 
     @GET
@@ -97,7 +88,12 @@ public class Endpoint {
             @Context HttpServletRequest httpServletRequest) {
         logger.debug("[userImgThumbnail]");
 
-        assertIsLoggedIn(httpServletRequest);
+        try {
+            AccessControl.assertValidSessionForAnyRole(httpServletRequest);
+        } catch (UnauthorizedException e) {
+            logger.warn(e.getMessage());
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        }
 
         File imageFile = new File(new TomcatContainerImgBaseTmpDir().toAbsolutePathString(), "dummies/DummyAvatar.png");
         try {
@@ -108,7 +104,5 @@ public class Endpoint {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
-
-
 
 }

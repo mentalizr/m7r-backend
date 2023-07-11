@@ -44,5 +44,9 @@ public class ResponseFactory {
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ErrorSO.withMessage(e.getMessage())).build();
     }
 
+    public static Response badRequestError(Exception e) {
+        return Response.status(Response.Status.BAD_REQUEST).entity(ErrorSO.withMessage(e.getMessage())).build();
+    }
+
 }
 

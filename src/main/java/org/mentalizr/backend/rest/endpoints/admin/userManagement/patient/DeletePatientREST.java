@@ -1,8 +1,9 @@
 package org.mentalizr.backend.rest.endpoints.admin.userManagement.patient;
 
-import org.mentalizr.backend.auth.AuthorizationService;
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
@@ -12,6 +13,7 @@ import org.mentalizr.persistence.rdbms.barnacle.dao.UserDAO;
 import org.mentalizr.persistence.rdbms.barnacle.dao.UserLoginDAO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserLoginVO;
+import org.mentalizr.persistence.rdbms.edao.PolicyConsentEDAO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -41,8 +43,8 @@ public class DeletePatientREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return AuthorizationService.assertIsLoggedInAsAdmin(httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return AccessControl.assertValidSession(Admin.ROLE_NAME, httpServletRequest);
             }
 
             @Override
@@ -53,6 +55,7 @@ public class DeletePatientREST {
                 PatientProgramDAO.delete(patientProgramVO.getPK());
                 RolePatientDAO.delete(userLoginVO.getUserId());
                 UserLoginDAO.delete(userLoginVO.getUserId());
+                PolicyConsentEDAO.deleteAllForUser(userLoginVO.getUserId());
                 UserDAO.delete(userLoginVO.getUserId());
 
                 return null;

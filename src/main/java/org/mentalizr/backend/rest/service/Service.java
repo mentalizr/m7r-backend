@@ -1,10 +1,10 @@
 package org.mentalizr.backend.rest.service;
 
-import org.mentalizr.backend.auth.PatientHttpSessionAttribute;
-import org.mentalizr.backend.auth.TherapistHttpSessionAttribute;
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
-import org.mentalizr.backend.exceptions.InfrastructureException;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.Const;
+import org.mentalizr.backend.exceptions.M7rIllegalServiceInputException;
+import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.ResponseFactory;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
@@ -21,11 +21,11 @@ import java.io.IOException;
 public abstract  class Service {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    private static final Logger authLogger = LoggerFactory.getLogger("m7r-auth");
+    private static final Logger authLogger = Const.authLogger;
 
     protected HttpServletRequest httpServletRequest;
     protected Object serviceObjectRequest;
-    protected UserHttpSessionAttribute userHttpSessionAttribute;
+    protected Authorization authorization;
 
     public Service(HttpServletRequest httpServletRequest) {
         this.httpServletRequest = httpServletRequest;
@@ -43,7 +43,7 @@ public abstract  class Service {
         logger.trace("[" + getServiceId() + "] called.");
     }
 
-    protected abstract UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException;
+    protected abstract Authorization checkSecurityConstraints() throws UnauthorizedException, M7rIllegalServiceInputException;
 
     /**
      * Check business preconditions that are not yet checked as security constraints.
@@ -51,17 +51,17 @@ public abstract  class Service {
      * @throws DataSourceException
      * @throws ServicePreconditionFailedException
      */
-    protected void checkPreconditions() throws ServicePreconditionFailedException, InfrastructureException {
+    protected void checkPreconditions() throws ServicePreconditionFailedException, M7rInfrastructureException {
     }
 
-    protected abstract Object workLoad() throws RESTException, ContentManagerException, InfrastructureException, IOException, DataSourceException, EntityNotFoundException;
+    protected abstract Object workLoad() throws RESTException, ContentManagerException, M7rInfrastructureException, IOException, DataSourceException, EntityNotFoundException, M7rIllegalServiceInputException;
 
     protected void updateActivityStatus(){
     }
 
     protected void logLeave() {
-        if (this.userHttpSessionAttribute != null) {
-            String userId = this.userHttpSessionAttribute.getUserVO().getId();
+        if (this.authorization != null) {
+            String userId = this.authorization.getUserId();
             logger.debug("[" + getServiceId() + "][" + userId + "] completed.");
         } else {
             logger.debug("[" + getServiceId() + "] completed.");
@@ -78,10 +78,16 @@ public abstract  class Service {
         }
 
         try {
-            this.userHttpSessionAttribute = checkSecurityConstraints();
+            this.authorization = checkSecurityConstraints();
         } catch (UnauthorizedException e) {
             authLogger.warn("Authorization failed for service [" + getServiceId() + "]: " + e.getMessage());
             return ResponseFactory.unauthorized();
+        } catch (M7rIllegalServiceInputException e) {
+            return handleIllegalServiceInput(e);
+        } catch (RuntimeException e) {
+            logger.error("A RuntimeExceptioni occurred on executing method checkSecurityConstraints for service ["
+                    + getServiceId() + "]: " + e.getMessage(), e);
+            return ResponseFactory.internalServerError(e);
         }
 
         try {
@@ -90,15 +96,20 @@ public abstract  class Service {
             String message = "Service precondition failed for service [" + getServiceId() + "]: " + e.getMessage();
             logger.error(message, e);
             return ResponseFactory.preconditionFailed(message);
-        } catch (InfrastructureException e) {
+        } catch (M7rInfrastructureException e) {
             logger.error(e.getMessage(), e);
+            return ResponseFactory.internalServerError(e);
+        } catch (RuntimeException e) {
+            logger.error("A RuntimeException occurred on executing method checkSecurityConstraints for service ["
+                    + getServiceId() + "]: " + e.getMessage(), e);
             return ResponseFactory.internalServerError(e);
         }
 
         Object responseSO;
         try {
             responseSO = workLoad();
-        } catch (RESTException | ContentManagerException | IOException | InfrastructureException | DataSourceException e) {
+        } catch (RESTException | ContentManagerException | IOException | M7rInfrastructureException |
+                 DataSourceException | RuntimeException e) {
             logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
                     + getServiceId() + "]: " + e.getMessage(), e);
             return ResponseFactory.internalServerError(e);
@@ -106,6 +117,8 @@ public abstract  class Service {
             logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
                     + getServiceId() + "]: " + e.getMessage());
             return ResponseFactory.entityNotFound(e);
+        } catch (M7rIllegalServiceInputException e) {
+            return handleIllegalServiceInput(e);
         }
 
         try {
@@ -125,12 +138,10 @@ public abstract  class Service {
         return ResponseFactory.ok(responseSO);
     }
 
-    protected PatientHttpSessionAttribute getPatientHttpSessionAttribute() {
-        return UserHttpSessionAttribute.asPatientHttpSessionAttribute(this.userHttpSessionAttribute);
-    }
-
-    protected TherapistHttpSessionAttribute getTherapistHttpSessionAttribute() {
-        return UserHttpSessionAttribute.asTherapistHttpSessionAttribute(this.userHttpSessionAttribute);
+    private Response handleIllegalServiceInput(M7rIllegalServiceInputException e) {
+        logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
+                + getServiceId() + "]: " + e.getMessage());
+        return ResponseFactory.badRequestError(e);
     }
 
 }

@@ -1,8 +1,10 @@
 package org.mentalizr.backend.rest.endpoints.therapist;
 
+import de.arthurpicht.webAccessControl.auth.AccessControl;
+import de.arthurpicht.webAccessControl.auth.Authorization;
+import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.mentalizr.backend.accessControl.roles.Therapist;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
-import org.mentalizr.backend.auth.UnauthorizedException;
-import org.mentalizr.backend.auth.UserHttpSessionAttribute;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
@@ -17,8 +19,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.FileInputStream;
 import java.io.IOException;
-
-import static org.mentalizr.backend.auth.AuthorizationService.assertIsLoggedInAsTherapist;
 
 @Path("v1")
 public class ProgramContentREST {
@@ -40,8 +40,8 @@ public class ProgramContentREST {
             }
 
             @Override
-            protected UserHttpSessionAttribute checkSecurityConstraints() throws UnauthorizedException {
-                return assertIsLoggedInAsTherapist(httpServletRequest);
+            protected Authorization checkSecurityConstraints() throws UnauthorizedException {
+                return AccessControl.assertValidSession(Therapist.ROLE_NAME, this.httpServletRequest);
             }
 
             @Override
@@ -53,7 +53,7 @@ public class ProgramContentREST {
 
             @Override
             protected void logLeave() {
-                String userId = this.userHttpSessionAttribute.getUserVO().getId();
+                String userId = this.authorization.getUserId();
                 this.logger.debug("[" + SERVICE_ID + "][" + userId + "][" + contentId + "] completed.");
             }
 

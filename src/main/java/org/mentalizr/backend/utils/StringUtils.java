@@ -1,10 +1,14 @@
 package org.mentalizr.backend.utils;
 
-import de.arthurpicht.utils.core.assertion.AssertMethodPrecondition;
 import de.arthurpicht.utils.core.strings.Strings;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+
+import static de.arthurpicht.utils.core.assertion.MethodPreconditions.assertArgumentNotNullAndNotEmpty;
 
 public class StringUtils {
 
@@ -15,11 +19,11 @@ public class StringUtils {
      *
      * @param string string to be split
      * @param delimiter separation between to chunks
-     * @return list of splitted chunks
+     * @return list of split chunks
      */
     public static List<String> split(String string, String delimiter) {
-        AssertMethodPrecondition.parameterNotNullAndNotEmpty("string", string);
-        AssertMethodPrecondition.parameterNotNullAndNotEmpty("delimiter", delimiter);
+        assertArgumentNotNullAndNotEmpty("string", string);
+        assertArgumentNotNullAndNotEmpty("delimiter", delimiter);
 
         List<String> chunks = new ArrayList<>();
 
@@ -36,6 +40,10 @@ public class StringUtils {
         if (Strings.isSpecified(string)) chunks.add(string);
 
         return chunks;
+    }
+
+    public static InputStream asInputStream(String string, Charset charset) {
+        return new ByteArrayInputStream(string.getBytes(charset));
     }
 
 }
