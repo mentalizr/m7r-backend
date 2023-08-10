@@ -5,6 +5,7 @@ import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.Const;
 import org.mentalizr.backend.exceptions.M7rIllegalServiceInputException;
 import org.mentalizr.backend.exceptions.M7rInfrastructureException;
+import org.mentalizr.backend.exceptions.M7rUnknownEntityException;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.ResponseFactory;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
@@ -54,7 +55,7 @@ public abstract  class Service {
     protected void checkPreconditions() throws ServicePreconditionFailedException, M7rInfrastructureException {
     }
 
-    protected abstract Object workLoad() throws RESTException, ContentManagerException, M7rInfrastructureException, IOException, DataSourceException, EntityNotFoundException, M7rIllegalServiceInputException;
+    protected abstract Object workLoad() throws RESTException, ContentManagerException, M7rInfrastructureException, IOException, DataSourceException, EntityNotFoundException, M7rIllegalServiceInputException, M7rUnknownEntityException;
 
     protected void updateActivityStatus(){
     }
@@ -113,7 +114,7 @@ public abstract  class Service {
             logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
                     + getServiceId() + "]: " + e.getMessage(), e);
             return ResponseFactory.internalServerError(e);
-        } catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException | M7rUnknownEntityException e) {
             logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
                     + getServiceId() + "]: " + e.getMessage());
             return ResponseFactory.entityNotFound(e);
