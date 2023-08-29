@@ -146,3 +146,4 @@ tasks.findByName('war').mustRunAfter('copyResourcesFromFrontend')
 tasks.findByName('war').mustRunAfter('copyBarnacleConf')
 tasks.findByName('war').mustRunAfter('copyWebAppConf')
 
+defaultTasks 'war'

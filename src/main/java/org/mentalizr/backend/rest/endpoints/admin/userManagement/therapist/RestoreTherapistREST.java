@@ -60,6 +60,7 @@ public class RestoreTherapistREST {
                 UserLogin.restore(
                         therapistRestoreSO.getUserId(),
                         therapistRestoreSO.isActive(),
+                        therapistRestoreSO.getCreation(),
                         therapistRestoreSO.getFirstActive(),
                         therapistRestoreSO.getLastActive(),
                         therapistRestoreSO.getUsername(),

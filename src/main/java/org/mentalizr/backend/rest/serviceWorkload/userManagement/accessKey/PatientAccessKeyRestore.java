@@ -18,6 +18,9 @@ public class PatientAccessKeyRestore {
             PatientAccessKeyCreate.createUserAccessKeyPatientComposite(
                     accessKeyRestoreSO.getUserId(),
                     accessKeyRestoreSO.isActive(),
+                    accessKeyRestoreSO.getCreation(),
+                    accessKeyRestoreSO.getFirstActive(),
+                    accessKeyRestoreSO.getLastActive(),
                     accessKeyRestoreSO.getAccessKey(),
                     accessKeyRestoreSO.getProgramId(),
                     accessKeyRestoreSO.getTherapistId());

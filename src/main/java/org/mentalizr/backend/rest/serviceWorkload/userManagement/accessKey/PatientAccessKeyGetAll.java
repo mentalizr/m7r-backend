@@ -28,6 +28,9 @@ public class PatientAccessKeyGetAll {
             AccessKeyRestoreSO accessKeyRestoreSO = new AccessKeyRestoreSO();
             accessKeyRestoreSO.setUserId(userAccessKeyPatientCompositeVO.getUserId());
             accessKeyRestoreSO.setActive(userAccessKeyPatientCompositeVO.isActive());
+            accessKeyRestoreSO.setCreation(userAccessKeyPatientCompositeVO.getCreation());
+            accessKeyRestoreSO.setFirstActive(userAccessKeyPatientCompositeVO.getFirstActive());
+            accessKeyRestoreSO.setLastActive(userAccessKeyPatientCompositeVO.getLastActive());
             accessKeyRestoreSO.setAccessKey(userAccessKeyPatientCompositeVO.getAccessKey());
             accessKeyRestoreSO.setProgramId(userAccessKeyPatientCompositeVO.getProgramId());
             accessKeyRestoreSO.setTherapistId(userAccessKeyPatientCompositeVO.getTherapistId());

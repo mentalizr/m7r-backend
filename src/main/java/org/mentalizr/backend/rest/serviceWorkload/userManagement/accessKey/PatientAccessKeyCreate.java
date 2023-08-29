@@ -38,11 +38,15 @@ public class PatientAccessKeyCreate {
                 accessKeyCreateSO.getNrOfKeys());
 
         AccessKeyCollectionSO accessKeyCollectionSO = new AccessKeyCollectionSO();
+        long creationTimestamp = System.currentTimeMillis();
         for (String accessKey : accessKeys) {
             String uuid = UUID.randomUUID().toString();
             createUserAccessKeyPatientComposite(
                     uuid,
                     accessKeyCreateSO.isActive(),
+                    creationTimestamp,
+                    null,
+                    null,
                     accessKey,
                     accessKeyCreateSO.getProgramId(),
                     accessKeyCreateSO.getTherapistId());
@@ -93,6 +97,9 @@ public class PatientAccessKeyCreate {
     public static void createUserAccessKeyPatientComposite(
             String userId,
             boolean active,
+            Long creationTimestamp,
+            Long firstActive,
+            Long lastActive,
             String accessKey,
             String programId,
             String therapistId
@@ -100,6 +107,9 @@ public class PatientAccessKeyCreate {
 
         UserVO userVO = new UserVO(userId);
         userVO.setActive(active);
+        userVO.setCreation(creationTimestamp);
+        userVO.setFirstActive(firstActive);
+        userVO.setLastActive(lastActive);
 
         UserAccessKeyVO userAccessKeyVO = new UserAccessKeyVO(userId);
         userAccessKeyVO.setAccessKey(accessKey);

@@ -83,6 +83,7 @@ public class RestorePatientREST {
                 UserLogin.restore(
                         patientRestoreSO.getUserId(),
                         patientRestoreSO.isActive(),
+                        patientRestoreSO.getCreation(),
                         patientRestoreSO.getFirstActive(),
                         patientRestoreSO.getLastActive(),
                         patientRestoreSO.getUsername(),

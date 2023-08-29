@@ -13,6 +13,7 @@ public class PatientRestoreSOAdapter {
         UserVO userVO = userLoginCompositeVO.getUserVO();
         patientRestoreSO.setUserId(userVO.getId());
         patientRestoreSO.setActive(userVO.getActive());
+        patientRestoreSO.setCreation(userVO.getCreation());
         patientRestoreSO.setFirstActive(userVO.getFirstActive());
         patientRestoreSO.setLastActive(userVO.getLastActive());
 

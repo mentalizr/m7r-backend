@@ -20,6 +20,7 @@ public class TherapistRestoreSOAdapter {
 
         therapistRestoreSO.setUserId(userVO.getId());
         therapistRestoreSO.setActive(userVO.getActive());
+        therapistRestoreSO.setCreation(userVO.getCreation());
         therapistRestoreSO.setFirstActive(userVO.getFirstActive());
         therapistRestoreSO.setLastActive(userVO.getLastActive());
 
