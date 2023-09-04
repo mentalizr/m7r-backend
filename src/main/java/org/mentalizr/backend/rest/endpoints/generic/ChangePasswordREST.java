@@ -17,13 +17,12 @@ import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.persistence.rdbms.edao.UserLoginEDAO;
 import org.mentalizr.persistence.rdbms.utils.Argon2Hash;
 import org.mentalizr.serviceObjects.frontend.application.ChangePasswordSO;
+import org.mentalizr.serviceObjects.userManagement.PatientAddSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -35,9 +34,9 @@ public class ChangePasswordREST {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @GET
+    @POST
     @Path(SERVICE_ID)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response program(
             ChangePasswordSO changePasswordSO,
             @Context HttpServletRequest httpServletRequest
