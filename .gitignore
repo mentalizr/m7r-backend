@@ -9,6 +9,7 @@ gradlew
 gradlew.bat
 src/main/resources/barnacle.conf
 src/main/resources/builddate.txt
+src/main/resources/buildId.txt
 conf/logback.xml
 conf/m7r.conf
 conf/m7r-instance.conf
