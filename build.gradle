@@ -1,24 +1,12 @@
-import de.arthurpicht.DummyPlugin
 import de.arthurpicht.DummyTask
 
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
-import de.arthurpicht.Dummy
-
 
 plugins {
     id 'war'
 }
-
-//gradlePlugins {
-//    plugins {
-//        dummy {
-//            id = 'de.arthurpicht'
-//            implementationClass = 'de.arthurpicht.DummyPlugin'
-//        }
-//    }
-//}
 
 group 'org.mentalizr'
 version '0.1-SNAPSHOT'
@@ -35,7 +23,6 @@ repositories {
 }
 
 dependencies {
-    implementation project(path: ':')
     providedCompile 'jakarta.servlet:jakarta.servlet-api:4.0.2'
 
     implementation 'org.mentalizr:m7r-commons:0.0.1-SNAPSHOT'
@@ -98,7 +85,7 @@ tasks.register('createBuildIdFile') {
 
 tasks.register('copyResourcesFromFrontend', Copy) {
     def frontendProjectHtml = Paths.get("$rootDir").resolve("../m7r-frontend-project/html").toFile()
-    if (!frontendProjectHtml.exists()) throw new GradleException("Project m7r-frontend-project not found.");
+    if (!frontendProjectHtml.exists()) throw new GradleException("Project m7r-frontend-project not found.")
 
     inputs.dir("../m7r-frontend-project/html")
     outputs.dir("../src/main/webapp/WEB-INF")
@@ -156,41 +143,7 @@ clean {
     delete fileTree("$rootDir/src/main/webapp/WEB-INF").include('*.html')
 }
 
-//task doIt {
-//    doLast {
-//        def dummy = new Dummy()
-//    }
-//}
-
-//tasks.register('runApp', JavaExec) {
-//    classpath = sourceSets.main.runtimeClasspath
-//
-//    mainClass = 'org.mentalizr.backend.test.Dummy'
-//
-//    // arguments to pass to the application
-//
-//}
-
-//task doStuff {
-//    doLast {
-//        URL[] urls = sourceSets.main.runtimeClasspath.files as URL[]
-//        def classloader = new URLClassLoader(urls, null)
-//        Class myClass = classloader.load("org.mentalizr.backend.test.Dummy")
-//        def myInstance = myClass.newInstance()
-//        Method method = myClass.getMethod("doIt")
-//        method.invoke(myInstance)
-//    }
-//}
-
-task hello {
-    doLast {
-        Dummy.doTheStuff()
-    }
-}
-
-task dummy(type: DummyTask)
-
-
+tasks.register('dummy', DummyTask)
 
 war.dependsOn copyResourcesFromFrontend
 war.dependsOn copyBarnacleConf
