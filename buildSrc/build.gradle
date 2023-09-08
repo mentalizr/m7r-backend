@@ -15,5 +15,7 @@ repositories {
 
 dependencies {
     implementation 'com.github.arthurpicht:utils-io:0.0.17'
+    implementation 'com.github.arthurpicht:utils-core:1.13.0'
+
 
 }
