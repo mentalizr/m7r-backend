@@ -104,8 +104,6 @@ tasks.register('copyWebAppConf', Copy) {
 clean {
     delete "$rootDir/src/main/resources/barnacle.conf"
     delete "$rootDir/conf/logback.xml"
-    delete "$rootDir/conf/m7r.conf"
-    delete "$rootDir/conf/m7r-instance.conf"
     delete fileTree("$rootDir/src/main/webapp/WEB-INF").include('*.html')
 }
 
