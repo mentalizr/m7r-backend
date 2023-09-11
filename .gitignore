@@ -1,18 +1,19 @@
 *~
 .gradle/
 .idea/
-build/
-gradle/
-src/main/generated/**/*.java
-src/main/webapp/WEB-INF/*.html
-gradlew
-gradlew.bat
-src/main/resources/barnacle.conf
-src/main/resources/builddate.txt
-src/main/resources/buildId.txt
-conf/logback.xml
-conf/m7r.conf
-conf/m7r-instance.conf
+/build/
+/buildSrc/build/
+/gradle/
+/src/main/generated/**/*.java
+/src/main/webapp/WEB-INF/*.html
+/gradlew
+/gradlew.bat
+/src/main/resources/barnacle.conf
+/src/main/resources/builddate.txt
+/src/main/resources/buildId.txt
+/conf/logback.xml
+/conf/m7r.conf
+/conf/m7r-instance.conf
 
 
 
