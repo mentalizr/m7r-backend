@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+repositories {
+    maven { url "https://jitpack.io" }
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.github.arthurpicht:utils-io:0.0.17'
+    implementation 'com.github.arthurpicht:utils-core:1.13.0'
+
+
+}

@@ -1,3 +1,6 @@
+import org.mentalizr.backend.build.task.CopyStaticResourcesFromFrontendTask
+import org.mentalizr.backend.build.task.ExpandInitHtmlTask
+
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
@@ -55,39 +58,19 @@ test {
 }
 
 war() {
-//    doFirst {
-//        new File("src/main/resources/", "builddate.txt").text = """${new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date())}"""
-//    }
     archiveFileName = 'm7r.war'
     from('conf') {
         include 'logback.xml'
         into 'WEB-INF/classes'
     }
-    from('conf') {
-        include 'm7r.conf'
-        into 'WEB-INF/classes'
-    }
-    from('conf') {
-        include 'm7r-instance.conf'
-        into 'WEB-INF/classes'
-    }
 }
 
-tasks.register('createBuildDateFile') {
-    new File("src/main/resources/", "builddate.txt").text = """${new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date())}"""
+tasks.register('createBuildIdFile') {
+    new File("src/main/resources/", "buildId.txt").text = """${new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())}"""
 }
 
-
-tasks.register('copyResourcesFromFrontend', Copy) {
-    def frontendProjectHtml = Paths.get("$rootDir").resolve("../m7r-frontend-project/html").toFile()
-    if (!frontendProjectHtml.exists()) throw new GradleException("Project m7r-frontend-project not found.");
-
-    inputs.dir("../m7r-frontend-project/html")
-    outputs.dir("../src/main/webapp/WEB-INF")
-
-    from frontendProjectHtml
-    into "$rootDir/src/main/webapp/WEB-INF"
-}
+tasks.register('expandInitHtml', ExpandInitHtmlTask)
+tasks.register('copyStaticResourcesFromFrontend', CopyStaticResourcesFromFrontendTask)
 
 tasks.register('copyBarnacleConf', Copy) {
     def userHome = System.getProperty("user.home")
@@ -115,34 +98,22 @@ tasks.register('copyWebAppConf', Copy) {
     outputs.file("$rootDir/conf/logback.xml")
     from file(logbackConf)
 
-//    def m7rConf = configDir.resolve("common/m7r.conf").toFile()
-//    if (!m7rConf.exists()) throw new GradleException(m7rConf.absolutePath + ' not found.')
-//    inputs.file(m7rConf)
-//    outputs.file("$rootDir/conf/m7r.conf")
-//    from file(m7rConf)
-
-//    def m7rInstanceConf = configDir.resolve("m7r-instance.conf").toFile()
-//    if (!m7rInstanceConf.exists()) throw new GradleException(m7rInstanceConf.absolutePath + ' not found.')
-//    inputs.file(m7rInstanceConf)
-//    outputs.file("$rootDir/conf/m7r-instance.conf")
-//    from file(m7rInstanceConf)
-
     into "$rootDir/conf"
 }
 
 clean {
     delete "$rootDir/src/main/resources/barnacle.conf"
     delete "$rootDir/conf/logback.xml"
-    delete "$rootDir/conf/m7r.conf"
-    delete "$rootDir/conf/m7r-instance.conf"
     delete fileTree("$rootDir/src/main/webapp/WEB-INF").include('*.html')
 }
 
-war.dependsOn copyResourcesFromFrontend
+war.dependsOn expandInitHtml
+war.dependsOn copyStaticResourcesFromFrontend
 war.dependsOn copyBarnacleConf
 war.dependsOn copyWebAppConf
-war.dependsOn createBuildDateFile
-tasks.findByName('war').mustRunAfter('copyResourcesFromFrontend')
+//war.dependsOn createBuildDateFile
+war.dependsOn createBuildIdFile
+tasks.findByName('war').mustRunAfter('copyStaticResourcesFromFrontend')
 tasks.findByName('war').mustRunAfter('copyBarnacleConf')
 tasks.findByName('war').mustRunAfter('copyWebAppConf')
 

@@ -31,12 +31,12 @@ public class Endpoint {
     @GET
     public String defaultMessage() {
         String message = "mentalizr REST interface is up and running. ";
-        InputStream inputStream = InputStreams.getFileFromResourceAsStream("builddate.txt");
+        InputStream inputStream = InputStreams.getFileFromResourceAsStream("buildId.txt");
         try {
             List<String> strings = InputStreams.toStrings(inputStream);
-            message += "Build time: " + strings.get(0);
+            message += "Build ID: " + strings.get(0);
         } catch (IOException | RuntimeException e) {
-            message += "Could not read builddate.txt";
+            message += "Could not read buildId.txt";
         }
 
         return message + "\n";
