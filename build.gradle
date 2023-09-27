@@ -107,14 +107,14 @@ clean {
     delete fileTree("$rootDir/src/main/webapp/WEB-INF").include('*.html')
 }
 
+processResources {
+    dependsOn copyBarnacleConf
+}
+
 war.dependsOn expandInitHtml
 war.dependsOn copyStaticResourcesFromFrontend
 war.dependsOn copyBarnacleConf
 war.dependsOn copyWebAppConf
-//war.dependsOn createBuildDateFile
 war.dependsOn createBuildIdFile
-tasks.findByName('war').mustRunAfter('copyStaticResourcesFromFrontend')
-tasks.findByName('war').mustRunAfter('copyBarnacleConf')
-tasks.findByName('war').mustRunAfter('copyWebAppConf')
 
 defaultTasks 'war'
