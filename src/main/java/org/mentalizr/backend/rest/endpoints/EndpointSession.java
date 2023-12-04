@@ -31,7 +31,7 @@ public class EndpointSession {
                         @FormParam("rememberMe") boolean rememberMe,
                         @Context HttpServletRequest httpServletRequest) {
 
-        logger.debug("[login] UserLogin: " + username + " rememberMe: " + rememberMe);
+        logger.info("[login] UserLogin: " + username + " rememberMe: " + rememberMe);
 
 //        try {
 //            Thread.sleep(2000);
@@ -69,7 +69,7 @@ public class EndpointSession {
                         @FormParam("rememberMe") boolean rememberMe,
                         @Context HttpServletRequest httpServletRequest) {
 
-        logger.debug("[loginAccessKey] AccessKey: " + accessKey + " rememberMe: " + rememberMe);
+        logger.info("[loginAccessKey] AccessKey: " + accessKey + " rememberMe: " + rememberMe);
 
         try {
             Thread.sleep(5000);

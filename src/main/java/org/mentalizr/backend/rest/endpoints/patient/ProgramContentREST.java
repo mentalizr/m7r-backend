@@ -55,8 +55,14 @@ public class ProgramContentREST {
             @Override
             protected void updateActivityStatus() {
                 String userId = this.authorization.getUserId();
-                PatientStatusDAO.updateLastContentId(userId, contentId);
-                PersistentUserActivity.update(this.authorization);
+                // TODO better solution? Check if info page by requesting content manager here?
+                if (!contentId.contains("_info_")) {
+                    PatientStatusDAO.updateLastContentId(userId, contentId);
+                    PersistentUserActivity.update(this.authorization);
+                } else {
+                    this.logger.debug("[" + SERVICE_ID + "][" + userId + "][" + contentId + "] skipped. " +
+                            "Not persisting info pages as patient status.");
+                }
             }
 
             @Override
