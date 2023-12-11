@@ -3,6 +3,7 @@ package org.mentalizr.backend.rest.endpoints.patient;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.M7rAccessControl;
+import org.mentalizr.backend.activity.PatientStatus;
 import org.mentalizr.backend.activity.PersistentUserActivity;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.rest.service.Service;
@@ -55,14 +56,8 @@ public class ProgramContentREST {
             @Override
             protected void updateActivityStatus() {
                 String userId = this.authorization.getUserId();
-                // TODO better solution? Check if info page by requesting content manager here?
-                if (!contentId.contains("_info_")) {
-                    PatientStatusDAO.updateLastContentId(userId, contentId);
-                    PersistentUserActivity.update(this.authorization);
-                } else {
-                    this.logger.debug("[" + SERVICE_ID + "][" + userId + "][" + contentId + "] skipped. " +
-                            "Not persisting info pages as patient status.");
-                }
+                PatientStatus.update(userId, contentId);
+                PersistentUserActivity.update(this.authorization);
             }
 
             @Override
