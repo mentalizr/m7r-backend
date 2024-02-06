@@ -6,6 +6,9 @@ import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.adapter.PatientRestoreSOAdapter;
 import org.mentalizr.backend.rest.service.Service;
+import org.mentalizr.persistence.mongo.restEndpointLogging.RestEndpointMessageConverter;
+import org.mentalizr.persistence.mongo.restEndpointLogging.RestEndpointMessageDAO;
+import org.mentalizr.persistence.mongo.restEndpointLogging.RestEndpointMessageMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
@@ -14,6 +17,7 @@ import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserLoginCompositeDAO
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
+import org.mentalizr.serviceObjects.frontend.application.RestEndpointMessageSO;
 import org.mentalizr.serviceObjects.userManagement.PatientRestoreCollectionSO;
 import org.mentalizr.serviceObjects.userManagement.PatientRestoreSO;
 
@@ -59,6 +63,16 @@ public class GetAllPatientsREST {
                     PatientRestoreSO patientRestoreSO = createPatientRestoreSO(userLoginCompositeVO);
                     patientRestoreCollectionSO.getCollection().add(patientRestoreSO);
                 }
+                RestEndpointMessageSO restEndpointMessageSO = new RestEndpointMessageSO();
+                restEndpointMessageSO.setUserId("23456");
+                restEndpointMessageSO.setRestId(SERVICE_ID);
+                restEndpointMessageSO.setRole("Dont know");
+                restEndpointMessageSO.setMessage("I was definetly here");
+                restEndpointMessageSO.setTimestamp("2024:12:12-12345678");
+
+                RestEndpointMessageMongoHandler.insertOne(RestEndpointMessageConverter
+                        .convert(restEndpointMessageSO));
+
                 return patientRestoreCollectionSO;
             }
 
