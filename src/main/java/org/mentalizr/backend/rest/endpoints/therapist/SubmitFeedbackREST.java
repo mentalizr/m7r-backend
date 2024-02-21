@@ -9,6 +9,8 @@ import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.commons.Dates;
 import org.mentalizr.persistence.mongo.DocumentNotFoundException;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.mongo.formData.FormDataDAO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FeedbackSO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
@@ -86,6 +88,10 @@ public class SubmitFeedbackREST {
             @Override
             protected void updateActivityStatus() {
                 PersistentUserActivity.update(this.authorization);
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject("SUBMITTED FEEDBACK { userid: "
+                                + feedbackSubmissionSO.getUserId()
+                                + " contentid: " + feedbackSubmissionSO.getContentId() +" }")));
             }
 
         }.call();

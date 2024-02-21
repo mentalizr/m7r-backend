@@ -10,6 +10,8 @@ import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.fileHierarchy.exceptions.ProgramNotFoundException;
 import org.mentalizr.contentManager.programStructure.ProgramStructure;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -52,6 +54,12 @@ public class GetProgramDisplayNameREST {
                     logger.error("Program not found. Cause: " + e.getMessage(), e);
                     throw new M7rUnknownEntityException(e.getMessage(), e);
                 }
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject()));
             }
 
         }.call();

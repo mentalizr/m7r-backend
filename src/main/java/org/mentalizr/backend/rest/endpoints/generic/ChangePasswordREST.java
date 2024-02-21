@@ -12,12 +12,13 @@ import org.mentalizr.backend.accessControl.roles.Therapist;
 import org.mentalizr.backend.exceptions.M7rIllegalServiceInputException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.utils.CredentialsSanity;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.persistence.rdbms.edao.UserLoginEDAO;
 import org.mentalizr.persistence.rdbms.utils.Argon2Hash;
 import org.mentalizr.serviceObjects.frontend.application.ChangePasswordSO;
-import org.mentalizr.serviceObjects.userManagement.PatientAddSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +76,12 @@ public class ChangePasswordREST {
                 UserLoginEDAO.unsetRenewPasswordRequired(userVO.getId());
 
                 return null;
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject()));
             }
         }.call();
 

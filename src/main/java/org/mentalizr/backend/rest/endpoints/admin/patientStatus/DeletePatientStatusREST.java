@@ -5,6 +5,8 @@ import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.rest.service.Service;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.mongo.patientStatus.PatientStatusMongoHandler;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +43,12 @@ public class DeletePatientStatusREST {
             protected Object workLoad() {
                 PatientStatusMongoHandler.delete(userId);
                 return null;
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject("DELETED PATIENT STATUS FROM { userid: " + userId + " }")));
             }
 
         }.call();

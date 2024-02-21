@@ -4,6 +4,8 @@ import de.arthurpicht.webAccessControl.auth.Authorization;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.config.instance.InstanceConfiguration;
 import org.mentalizr.backend.rest.service.Service;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.serviceObjects.frontend.application.ApplicationConfigGenericSO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +42,12 @@ public class AppConfigGenericREST {
             protected ApplicationConfigGenericSO workLoad() {
                 InstanceConfiguration instanceConfiguration = ApplicationContext.getInstanceConfiguration();
                 return instanceConfiguration.getApplicationConfigGenericSO();
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject()));
             }
 
         }.call();

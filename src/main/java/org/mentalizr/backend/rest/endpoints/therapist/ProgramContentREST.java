@@ -8,6 +8,8 @@ import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -49,6 +51,12 @@ public class ProgramContentREST {
                 ContentManager contentManager = ApplicationContext.getContentManager();
                 java.nio.file.Path stepContentFile = contentManager.getContent(contentId);
                 return new FileInputStream(stepContentFile.toFile());
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject()));
             }
 
             @Override

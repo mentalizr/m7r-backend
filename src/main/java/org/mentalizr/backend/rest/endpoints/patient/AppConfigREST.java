@@ -7,6 +7,8 @@ import org.mentalizr.backend.accessControl.M7rAuthorization;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.config.instance.InstanceConfiguration;
 import org.mentalizr.backend.rest.service.Service;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.serviceObjects.frontend.patient.ApplicationConfigPatientSO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,6 +47,12 @@ public class AppConfigREST {
                 M7rAuthorization m7rAuthorization = new M7rAuthorization(this.authorization);
                 String programId = m7rAuthorization.getUserAsPatientAbstract().getPatientProgramVO().getProgramId();
                 return instanceConfiguration.getApplicationConfigPatientSO(programId);
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject()));
             }
 
         }.call();

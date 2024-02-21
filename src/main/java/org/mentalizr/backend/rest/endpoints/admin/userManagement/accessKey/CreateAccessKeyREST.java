@@ -10,6 +10,8 @@ import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertProgram;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertRoleTherapist;
 import org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey.PatientAccessKeyCreate;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyCollectionSO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyCreateSO;
 
@@ -61,6 +63,14 @@ public class CreateAccessKeyREST {
             @Override
             protected AccessKeyCollectionSO workLoad() throws M7rInfrastructureException {
                 return PatientAccessKeyCreate.create(getAccessKeyCreateSO());
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject("CREATED ACCESSKEYS { program: "
+                                + accessKeyCreateSO.getProgramId() + " amount: "
+                                + accessKeyCreateSO.getNrOfKeys() + " }")));
             }
 
             private AccessKeyCreateSO getAccessKeyCreateSO() {

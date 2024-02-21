@@ -8,6 +8,8 @@ import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertPolicy;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.userAdmin.Policy;
 import org.mentalizr.serviceObjects.userManagement.PolicySO;
@@ -54,6 +56,12 @@ public class CreatePolicyREST {
             protected Object workLoad() throws DataSourceException {
                 Policy.create(policySO.getUserId(), policySO.getVersion(), policySO.getConsent());
                 return null;
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject()));
             }
 
         }.call();

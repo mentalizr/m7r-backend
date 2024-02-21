@@ -5,6 +5,8 @@ import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.rest.service.Service;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.UserDAO;
@@ -48,6 +50,12 @@ public class ActivateUserREST {
                 userVO.setActive(true);
                 UserDAO.update(userVO);
                 return null;
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject("ACTIVATED USER { " + userId + " }")));
             }
 
         }.call();

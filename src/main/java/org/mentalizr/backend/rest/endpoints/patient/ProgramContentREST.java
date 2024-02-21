@@ -8,6 +8,8 @@ import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.mongo.patientStatus.PatientStatusDAO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,6 +58,9 @@ public class ProgramContentREST {
             protected void updateActivityStatus() {
                 String userId = this.authorization.getUserId();
                 // TODO better solution? Check if info page by requesting content manager here?
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject()));
+
                 if (!contentId.contains("_info_")) {
                     PatientStatusDAO.updateLastContentId(userId, contentId);
                     PersistentUserActivity.update(this.authorization);

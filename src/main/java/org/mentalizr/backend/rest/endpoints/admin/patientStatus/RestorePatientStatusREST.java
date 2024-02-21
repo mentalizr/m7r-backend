@@ -8,6 +8,8 @@ import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.DocumentPreexistingException;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.mongo.patientStatus.PatientStatusConverter;
 import org.mentalizr.persistence.mongo.patientStatus.PatientStatusMongoHandler;
 import org.mentalizr.serviceObjects.frontend.patient.PatientStatusSO;
@@ -54,6 +56,12 @@ public class RestorePatientStatusREST {
                     throw new RESTException("REST method [" + SERVICE_ID + "]. PatientStatus cannot be restored as it is preexisting.");
                 }
                 return null;
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject("RESTORED PATIENT STATUS FROM { userid: " + patientStatusSO.getUserId() + " }")));
             }
 
         }.call();

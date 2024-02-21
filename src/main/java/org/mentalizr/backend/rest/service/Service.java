@@ -8,15 +8,19 @@ import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.exceptions.M7rUnknownEntityException;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.ResponseFactory;
+import org.mentalizr.commons.Dates;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
+import org.mentalizr.serviceObjects.frontend.application.ActivityStatusMessageSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.time.Instant;
+import java.util.Date;
 
 @SuppressWarnings("JavaDoc")
 public abstract  class Service {
@@ -44,7 +48,8 @@ public abstract  class Service {
         logger.trace("[" + getServiceId() + "] called.");
     }
 
-    protected abstract Authorization checkSecurityConstraints() throws UnauthorizedException, M7rIllegalServiceInputException;
+    protected abstract Authorization checkSecurityConstraints()
+            throws UnauthorizedException, M7rIllegalServiceInputException;
 
     /**
      * Check business preconditions that are not yet checked as security constraints.
@@ -55,10 +60,11 @@ public abstract  class Service {
     protected void checkPreconditions() throws ServicePreconditionFailedException, M7rInfrastructureException {
     }
 
-    protected abstract Object workLoad() throws RESTException, ContentManagerException, M7rInfrastructureException, IOException, DataSourceException, EntityNotFoundException, M7rIllegalServiceInputException, M7rUnknownEntityException;
+    protected abstract Object workLoad() throws RESTException, ContentManagerException, M7rInfrastructureException,
+            IOException, DataSourceException, EntityNotFoundException, M7rIllegalServiceInputException,
+            M7rUnknownEntityException;
 
-    protected void updateActivityStatus(){
-    }
+    protected abstract void updateActivityStatus();
 
     protected void logLeave() {
         if (this.authorization != null) {
@@ -74,7 +80,8 @@ public abstract  class Service {
         try {
             logEntry();
         } catch (RuntimeException e) {
-            logger.error("A RuntimeException occurred on executing method logEntry for service [" + getServiceId() + "]: " + e.getMessage(), e);
+            logger.error("A RuntimeException occurred on executing method logEntry for service ["
+                    + getServiceId() + "]: " + e.getMessage(), e);
             return ResponseFactory.internalServerError(e);
         }
 
@@ -125,14 +132,16 @@ public abstract  class Service {
         try {
             updateActivityStatus();
         } catch (RuntimeException e) {
-            logger.error("A RuntimeException occurred on executing method updateActivityStatus for service [" + getServiceId() + "]: " + e.getMessage(), e);
+            logger.error("A RuntimeException occurred on executing method updateActivityStatus for service ["
+                    + getServiceId() + "]: " + e.getMessage(), e);
             return ResponseFactory.internalServerError(e);
         }
 
         try {
             logLeave();
         } catch (RuntimeException e) {
-            logger.error("A RuntimeException occurred on executing method logLeave for service [" + getServiceId() + "]: " + e.getMessage(), e);
+            logger.error("A RuntimeException occurred on executing method logLeave for service ["
+                    + getServiceId() + "]: " + e.getMessage(), e);
             return ResponseFactory.internalServerError(e);
         }
 
@@ -143,6 +152,28 @@ public abstract  class Service {
         logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
                 + getServiceId() + "]: " + e.getMessage());
         return ResponseFactory.badRequestError(e);
+    }
+
+    protected ActivityStatusMessageSO createMessageObject() {
+        ActivityStatusMessageSO activityStatusMessageSO = new ActivityStatusMessageSO();
+        activityStatusMessageSO.setTimestamp(Dates.toIsoString(Date.from(Instant.now())));
+        activityStatusMessageSO.setUserId(this.authorization.getUserId());
+        activityStatusMessageSO.setRestId(this.getServiceId());
+        activityStatusMessageSO.setRole(this.authorization.getRoleName());
+        activityStatusMessageSO.setMessage("");
+
+        return activityStatusMessageSO;
+    }
+
+    protected ActivityStatusMessageSO createMessageObject(String message) {
+        ActivityStatusMessageSO activityStatusMessageSO = new ActivityStatusMessageSO();
+        activityStatusMessageSO.setTimestamp(Dates.toIsoString(Date.from(Instant.now())));
+        activityStatusMessageSO.setUserId(this.authorization.getUserId());
+        activityStatusMessageSO.setRestId(this.getServiceId());
+        activityStatusMessageSO.setRole(this.authorization.getRoleName());
+        activityStatusMessageSO.setMessage(message);
+
+        return activityStatusMessageSO;
     }
 
 }

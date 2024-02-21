@@ -8,6 +8,8 @@ import org.mentalizr.backend.accessControl.roles.PatientAbstract;
 import org.mentalizr.backend.accessControl.roles.PatientAnonymous;
 import org.mentalizr.backend.accessControl.roles.PatientLogin;
 import org.mentalizr.backend.rest.service.Service;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.mongo.formData.FormDataDAO;
 import org.mentalizr.persistence.mongo.formData.FormDataTimestampUpdater;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
@@ -57,6 +59,12 @@ public class GetFormDataREST {
                 FormDataTimestampUpdater.markFeedbackAsSeenByPatient(formDataSO);
 
                 return formDataSO;
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject()));
             }
 
             @Override

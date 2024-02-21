@@ -10,11 +10,10 @@ import org.mentalizr.backend.accessControl.roles.M7rUser;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
-import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.persistence.rdbms.barnacle.vob.UserVOB;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -75,6 +74,12 @@ public class ConsentPolicyREST {
                 RequirementsFulfill.policyConsent(m7rUser);
                 AccessControl.updateSession(this.httpServletRequest);
                 return "OK";
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject()));
             }
 
         }.call();

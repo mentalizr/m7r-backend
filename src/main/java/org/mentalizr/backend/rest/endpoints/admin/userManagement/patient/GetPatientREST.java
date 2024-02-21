@@ -6,6 +6,8 @@ import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.adapter.PatientRestoreSOAdapter;
 import org.mentalizr.backend.rest.service.Service;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
@@ -62,6 +64,12 @@ public class GetPatientREST {
                 patientRestoreSO.setTherapistId(rolePatientVO.getTherapistId());
 
                 return patientRestoreSO;
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject("REQUESTED PATIENT { username: " + username + " }")));
             }
 
         }.call();
