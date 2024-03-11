@@ -55,7 +55,7 @@ public class ActivateUserREST {
             @Override
             protected void updateActivityStatus() {
                 ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("ACTIVATED USER { " + userId + " }")));
+                        .convert(createMessageObject("userid: " + userId)));
             }
 
         }.call();

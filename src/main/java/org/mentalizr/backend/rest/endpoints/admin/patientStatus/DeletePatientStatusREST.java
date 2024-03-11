@@ -48,7 +48,7 @@ public class DeletePatientStatusREST {
             @Override
             protected void updateActivityStatus() {
                 ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("DELETED PATIENT STATUS FROM { userid: " + userId + " }")));
+                        .convert(createMessageObject("userid: " + userId)));
             }
 
         }.call();

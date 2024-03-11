@@ -61,7 +61,7 @@ public class RestoreFormDataREST {
             @Override
             protected void updateActivityStatus() {
                 ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("RESTORED FORMDATA FROM { userid: " + formDataSO.getUserId() + " }")));
+                        .convert(createMessageObject("userid: " + formDataSO.getUserId())));
             }
 
         }.call();

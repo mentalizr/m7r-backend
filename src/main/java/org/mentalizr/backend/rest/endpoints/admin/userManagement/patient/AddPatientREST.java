@@ -110,9 +110,9 @@ public class AddPatientREST {
             @Override
             protected void updateActivityStatus() {
                 ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("ADDED PATIENT { username: "
-                                + patientAddSO.getUsername() + " userid: "
-                                + patientAddSO.getUserId() + " }")));
+                        .convert(createMessageObject("username: "
+                                + patientAddSO.getUsername() + " | userid: "
+                                + patientAddSO.getUserId())));
             }
 
         }.call();

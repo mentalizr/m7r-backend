@@ -8,6 +8,8 @@ import org.mentalizr.backend.activity.PersistentUserActivity;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.commons.Dates;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.mongo.formData.FormDataConverter;
 import org.mentalizr.persistence.mongo.formData.FormDataMongoHandler;
 import org.mentalizr.serviceObjects.frontend.patient.formData.ExerciseSO;
@@ -75,6 +77,9 @@ public class SendFormDataREST {
             @Override
             protected void updateActivityStatus() {
                 PersistentUserActivity.update(this.authorization);
+
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject()));
             }
 
             @Override

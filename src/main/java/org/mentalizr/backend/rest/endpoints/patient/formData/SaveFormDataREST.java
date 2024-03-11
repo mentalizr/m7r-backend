@@ -5,6 +5,8 @@ import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.M7rAccessControl;
 import org.mentalizr.backend.activity.PersistentUserActivity;
 import org.mentalizr.backend.rest.service.Service;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.mongo.formData.FormDataMongoHandler;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
 
@@ -49,6 +51,9 @@ public class SaveFormDataREST {
             @Override
             protected void updateActivityStatus() {
                 PersistentUserActivity.update(this.authorization);
+
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject()));
             }
 
             @Override

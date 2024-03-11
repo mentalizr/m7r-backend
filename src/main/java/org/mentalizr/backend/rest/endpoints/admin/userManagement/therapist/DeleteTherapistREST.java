@@ -62,8 +62,7 @@ public class DeleteTherapistREST {
             @Override
             protected void updateActivityStatus() {
                 ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("CREATED THERAPIST { username: "
-                                + username + " }")));
+                        .convert(createMessageObject("username: " + username)));
             }
 
         }.call();

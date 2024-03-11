@@ -69,7 +69,7 @@ public class GetPatientREST {
             @Override
             protected void updateActivityStatus() {
                 ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("REQUESTED PATIENT { username: " + username + " }")));
+                        .convert(createMessageObject("username: " + username)));
             }
 
         }.call();

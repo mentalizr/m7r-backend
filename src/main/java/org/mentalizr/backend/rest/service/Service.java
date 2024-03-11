@@ -8,19 +8,18 @@ import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.exceptions.M7rUnknownEntityException;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.ResponseFactory;
-import org.mentalizr.commons.Dates;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
+import org.mentalizr.persistence.mongo.DocumentNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
-import org.mentalizr.serviceObjects.frontend.application.ActivityStatusMessageSO;
+import org.mentalizr.serviceObjects.userManagement.ActivityStatusMessageSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.time.Instant;
-import java.util.Date;
+import java.util.List;
 
 @SuppressWarnings("JavaDoc")
 public abstract  class Service {
@@ -30,6 +29,7 @@ public abstract  class Service {
 
     protected HttpServletRequest httpServletRequest;
     protected Object serviceObjectRequest;
+    protected List<Object> serviceObjectRequests;
     protected Authorization authorization;
 
     public Service(HttpServletRequest httpServletRequest) {
@@ -40,6 +40,11 @@ public abstract  class Service {
     public Service(HttpServletRequest httpServletRequest, Object serviceObjectRequest) {
         this.httpServletRequest = httpServletRequest;
         this.serviceObjectRequest = serviceObjectRequest;
+    }
+
+    public Service(HttpServletRequest httpServletRequest, List<Object> serviceObjectRequests) {
+        this.httpServletRequest = httpServletRequest;
+        this.serviceObjectRequests = serviceObjectRequests;
     }
 
     protected abstract String getServiceId();
@@ -62,7 +67,7 @@ public abstract  class Service {
 
     protected abstract Object workLoad() throws RESTException, ContentManagerException, M7rInfrastructureException,
             IOException, DataSourceException, EntityNotFoundException, M7rIllegalServiceInputException,
-            M7rUnknownEntityException;
+            M7rUnknownEntityException, DocumentNotFoundException;
 
     protected abstract void updateActivityStatus();
 
@@ -127,6 +132,8 @@ public abstract  class Service {
             return ResponseFactory.entityNotFound(e);
         } catch (M7rIllegalServiceInputException e) {
             return handleIllegalServiceInput(e);
+        } catch (DocumentNotFoundException e) {
+            throw new RuntimeException(e);
         }
 
         try {
@@ -156,7 +163,7 @@ public abstract  class Service {
 
     protected ActivityStatusMessageSO createMessageObject() {
         ActivityStatusMessageSO activityStatusMessageSO = new ActivityStatusMessageSO();
-        activityStatusMessageSO.setTimestamp(Dates.toIsoString(Date.from(Instant.now())));
+        activityStatusMessageSO.setTimestamp(System.currentTimeMillis());
         activityStatusMessageSO.setUserId(this.authorization.getUserId());
         activityStatusMessageSO.setRestId(this.getServiceId());
         activityStatusMessageSO.setRole(this.authorization.getRoleName());
@@ -167,7 +174,7 @@ public abstract  class Service {
 
     protected ActivityStatusMessageSO createMessageObject(String message) {
         ActivityStatusMessageSO activityStatusMessageSO = new ActivityStatusMessageSO();
-        activityStatusMessageSO.setTimestamp(Dates.toIsoString(Date.from(Instant.now())));
+        activityStatusMessageSO.setTimestamp(System.currentTimeMillis());
         activityStatusMessageSO.setUserId(this.authorization.getUserId());
         activityStatusMessageSO.setRestId(this.getServiceId());
         activityStatusMessageSO.setRole(this.authorization.getRoleName());

@@ -68,9 +68,9 @@ public class CreateAccessKeyREST {
             @Override
             protected void updateActivityStatus() {
                 ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("CREATED ACCESSKEYS { program: "
-                                + accessKeyCreateSO.getProgramId() + " amount: "
-                                + accessKeyCreateSO.getNrOfKeys() + " }")));
+                        .convert(createMessageObject("program: "
+                                + accessKeyCreateSO.getProgramId() + " | amount: "
+                                + accessKeyCreateSO.getNrOfKeys())));
             }
 
             private AccessKeyCreateSO getAccessKeyCreateSO() {

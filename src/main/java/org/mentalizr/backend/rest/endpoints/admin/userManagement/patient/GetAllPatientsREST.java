@@ -36,9 +36,7 @@ public class GetAllPatientsREST {
     @GET
     @Path(SERVICE_ID)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAll(
-            @Context HttpServletRequest httpServletRequest
-    ) {
+    public Response getAll(@Context HttpServletRequest httpServletRequest) {
 
         return new Service(httpServletRequest) {
 

@@ -61,7 +61,7 @@ public class RestorePatientStatusREST {
             @Override
             protected void updateActivityStatus() {
                 ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("RESTORED PATIENT STATUS FROM { userid: " + patientStatusSO.getUserId() + " }")));
+                        .convert(createMessageObject("userid: " + patientStatusSO.getUserId())));
             }
 
         }.call();

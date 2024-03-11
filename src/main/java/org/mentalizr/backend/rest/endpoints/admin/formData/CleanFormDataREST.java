@@ -48,7 +48,7 @@ public class CleanFormDataREST {
             @Override
             protected void updateActivityStatus() {
                 ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("REMOVED FORMDATA FROM { userid: " + userId + " }")));
+                        .convert(createMessageObject("userid: " + userId )));
             }
 
         }.call();

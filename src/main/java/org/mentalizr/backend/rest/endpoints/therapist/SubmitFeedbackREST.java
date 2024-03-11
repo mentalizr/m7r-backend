@@ -89,9 +89,9 @@ public class SubmitFeedbackREST {
             protected void updateActivityStatus() {
                 PersistentUserActivity.update(this.authorization);
                 ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("SUBMITTED FEEDBACK { userid: "
+                        .convert(createMessageObject("userid: "
                                 + feedbackSubmissionSO.getUserId()
-                                + " contentid: " + feedbackSubmissionSO.getContentId() +" }")));
+                                + " | contentid: " + feedbackSubmissionSO.getContentId())));
             }
 
         }.call();

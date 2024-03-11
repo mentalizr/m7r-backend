@@ -51,7 +51,7 @@ public class GetAllFormDataREST {
             @Override
             protected void updateActivityStatus() {
                 ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("REQUESTED FORMDATA FROM { userid: " + userId + " }")));
+                        .convert(createMessageObject("userid: " + userId)));
             }
 
         }.call();

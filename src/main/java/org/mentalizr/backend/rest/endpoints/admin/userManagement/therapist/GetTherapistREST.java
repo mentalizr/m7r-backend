@@ -59,7 +59,7 @@ public class GetTherapistREST {
             @Override
             protected void updateActivityStatus() {
                 ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("REQUESTED THERAPIST { username: " + username + " }")));
+                        .convert(createMessageObject("username: " + username)));
             }
 
         }.call();

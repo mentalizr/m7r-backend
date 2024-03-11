@@ -55,7 +55,7 @@ public class DeactivateUserREST {
             @Override
             protected void updateActivityStatus() {
                 ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("DEACTIVATED USER { " + userId + " }")));
+                        .convert(createMessageObject("userid: " + userId)));
             }
 
         }.call();

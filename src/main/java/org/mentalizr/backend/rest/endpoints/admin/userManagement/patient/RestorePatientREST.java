@@ -117,9 +117,9 @@ public class RestorePatientREST {
             @Override
             protected void updateActivityStatus() {
                 ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("RESTORED PATIENT { username: "
-                                + patientRestoreSO.getUsername() + " program: "
-                                + patientRestoreSO.getProgramId() + " }")));
+                        .convert(createMessageObject("username: "
+                                + patientRestoreSO.getUsername() + " | program: "
+                                + patientRestoreSO.getProgramId())));
             }
 
         }.call();
