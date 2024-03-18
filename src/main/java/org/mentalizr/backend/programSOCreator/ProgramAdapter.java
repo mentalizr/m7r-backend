@@ -28,8 +28,8 @@ public class ProgramAdapter {
         List<InfotextSO> infotextSOList = new ArrayList<>();
         for (Infotext infotext : infotextList) {
             InfotextSO infotextSO = new InfotextSO();
-            infotextSO.setId(infotext.getId());
-            infotextSO.setName(infotext.getName());
+            infotextSO.setId(infotext.id());
+            infotextSO.setName(infotext.name());
             infotextSOList.add(infotextSO);
         }
         return infotextSOList;

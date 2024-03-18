@@ -33,15 +33,6 @@ public class ProgramSOCreator {
         return programSO;
     }
 
-//    private ProgramStructure getProgramStructure(String programId) throws ProgramSOBuilderException {
-//        ContentManager contentManager = ApplicationContext.getContentManager();
-//        try {
-//            return contentManager.getProgramStructure(programId);
-//        } catch (ProgramNotFoundException e) {
-//            throw new ProgramSOBuilderException(e);
-//        }
-//    }
-
     private void setAccessibilityStatusForSteps(ProgramSO programSO) {
         List<StepSO> stepSOList = ProgramAdapterUtils.buildStepSOList(programSO);
         if (programSO.isBlocking()) {
@@ -71,7 +62,6 @@ public class ProgramSOCreator {
     }
 
     private boolean isFeedbackPending(StepSOIterator stepSOIterator) {
-
         if (!stepSOIterator.hasPrevious())
             throw new RuntimeException("Inconsistency exception. Previous step expected for feedback.");
         StepSO stepSOExercise = stepSOIterator.getStepSOList().get(stepSOIterator.getIndex() - 1);
