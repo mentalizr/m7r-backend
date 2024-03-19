@@ -16,10 +16,12 @@ import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.Serial;
 import java.nio.file.Path;
 
 public class M7rMediaServlet extends MediaServlet {
 
+    @Serial
     private static final long serialVersionUID = 8738566128735601223L;
 
     @Override
