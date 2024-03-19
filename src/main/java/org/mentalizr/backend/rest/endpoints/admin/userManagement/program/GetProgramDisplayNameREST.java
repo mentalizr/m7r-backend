@@ -47,7 +47,7 @@ public class GetProgramDisplayNameREST {
                 ContentManager contentManager = ApplicationContext.getContentManager();
                 try {
                     ProgramStructure programStructure = contentManager.getProgramStructure(programId);
-                    return programStructure.getName();
+                    return programStructure.name();
                 } catch (ProgramNotFoundException e) {
                     logger.error("Program not found. Cause: " + e.getMessage(), e);
                     throw new M7rUnknownEntityException(e.getMessage(), e);

@@ -3,6 +3,7 @@ package org.mentalizr.backend.rest.endpoints.patient;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.M7rAccessControl;
+import org.mentalizr.backend.activity.PatientStatus;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.patientStatus.PatientStatusDAO;
 import org.mentalizr.serviceObjects.frontend.patient.PatientStatusSO;
@@ -40,7 +41,7 @@ public class PatientStatusREST {
             @Override
             protected PatientStatusSO workLoad() {
                 String userId = this.authorization.getUserId();
-                return PatientStatusDAO.obtain(userId);
+                return PatientStatus.obtain(userId);
             }
 
         }.call();

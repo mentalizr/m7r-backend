@@ -12,13 +12,13 @@ public class ProgramAdapter {
     public static ProgramSO getProgramSO(ProgramStructure programStructure) {
 
         ProgramSO programSO = new ProgramSO();
-        programSO.setId(programStructure.getId());
-        programSO.setName(programStructure.getName());
+        programSO.setId(programStructure.id());
+        programSO.setName(programStructure.name());
 
-        List<InfotextSO> infotextSOList = getInfotextSOList(programStructure.getInfotexts());
+        List<InfotextSO> infotextSOList = getInfotextSOList(programStructure.infotexts());
         programSO.setInfotexts(infotextSOList);
 
-        List<ModuleSO> moduleSOList = getModuleSOList(programStructure.getModules());
+        List<ModuleSO> moduleSOList = getModuleSOList(programStructure.modules());
         programSO.setModules(moduleSOList);
 
         return programSO;
@@ -28,8 +28,8 @@ public class ProgramAdapter {
         List<InfotextSO> infotextSOList = new ArrayList<>();
         for (Infotext infotext : infotextList) {
             InfotextSO infotextSO = new InfotextSO();
-            infotextSO.setId(infotext.getId());
-            infotextSO.setName(infotext.getName());
+            infotextSO.setId(infotext.id());
+            infotextSO.setName(infotext.name());
             infotextSOList.add(infotextSO);
         }
         return infotextSOList;
@@ -39,9 +39,9 @@ public class ProgramAdapter {
         List<ModuleSO> moduleSOList = new ArrayList<>();
         for (Module module : moduleList) {
             ModuleSO moduleSO = new ModuleSO();
-            moduleSO.setId(module.getId());
-            moduleSO.setName(module.getName());
-            moduleSO.setSubmodules(getSubmoduleSOList(module.getSubmodules()));
+            moduleSO.setId(module.id());
+            moduleSO.setName(module.name());
+            moduleSO.setSubmodules(getSubmoduleSOList(module.submodules()));
             moduleSOList.add(moduleSO);
         }
         return moduleSOList;
@@ -51,9 +51,9 @@ public class ProgramAdapter {
         List<SubmoduleSO> submoduleSOList = new ArrayList<>();
         for (Submodule submodule : submoduleList) {
             SubmoduleSO submoduleSO = new SubmoduleSO();
-            submoduleSO.setId(submodule.getId());
-            submoduleSO.setName(submodule.getName());
-            submoduleSO.setSteps(getStepSOList(submodule.getSteps()));
+            submoduleSO.setId(submodule.id());
+            submoduleSO.setName(submodule.name());
+            submoduleSO.setSteps(getStepSOList(submodule.steps()));
             submoduleSOList.add(submoduleSO);
         }
         return submoduleSOList;
@@ -63,10 +63,10 @@ public class ProgramAdapter {
         List<StepSO> stepSOList = new ArrayList<>();
         for (Step step : stepList) {
             StepSO stepSO = new StepSO();
-            stepSO.setId(step.getId());
-            stepSO.setName(step.getName());
-            stepSO.setExercise(step.isExercise());
-            stepSO.setFeedback(step.isFeedback());
+            stepSO.setId(step.id());
+            stepSO.setName(step.name());
+            stepSO.setExercise(step.exercise());
+            stepSO.setFeedback(step.feedback());
             stepSOList.add(stepSO);
         }
         return stepSOList;
