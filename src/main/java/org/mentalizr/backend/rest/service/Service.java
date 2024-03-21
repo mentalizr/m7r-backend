@@ -9,6 +9,7 @@ import org.mentalizr.backend.exceptions.M7rUnknownEntityException;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.ResponseFactory;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
+import org.mentalizr.persistence.rdbms.barnacle.connectionManager.BusinessConstraintException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.slf4j.Logger;
@@ -55,7 +56,7 @@ public abstract  class Service {
     protected void checkPreconditions() throws ServicePreconditionFailedException, M7rInfrastructureException {
     }
 
-    protected abstract Object workLoad() throws RESTException, ContentManagerException, M7rInfrastructureException, IOException, DataSourceException, EntityNotFoundException, M7rIllegalServiceInputException, M7rUnknownEntityException;
+    protected abstract Object workLoad() throws RESTException, ContentManagerException, M7rInfrastructureException, IOException, DataSourceException, EntityNotFoundException, M7rIllegalServiceInputException, M7rUnknownEntityException, BusinessConstraintException;
 
     protected void updateActivityStatus(){
     }
@@ -111,13 +112,14 @@ public abstract  class Service {
             responseSO = workLoad();
         } catch (RESTException | ContentManagerException | IOException | M7rInfrastructureException |
                  DataSourceException | RuntimeException e) {
-            logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
-                    + getServiceId() + "]: " + e.getMessage(), e);
+            logger.error(getWorkloadExceptionMessage(e));
             return ResponseFactory.internalServerError(e);
         } catch (EntityNotFoundException | M7rUnknownEntityException e) {
-            logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
-                    + getServiceId() + "]: " + e.getMessage());
+            logger.error(getWorkloadExceptionMessage(e));
             return ResponseFactory.entityNotFound(e);
+        } catch (BusinessConstraintException e) {
+            logger.error(getWorkloadExceptionMessage(e));
+            return ResponseFactory.businessConstraintFailed(e);
         } catch (M7rIllegalServiceInputException e) {
             return handleIllegalServiceInput(e);
         }
@@ -143,6 +145,11 @@ public abstract  class Service {
         logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
                 + getServiceId() + "]: " + e.getMessage());
         return ResponseFactory.badRequestError(e);
+    }
+
+    private String getWorkloadExceptionMessage(Exception e) {
+        return "A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
+        + getServiceId() + "]: " + e.getMessage();
     }
 
 }

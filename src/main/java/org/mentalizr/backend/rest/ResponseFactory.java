@@ -11,6 +11,7 @@ public class ResponseFactory {
     private static final int ENTITY_NOT_FOUND = 470;
     private static final int ENTITY_PREEXISTING = 471;
     private static final int PRECONDITION_FAILED = 471;
+    private static final int BUSINESS_CONSTRAINT_FAILED = 472;
 
     public static Response ok() {
         return Response.ok().build();
@@ -27,6 +28,10 @@ public class ResponseFactory {
 
     public static Response entityNotFound(Exception e) {
         return Response.status(ENTITY_NOT_FOUND).entity(ErrorSO.withMessage(e.getMessage())).build();
+    }
+
+    public static Response businessConstraintFailed(Exception e) {
+        return Response.status(BUSINESS_CONSTRAINT_FAILED).entity(ErrorSO.withMessage(e.getMessage())).build();
     }
 
     public static Response preconditionFailed(String message) {
