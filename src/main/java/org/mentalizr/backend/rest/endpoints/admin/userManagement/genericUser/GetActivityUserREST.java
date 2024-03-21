@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
 @Path("v1")
 public class GetActivityUserREST {
 
-    private static final String SERVICE_ID = "admin/user/patient/activity";
+    private static final String SERVICE_ID = "admin/user/activity/get";
 
     @POST
     @Path(SERVICE_ID)
@@ -44,7 +44,8 @@ public class GetActivityUserREST {
             }
 
             @Override
-            protected void checkPreconditions() throws M7rInfrastructureException, ServicePreconditionFailedException {
+            protected void checkPreconditions()
+                    throws M7rInfrastructureException, ServicePreconditionFailedException {
 
             }
 
