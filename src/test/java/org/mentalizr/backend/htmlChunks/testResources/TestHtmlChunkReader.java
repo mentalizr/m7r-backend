@@ -32,7 +32,7 @@ public class TestHtmlChunkReader implements HtmlChunkReader {
         } else if (htmlChunk instanceof ImprintHtmlChunk) {
             return IMPRINT;
         }
-        throw new RuntimeException("Not implemented.");
+        throw new RuntimeException("Not implemented. Instance is: " + htmlChunk.getClass().getSimpleName());
     }
 
 

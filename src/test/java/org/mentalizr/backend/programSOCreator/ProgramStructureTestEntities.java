@@ -1,9 +1,7 @@
 package org.mentalizr.backend.programSOCreator;
 
+import org.mentalizr.contentManager.programStructure.*;
 import org.mentalizr.contentManager.programStructure.Module;
-import org.mentalizr.contentManager.programStructure.ProgramStructure;
-import org.mentalizr.contentManager.programStructure.Step;
-import org.mentalizr.contentManager.programStructure.Submodule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +40,9 @@ public class ProgramStructureTestEntities {
         List<Module> moduleList = new ArrayList<>();
         moduleList.add(module);
 
-        return new ProgramStructure("p1", "test program", moduleList);
+        List<Infotext> infotextList = new ArrayList<>();
+
+        return new ProgramStructure("p1", "test program", moduleList, infotextList);
     }
 
 }

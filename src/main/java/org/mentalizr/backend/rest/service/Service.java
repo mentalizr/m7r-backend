@@ -3,13 +3,13 @@ package org.mentalizr.backend.rest.service;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.Const;
+import org.mentalizr.backend.exceptions.M7rBusinessConstraintException;
 import org.mentalizr.backend.exceptions.M7rIllegalServiceInputException;
 import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.exceptions.M7rUnknownEntityException;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.ResponseFactory;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
-import org.mentalizr.persistence.rdbms.barnacle.connectionManager.BusinessConstraintException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.slf4j.Logger;
@@ -56,7 +56,7 @@ public abstract  class Service {
     protected void checkPreconditions() throws ServicePreconditionFailedException, M7rInfrastructureException {
     }
 
-    protected abstract Object workLoad() throws RESTException, ContentManagerException, M7rInfrastructureException, IOException, DataSourceException, EntityNotFoundException, M7rIllegalServiceInputException, M7rUnknownEntityException, BusinessConstraintException;
+    protected abstract Object workLoad() throws RESTException, ContentManagerException, M7rInfrastructureException, IOException, DataSourceException, EntityNotFoundException, M7rIllegalServiceInputException, M7rUnknownEntityException, M7rBusinessConstraintException;
 
     protected void updateActivityStatus(){
     }
@@ -117,7 +117,7 @@ public abstract  class Service {
         } catch (EntityNotFoundException | M7rUnknownEntityException e) {
             logger.error(getWorkloadExceptionMessage(e));
             return ResponseFactory.entityNotFound(e);
-        } catch (BusinessConstraintException e) {
+        } catch (M7rBusinessConstraintException e) {
             logger.error(getWorkloadExceptionMessage(e));
             return ResponseFactory.businessConstraintFailed(e);
         } catch (M7rIllegalServiceInputException e) {

@@ -4,8 +4,8 @@ import de.arthurpicht.webAccessControl.auth.AccessControl;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
+import org.mentalizr.backend.exceptions.M7rBusinessConstraintException;
 import org.mentalizr.backend.rest.service.Service;
-import org.mentalizr.persistence.rdbms.barnacle.connectionManager.BusinessConstraintException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.RoleTherapistDAO;
@@ -50,13 +50,13 @@ public class DeleteTherapistREST {
             }
 
             @Override
-            protected Object workLoad() throws DataSourceException, EntityNotFoundException, BusinessConstraintException {
+            protected Object workLoad() throws DataSourceException, EntityNotFoundException, M7rBusinessConstraintException {
                 UserLoginVO userLoginVO = UserLoginDAO.findByUk_username(username);
                 RoleTherapistVO roleTherapistVO = RoleTherapistDAO.load(userLoginVO.getUserId());
 
                 List<RolePatientVO> rolePatientVOList = roleTherapistVO.getRolePatientVOByFk_therapist_id();
                 if (!rolePatientVOList.isEmpty())
-                    throw new BusinessConstraintException("Therapist has dependent patients.");
+                    throw new M7rBusinessConstraintException("Therapist has dependent patients.");
 
                 RoleTherapistDAO.delete(userLoginVO.getUserId());
                 UserLoginDAO.delete(userLoginVO.getUserId());
