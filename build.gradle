@@ -29,7 +29,7 @@ dependencies {
     implementation 'org.mentalizr:m7r-content-manager:0.1-SNAPSHOT'
 
     implementation 'com.github.arthurpicht:utils-core:1.13.0'
-    implementation 'com.github.arthurpicht:utils-io:0.0.17'
+    implementation 'com.github.arthurpicht:utils-io:0.0.20'
     implementation 'com.github.arthurpicht:webAccessControl:0.0.3'
 
     implementation 'org.glassfish.jersey.core:jersey-server:2.40'
@@ -41,10 +41,10 @@ dependencies {
 
     implementation 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.3'
 
-    implementation 'ch.qos.logback:logback-classic:1.4.7'
+    implementation 'ch.qos.logback:logback-classic:1.5.2'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
 }
 
 test {
