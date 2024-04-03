@@ -1,7 +1,10 @@
 package org.mentalizr.backend.exceptions;
 
+import java.io.Serial;
+
 public class M7rUnknownEntityException extends Exception {
 
+    @Serial
     private static final long serialVersionUID = -4812429961005802403L;
 
     public M7rUnknownEntityException() {
