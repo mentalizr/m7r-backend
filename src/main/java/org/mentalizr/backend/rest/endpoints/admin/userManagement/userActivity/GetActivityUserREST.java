@@ -1,4 +1,4 @@
-package org.mentalizr.backend.rest.endpoints.admin.userManagement.genericUser;
+package org.mentalizr.backend.rest.endpoints.admin.userManagement.userActivity;
 
 import de.arthurpicht.webAccessControl.auth.AccessControl;
 import de.arthurpicht.webAccessControl.auth.Authorization;
