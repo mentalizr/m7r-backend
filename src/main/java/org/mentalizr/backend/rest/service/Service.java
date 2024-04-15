@@ -3,10 +3,7 @@ package org.mentalizr.backend.rest.service;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.Const;
-import org.mentalizr.backend.exceptions.M7rBusinessConstraintException;
-import org.mentalizr.backend.exceptions.M7rIllegalServiceInputException;
-import org.mentalizr.backend.exceptions.M7rInfrastructureException;
-import org.mentalizr.backend.exceptions.M7rUnknownEntityException;
+import org.mentalizr.backend.exceptions.*;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.ResponseFactory;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
@@ -56,7 +53,7 @@ public abstract  class Service {
     protected void checkPreconditions() throws ServicePreconditionFailedException, M7rInfrastructureException {
     }
 
-    protected abstract Object workLoad() throws RESTException, ContentManagerException, M7rInfrastructureException, IOException, DataSourceException, EntityNotFoundException, M7rIllegalServiceInputException, M7rUnknownEntityException, M7rBusinessConstraintException;
+    protected abstract Object workLoad() throws RESTException, ContentManagerException, M7rInfrastructureException, IOException, DataSourceException, EntityNotFoundException, M7rIllegalServiceInputException, M7rUnknownEntityException, M7rBusinessConstraintException, M7rNoSuchResourceException;
 
     protected void updateActivityStatus(){
     }
@@ -117,6 +114,9 @@ public abstract  class Service {
         } catch (EntityNotFoundException | M7rUnknownEntityException e) {
             logger.error(getWorkloadExceptionMessage(e));
             return ResponseFactory.entityNotFound(e);
+        } catch (M7rNoSuchResourceException e) {
+            logger.error(getWorkloadExceptionMessage(e));
+            return ResponseFactory.noSuchResource(e);
         } catch (M7rBusinessConstraintException e) {
             logger.error(getWorkloadExceptionMessage(e));
             return ResponseFactory.businessConstraintFailed(e);
