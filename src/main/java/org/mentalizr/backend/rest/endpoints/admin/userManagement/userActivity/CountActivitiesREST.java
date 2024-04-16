@@ -17,6 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+@Path("v1")
 public class CountActivitiesREST {
 
     private static final String SERVICE_ID = "admin/user/activity/count";
