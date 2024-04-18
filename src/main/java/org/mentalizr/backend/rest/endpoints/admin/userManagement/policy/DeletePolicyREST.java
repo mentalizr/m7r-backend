@@ -55,8 +55,7 @@ public class DeletePolicyREST {
 
             @Override
             protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject()));
+
             }
 
         }.call();

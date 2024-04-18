@@ -84,10 +84,7 @@ public class RestoreTherapistREST {
 
             @Override
             protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("username: "
-                                + therapistRestoreSO.getUsername() + " | userid: "
-                                + therapistRestoreSO.getUserId())));
+
             }
 
         }.call();

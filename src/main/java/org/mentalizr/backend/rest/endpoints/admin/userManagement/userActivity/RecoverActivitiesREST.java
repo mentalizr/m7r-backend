@@ -4,7 +4,6 @@ import de.arthurpicht.webAccessControl.auth.AccessControl;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
-import org.mentalizr.backend.exceptions.M7rIllegalServiceInputException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
@@ -20,7 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("v1")
-public class AddActivitiesREST {
+public class RecoverActivitiesREST {
 
     private static final String SERVICE_ID = "/admin/user/activity/add";
 
@@ -51,9 +50,7 @@ public class AddActivitiesREST {
 
             @Override
             protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("userid: "
-                                + activityStatusMessageCollectionSO.getCollection().get(1).getUserId())));
+
             }
         }.call();
     }

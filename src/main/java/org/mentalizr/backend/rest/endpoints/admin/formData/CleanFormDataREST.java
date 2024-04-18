@@ -47,8 +47,7 @@ public class CleanFormDataREST {
 
             @Override
             protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("userid: " + userId )));
+
             }
 
         }.call();

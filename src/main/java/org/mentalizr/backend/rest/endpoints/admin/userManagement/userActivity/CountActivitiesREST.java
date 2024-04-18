@@ -46,8 +46,7 @@ public class CountActivitiesREST {
 
             @Override
             protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject()));
+
             }
         }.call();
     }

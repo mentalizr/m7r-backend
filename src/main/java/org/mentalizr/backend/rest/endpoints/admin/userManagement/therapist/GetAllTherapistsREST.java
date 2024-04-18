@@ -80,8 +80,7 @@ public class GetAllTherapistsREST {
 
             @Override
             protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject()));
+
             }
 
         }.call();

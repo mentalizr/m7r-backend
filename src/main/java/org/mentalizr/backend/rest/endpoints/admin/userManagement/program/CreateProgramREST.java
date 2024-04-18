@@ -60,8 +60,7 @@ public class CreateProgramREST {
 
             @Override
             protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("programid: " + programSO.getProgramId())));
+
             }
 
         }.call();

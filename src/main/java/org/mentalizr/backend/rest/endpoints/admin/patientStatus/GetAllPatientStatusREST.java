@@ -48,8 +48,7 @@ public class GetAllPatientStatusREST {
 
             @Override
             protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject()));
+
             }
 
         }.call();

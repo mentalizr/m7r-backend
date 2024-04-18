@@ -58,8 +58,7 @@ public class GetProgramDisplayNameREST {
 
             @Override
             protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject()));
+
             }
 
         }.call();

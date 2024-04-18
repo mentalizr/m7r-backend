@@ -49,8 +49,7 @@ public class GetAllAccessKeysREST {
 
             @Override
             protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject()));
+
             }
 
         }.call();

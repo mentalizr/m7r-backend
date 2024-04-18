@@ -67,10 +67,7 @@ public class RestoreAccessKeyREST {
 
             @Override
             protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("accesskey: "
-                                + accessKeyRestoreSO.getAccessKey() + " | program: "
-                                + accessKeyRestoreSO.getProgramId())));
+
             }
 
             private AccessKeyRestoreSO getAccessKeyRestoreSO() {

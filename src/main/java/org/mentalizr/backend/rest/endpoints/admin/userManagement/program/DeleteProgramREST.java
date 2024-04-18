@@ -51,8 +51,7 @@ public class DeleteProgramREST {
 
             @Override
             protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("programid: " + programId)));
+
             }
 
         }.call();

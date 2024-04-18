@@ -78,8 +78,7 @@ public class DeleteAccessKeyREST {
 
             @Override
             protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("accesskey: " + accessKeyDeleteSO.getAccessKey())));
+
             }
 
             private AccessKeyDeleteSO getAccessKeyDeleteSO() {
