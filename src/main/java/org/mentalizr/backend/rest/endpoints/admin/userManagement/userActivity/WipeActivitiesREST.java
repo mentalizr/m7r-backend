@@ -42,9 +42,8 @@ public class WipeActivitiesREST {
             }
 
             @Override
-            protected void updateActivityStatus() {
+            protected void updateActivityStatus() {}
 
-            }
         }.call();
     }
 }

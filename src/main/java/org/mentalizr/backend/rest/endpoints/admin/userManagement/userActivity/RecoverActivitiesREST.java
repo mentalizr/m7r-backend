@@ -25,9 +25,11 @@ public class RecoverActivitiesREST {
 
     @POST
     @Path(SERVICE_ID)
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response add(ActivityStatusMessageCollectionSO activityStatusMessageCollectionSO, @Context HttpServletRequest httpServletRequest) {
+    public Response add(
+            ActivityStatusMessageCollectionSO activityStatusMessageCollectionSO,
+            @Context HttpServletRequest httpServletRequest
+    ) {
         return new Service(httpServletRequest) {
 
             @Override
@@ -41,17 +43,16 @@ public class RecoverActivitiesREST {
             }
 
             @Override
-            protected ActivityStatusMessageCollectionSO workLoad() {
+            protected Object workLoad() {
                 ActivityStatusMessageMongoHandler.insertMany(
                         ActivityStatusMessageConverter
                                 .convertActivityList(activityStatusMessageCollectionSO.getCollection()));
-                return activityStatusMessageCollectionSO;
+                return null;
             }
 
             @Override
-            protected void updateActivityStatus() {
+            protected void updateActivityStatus() {}
 
-            }
         }.call();
     }
 }
