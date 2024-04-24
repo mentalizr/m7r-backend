@@ -53,32 +53,35 @@ public class GetActivityUserREST {
             protected ActivityStatusMessageCollectionSO workLoad() {
                 ActivityStatusMessageCollectionSO collectionSO = null;
 
-                if (activityCommandSO.getFromTimestamp() != 0 && activityCommandSO.getUntilTimestamp() != 0) {
-                    collectionSO = ActivityStatusMessageConverter
-                            .convertDocumentListToCollection(
-                                    ActivityStatusMessageMongoHandler.fetchAllOfUserIDBetween(
-                                            activityCommandSO.getUserId(),
-                                            activityCommandSO.getFromTimestamp(),
-                                            activityCommandSO.getUntilTimestamp()));
+                if(!activityCommandSO.getUserId().isEmpty()) {
+                    if (activityCommandSO.getFromTimestamp() != 0 && activityCommandSO.getUntilTimestamp() != 0) {
+                        collectionSO = ActivityStatusMessageConverter
+                                .convertDocumentListToCollection(
+                                        ActivityStatusMessageMongoHandler.fetchAllOfUserIDBetween(
+                                                activityCommandSO.getUserId(),
+                                                activityCommandSO.getFromTimestamp(),
+                                                activityCommandSO.getUntilTimestamp()));
 
-                } else if (activityCommandSO.getFromTimestamp() != 0 && activityCommandSO.getUntilTimestamp() == 0) {
-                    collectionSO = ActivityStatusMessageConverter
-                            .convertDocumentListToCollection(
-                                    ActivityStatusMessageMongoHandler.fetchAllOfUserIDFrom(
-                                            activityCommandSO.getUserId(),
-                                            activityCommandSO.getFromTimestamp()));
+                    } else if (activityCommandSO.getFromTimestamp() != 0 && activityCommandSO.getUntilTimestamp() == 0) {
+                        collectionSO = ActivityStatusMessageConverter
+                                .convertDocumentListToCollection(
+                                        ActivityStatusMessageMongoHandler.fetchAllOfUserIDFrom(
+                                                activityCommandSO.getUserId(),
+                                                activityCommandSO.getFromTimestamp()));
 
-                } else if (activityCommandSO.getUntilTimestamp() != 0 && activityCommandSO.getFromTimestamp() == 0) {
-                    collectionSO = ActivityStatusMessageConverter.convertDocumentListToCollection(
-                            ActivityStatusMessageMongoHandler.fetchAllOfUserIDUntil(
-                                            activityCommandSO.getUserId(),
-                                            activityCommandSO.getUntilTimestamp()));
+                    } else if (activityCommandSO.getUntilTimestamp() != 0 && activityCommandSO.getFromTimestamp() == 0) {
+                        collectionSO = ActivityStatusMessageConverter.convertDocumentListToCollection(
+                                ActivityStatusMessageMongoHandler.fetchAllOfUserIDUntil(
+                                        activityCommandSO.getUserId(),
+                                        activityCommandSO.getUntilTimestamp()));
 
-                } else if (activityCommandSO.getFromTimestamp() == 0 && activityCommandSO.getUntilTimestamp() == 0) {
-                    collectionSO = ActivityStatusMessageConverter
-                            .convertDocumentListToCollection(
-                                    ActivityStatusMessageMongoHandler.fetchAllOfUserID(activityCommandSO.getUserId()));
+                    } else if (activityCommandSO.getFromTimestamp() == 0 && activityCommandSO.getUntilTimestamp() == 0) {
+                        collectionSO = ActivityStatusMessageConverter
+                                .convertDocumentListToCollection(
+                                        ActivityStatusMessageMongoHandler.fetchAllOfUserID(activityCommandSO.getUserId()));
+                    }
                 }
+
                 return collectionSO;
             }
 

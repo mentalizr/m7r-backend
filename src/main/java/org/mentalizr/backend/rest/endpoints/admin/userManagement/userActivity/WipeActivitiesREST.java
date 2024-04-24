@@ -43,8 +43,7 @@ public class WipeActivitiesREST {
 
             @Override
             protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("Template")));
+
             }
         }.call();
     }
