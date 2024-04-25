@@ -4,6 +4,7 @@ import de.arthurpicht.webAccessControl.auth.AccessControl;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
+import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
@@ -41,10 +42,12 @@ public class GetActivityREST {
             }
 
             @Override
-            protected ActivityStatusMessageCollectionSO workLoad() {
-
-                // TODO Hier Exception prüfen user == null
-                // TODO Hier prüfen until >= from
+            protected ActivityStatusMessageCollectionSO workLoad() throws RESTException {
+                if(activityQuerySO.getUserId() == null || activityQuerySO.getUserId().isEmpty()) {
+                    throw new RESTException("UserId not set.");
+                } else if (activityQuerySO.getUntilTimestamp() < activityQuerySO.getFromTimestamp()) {
+                    throw new RESTException("From timestamp is less than until timestamp.");
+                }
 
                 return ActivityStatusMessageConverter
                         .convertDocumentListToCollection(
@@ -52,47 +55,10 @@ public class GetActivityREST {
                                         activityQuerySO.getUserId(),
                                         activityQuerySO.getFromTimestamp(),
                                         activityQuerySO.getUntilTimestamp()));
-//
-//
-//                if(!activityQuerySO.getUserId().isEmpty()) {
-//                    if (activityQuerySO.getFromTimestamp() != 0 && activityQuerySO.getUntilTimestamp() != 0) {
-//                        collectionSO = ActivityStatusMessageConverter
-//                                .convertDocumentListToCollection(
-//                                        ActivityStatusMessageMongoHandler.fetchAllOfUserIDBetween(
-//                                                activityQuerySO.getUserId(),
-//                                                activityQuerySO.getFromTimestamp(),
-//                                                activityQuerySO.getUntilTimestamp()));
-//
-//                    } else if (activityQuerySO.getFromTimestamp() != 0 && activityQuerySO.getUntilTimestamp() == 0) {
-//                        collectionSO = ActivityStatusMessageConverter
-//                                .convertDocumentListToCollection(
-//                                        ActivityStatusMessageMongoHandler.fetchAllOfUserIDFrom(
-//                                                activityQuerySO.getUserId(),
-//                                                activityQuerySO.getFromTimestamp()));
-//
-//                    } else if (activityQuerySO.getUntilTimestamp() != 0 && activityQuerySO.getFromTimestamp() == 0) {
-//                        collectionSO = ActivityStatusMessageConverter.convertDocumentListToCollection(
-//                                ActivityStatusMessageMongoHandler.fetchAllOfUserIDUntil(
-//                                        activityQuerySO.getUserId(),
-//                                        activityQuerySO.getUntilTimestamp()));
-//
-//                    } else if (activityQuerySO.getFromTimestamp() == 0 && activityQuerySO.getUntilTimestamp() == 0) {
-//                        collectionSO = ActivityStatusMessageConverter
-//                                .convertDocumentListToCollection(
-//                                        ActivityStatusMessageMongoHandler.fetchAllOfUserID(activityQuerySO.getUserId()));
-//                    }
-//                } else {
-//                    // TODO Exception wenn keine User-Id gegeben.
-//                    throw new RuntimeException("TODO ...");
-//                }
-
-//                return collectionSO;
             }
 
             @Override
-            protected void updateActivityStatus() {
-
-            }
+            protected void updateActivityStatus() {}
         }.call();
 
     }
