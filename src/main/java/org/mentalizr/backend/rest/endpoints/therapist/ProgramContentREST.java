@@ -56,7 +56,7 @@ public class ProgramContentREST {
             @Override
             protected void updateActivityStatus() {
                 ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject()));
+                        .convert(createMessageObject("ContendId: " + contentId)));
             }
 
             @Override

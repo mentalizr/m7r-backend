@@ -57,7 +57,7 @@ public class GetPatientMessagesREST {
             @Override
             protected void updateActivityStatus() {
                 ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject()));
+                        .convert(createMessageObject("PatientID: " + patientId)));
             }
 
             @Override

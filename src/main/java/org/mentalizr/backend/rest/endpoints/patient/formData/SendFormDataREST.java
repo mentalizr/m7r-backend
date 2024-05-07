@@ -79,7 +79,7 @@ public class SendFormDataREST {
                 PersistentUserActivity.update(this.authorization);
 
                 ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject()));
+                        .convert(createMessageObject("ContentId: " + formDataSO.getContentId())));
             }
 
             @Override
