@@ -1,14 +1,15 @@
 package org.mentalizr.backend.accessControl.roles;
 
-import org.mentalizr.backend.rest.entities.UserRole;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public class Admin extends M7rUser implements Serializable {
 
     public static final String ROLE_NAME ="ADMIN";
 
+    @Serial
     private static final long serialVersionUID = 8621340531156354740L;
 
     public Admin(UserLoginCompositeVO userLoginCompositeVO) {

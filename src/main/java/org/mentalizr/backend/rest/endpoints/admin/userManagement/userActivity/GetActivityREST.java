@@ -4,7 +4,7 @@ import de.arthurpicht.webAccessControl.auth.AccessControl;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
-import org.mentalizr.backend.rest.RESTException;
+import org.mentalizr.backend.exceptions.M7rIllegalServiceInputException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
@@ -12,7 +12,10 @@ import org.mentalizr.serviceObjects.requestObjects.ActivityQuerySO;
 import org.mentalizr.serviceObjects.userManagement.ActivityStatusMessageCollectionSO;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -42,11 +45,11 @@ public class GetActivityREST {
             }
 
             @Override
-            protected ActivityStatusMessageCollectionSO workLoad() throws RESTException {
+            protected ActivityStatusMessageCollectionSO workLoad() throws M7rIllegalServiceInputException {
                 if(activityQuerySO.getUserId() == null || activityQuerySO.getUserId().isEmpty()) {
-                    throw new RESTException("UserId not set.");
+                    throw new M7rIllegalServiceInputException("UserId not set.");
                 } else if (activityQuerySO.getUntilTimestamp() < activityQuerySO.getFromTimestamp()) {
-                    throw new RESTException("From timestamp is less than until timestamp.");
+                    throw new M7rIllegalServiceInputException("From timestamp is less than until timestamp.");
                 }
 
                 return ActivityStatusMessageConverter
@@ -54,11 +57,14 @@ public class GetActivityREST {
                                 ActivityStatusMessageMongoHandler.fetchAllOfUserIDBetween(
                                         activityQuerySO.getUserId(),
                                         activityQuerySO.getFromTimestamp(),
-                                        activityQuerySO.getUntilTimestamp()));
+                                        activityQuerySO.getUntilTimestamp()
+                                )
+                        );
             }
 
             @Override
             protected void updateActivityStatus() {}
+
         }.call();
 
     }
