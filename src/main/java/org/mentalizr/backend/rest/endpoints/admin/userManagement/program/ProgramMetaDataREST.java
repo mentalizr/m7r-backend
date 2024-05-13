@@ -56,6 +56,11 @@ public class ProgramMetaDataREST {
                 }
             }
 
+            @Override
+            protected void updateActivityStatus() {
+
+            }
+
         }.call();
 
     }

@@ -67,6 +67,9 @@ public class ProgramLogoREST {
                 }
             }
 
+            @Override
+            protected void updateActivityStatus() {}
+
         }.call();
     }
 }

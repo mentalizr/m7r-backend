@@ -6,6 +6,8 @@ import org.mentalizr.backend.accessControl.M7rAccessControl;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.commons.paths.container.TomcatContainerImgBaseTmpDir;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -49,6 +51,12 @@ public class TherapeutImgThumbnailREST {
                     logger.error(message);
                     throw new RESTException(message);
                 }
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject()));
             }
 
         }.call();

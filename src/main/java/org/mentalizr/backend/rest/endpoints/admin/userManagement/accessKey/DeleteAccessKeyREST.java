@@ -8,6 +8,8 @@ import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertAccessKey;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
@@ -72,6 +74,11 @@ public class DeleteAccessKeyREST {
                 UserDAO.delete(userAccessKeyVO.getUserId());
 
                 return null;
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+
             }
 
             private AccessKeyDeleteSO getAccessKeyDeleteSO() {

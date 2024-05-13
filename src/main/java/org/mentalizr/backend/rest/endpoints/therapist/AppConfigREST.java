@@ -7,6 +7,8 @@ import org.mentalizr.backend.accessControl.roles.Therapist;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.config.instance.InstanceConfiguration;
 import org.mentalizr.backend.rest.service.Service;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.serviceObjects.frontend.therapist.ApplicationConfigTherapistSO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +46,12 @@ public class AppConfigREST {
             protected ApplicationConfigTherapistSO workLoad() {
                 InstanceConfiguration instanceConfiguration = ApplicationContext.getInstanceConfiguration();
                 return instanceConfiguration.getApplicationConfigTherapistSO();
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject()));
             }
 
         }.call();

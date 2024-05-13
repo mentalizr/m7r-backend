@@ -7,6 +7,8 @@ import org.mentalizr.backend.accessControl.M7rAuthorization;
 import org.mentalizr.backend.accessControl.roles.Therapist;
 import org.mentalizr.backend.patientsOverviewSOCreator.PatientsOverviewSOCreator;
 import org.mentalizr.backend.rest.service.Service;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.serviceObjects.frontend.therapist.PatientsOverviewSO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +48,12 @@ public class PatientsOverviewREST {
                 PatientsOverviewSOCreator patientsOverviewSOCreator
                         = new PatientsOverviewSOCreator(therapist.getRoleTherapistVO());
                 return patientsOverviewSOCreator.create();
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject()));
             }
 
         }.call();

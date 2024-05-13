@@ -6,6 +6,8 @@ import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.adapter.PatientRestoreSOAdapter;
 import org.mentalizr.backend.rest.service.Service;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
@@ -34,9 +36,7 @@ public class GetAllPatientsREST {
     @GET
     @Path(SERVICE_ID)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAll(
-            @Context HttpServletRequest httpServletRequest
-    ) {
+    public Response getAll(@Context HttpServletRequest httpServletRequest) {
 
         return new Service(httpServletRequest) {
 
@@ -59,6 +59,7 @@ public class GetAllPatientsREST {
                     PatientRestoreSO patientRestoreSO = createPatientRestoreSO(userLoginCompositeVO);
                     patientRestoreCollectionSO.getCollection().add(patientRestoreSO);
                 }
+
                 return patientRestoreCollectionSO;
             }
 
@@ -75,6 +76,11 @@ public class GetAllPatientsREST {
                 patientRestoreSO.setTherapistId(rolePatientVO.getTherapistId());
 
                 return patientRestoreSO;
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+
             }
 
         }.call();

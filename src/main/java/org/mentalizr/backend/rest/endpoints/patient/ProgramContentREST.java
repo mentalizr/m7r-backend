@@ -9,6 +9,8 @@ import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.mongo.patientStatus.PatientStatusDAO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,6 +57,8 @@ public class ProgramContentREST {
 
             @Override
             protected void updateActivityStatus() {
+                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
+                        .convert(createMessageObject()));
                 String userId = this.authorization.getUserId();
                 PatientStatus.update(userId, contentId);
                 PersistentUserActivity.update(this.authorization);
