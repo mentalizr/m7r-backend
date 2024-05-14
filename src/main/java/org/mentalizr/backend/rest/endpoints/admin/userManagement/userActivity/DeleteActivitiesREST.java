@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("v1")
-public class RemoveActivitiesREST {
+public class DeleteActivitiesREST {
 
     private static final String SERVICE_ID = "admin/user/activity/delete";
 
@@ -22,10 +22,11 @@ public class RemoveActivitiesREST {
     @Path(SERVICE_ID + "/{userId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response remove(
+    public Response delete(
             @PathParam("userId") String userId,
             @Context HttpServletRequest httpServletRequest) {
         return new Service(httpServletRequest, userId) {
+
             @Override
             protected String getServiceId() {
                 return SERVICE_ID;
@@ -44,6 +45,7 @@ public class RemoveActivitiesREST {
 
             @Override
             protected void updateActivityStatus() {}
+
         }.call();
     }
 }

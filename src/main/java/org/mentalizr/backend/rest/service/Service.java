@@ -39,11 +39,6 @@ public abstract  class Service {
         this.serviceObjectRequest = serviceObjectRequest;
     }
 
-//    public Service(HttpServletRequest httpServletRequest, List<Object> serviceObjectRequests) {
-//        this.httpServletRequest = httpServletRequest;
-//        this.serviceObjectRequest = serviceObjectRequests;
-//    }
-
     protected abstract String getServiceId();
 
     protected void logEntry() {
