@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.List;
 
 @SuppressWarnings("JavaDoc")
 public abstract  class Service {
@@ -59,7 +58,15 @@ public abstract  class Service {
 
     protected abstract Object workLoad() throws RESTException, ContentManagerException, M7rInfrastructureException, IOException, DataSourceException, EntityNotFoundException, M7rIllegalServiceInputException, M7rUnknownEntityException, M7rBusinessConstraintException, M7rNoSuchResourceException, M7rBusinessConstraintException, DocumentNotFoundException;
 
-    protected abstract void updateActivityStatus();
+    /**
+     * Update activity status as persisted in user-entity (rdbms).
+     */
+    protected void updateActivityStatus() {}
+
+    /**
+     * Writes activity message (mongo).
+     */
+    protected void writeActivityMessage() {}
 
     protected void logLeave() {
         if (this.authorization != null) {
@@ -139,6 +146,14 @@ public abstract  class Service {
         }
 
         try {
+            writeActivityMessage();
+        } catch (RuntimeException e) {
+            logger.error("A RuntimeException occurred on executing method logActivity for service ["
+                         + getServiceId() + "]: " + e.getMessage(), e);
+            return ResponseFactory.internalServerError(e);
+        }
+
+        try {
             logLeave();
         } catch (RuntimeException e) {
             logger.error("A RuntimeException occurred on executing method logLeave for service ["
@@ -158,28 +173,6 @@ public abstract  class Service {
     private String getWorkloadExceptionMessage(Exception e) {
         return "A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
         + getServiceId() + "]: " + e.getMessage();
-    }
-
-    protected ActivityStatusMessageSO createMessageObject() {
-        ActivityStatusMessageSO activityStatusMessageSO = new ActivityStatusMessageSO();
-        activityStatusMessageSO.setTimestamp(System.currentTimeMillis());
-        activityStatusMessageSO.setUserId(this.authorization.getUserId());
-        activityStatusMessageSO.setRestId(this.getServiceId());
-        activityStatusMessageSO.setRole(this.authorization.getRoleName());
-        activityStatusMessageSO.setMessage("");
-
-        return activityStatusMessageSO;
-    }
-
-    protected ActivityStatusMessageSO createMessageObject(String message) {
-        ActivityStatusMessageSO activityStatusMessageSO = new ActivityStatusMessageSO();
-        activityStatusMessageSO.setTimestamp(System.currentTimeMillis());
-        activityStatusMessageSO.setUserId(this.authorization.getUserId());
-        activityStatusMessageSO.setRestId(this.getServiceId());
-        activityStatusMessageSO.setRole(this.authorization.getRoleName());
-        activityStatusMessageSO.setMessage(message);
-
-        return activityStatusMessageSO;
     }
 
 }

@@ -6,9 +6,8 @@ import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.M7rAuthorization;
 import org.mentalizr.backend.accessControl.roles.Therapist;
 import org.mentalizr.backend.patientMessagesSOCreator.PatientMessagesSOCreator;
+import org.mentalizr.backend.rest.service.ActivityMessage;
 import org.mentalizr.backend.rest.service.Service;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.serviceObjects.frontend.therapist.patientMessage.PatientMessagesSO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,9 +54,8 @@ public class GetPatientMessagesREST {
             }
 
             @Override
-            protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("PatientID: " + patientId)));
+            protected void writeActivityMessage() {
+                ActivityMessage.write(SERVICE_ID, authorization, "patientId: " + patientId);
             }
 
             @Override

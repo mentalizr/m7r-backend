@@ -4,6 +4,7 @@ import de.arthurpicht.webAccessControl.auth.AccessControl;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Therapist;
+import org.mentalizr.backend.rest.service.ActivityMessage;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
@@ -53,9 +54,8 @@ public class GetFormDataREST {
             }
 
             @Override
-            protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("UserId: " + userId + "| ContentId: " + contentId)));
+            protected void writeActivityMessage() {
+                ActivityMessage.write(SERVICE_ID, authorization, "UserId: " + userId + "| ContentId: " + contentId);
             }
 
             @Override

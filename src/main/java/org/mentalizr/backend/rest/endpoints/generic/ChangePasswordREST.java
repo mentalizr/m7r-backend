@@ -10,8 +10,10 @@ import org.mentalizr.backend.accessControl.roles.M7rUser;
 import org.mentalizr.backend.accessControl.roles.PatientLogin;
 import org.mentalizr.backend.accessControl.roles.Therapist;
 import org.mentalizr.backend.exceptions.M7rIllegalServiceInputException;
+import org.mentalizr.backend.rest.service.ActivityMessage;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.utils.CredentialsSanity;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityDao;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
@@ -79,10 +81,10 @@ public class ChangePasswordREST {
             }
 
             @Override
-            protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject()));
+            protected void writeActivityMessage() {
+                ActivityMessage.write(SERVICE_ID, authorization);
             }
+
         }.call();
 
     }

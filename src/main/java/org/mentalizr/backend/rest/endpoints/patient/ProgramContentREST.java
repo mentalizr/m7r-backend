@@ -6,6 +6,7 @@ import org.mentalizr.backend.accessControl.M7rAccessControl;
 import org.mentalizr.backend.activity.PatientStatus;
 import org.mentalizr.backend.activity.PersistentUserActivity;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
+import org.mentalizr.backend.rest.service.ActivityMessage;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
@@ -56,12 +57,8 @@ public class ProgramContentREST {
             }
 
             @Override
-            protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject()));
-                String userId = this.authorization.getUserId();
-                PatientStatus.update(userId, contentId);
-                PersistentUserActivity.update(this.authorization);
+            protected void writeActivityMessage() {
+                ActivityMessage.write(SERVICE_ID, authorization);
             }
 
             @Override

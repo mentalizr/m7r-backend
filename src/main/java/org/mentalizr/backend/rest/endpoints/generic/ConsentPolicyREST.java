@@ -8,10 +8,9 @@ import de.arthurpicht.webAccessControl.securityAttribute.requirements.Requiremen
 import org.mentalizr.backend.accessControl.RequirementsFulfill;
 import org.mentalizr.backend.accessControl.roles.M7rUser;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
+import org.mentalizr.backend.rest.service.ActivityMessage;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.vob.UserVOB;
 
@@ -77,9 +76,8 @@ public class ConsentPolicyREST {
             }
 
             @Override
-            protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject()));
+            protected void writeActivityMessage() {
+                ActivityMessage.write(SERVICE_ID, authorization);
             }
 
         }.call();

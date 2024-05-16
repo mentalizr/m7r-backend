@@ -12,6 +12,7 @@ import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.exceptions.M7rIllegalServiceInputException;
 import org.mentalizr.backend.htmlChunks.HtmlChunkCache;
 import org.mentalizr.backend.htmlChunks.definitions.*;
+import org.mentalizr.backend.rest.service.ActivityMessage;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
@@ -74,9 +75,8 @@ public class HtmlChunkREST {
             }
 
             @Override
-            protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject()));
+            protected void writeActivityMessage() {
+                ActivityMessage.write(SERVICE_ID, authorization);
             }
 
         }.call();

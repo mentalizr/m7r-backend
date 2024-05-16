@@ -5,6 +5,7 @@ import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Therapist;
 import org.mentalizr.backend.activity.PersistentUserActivity;
+import org.mentalizr.backend.rest.service.ActivityMessage;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.commons.Dates;
@@ -88,10 +89,16 @@ public class SubmitFeedbackREST {
             @Override
             protected void updateActivityStatus() {
                 PersistentUserActivity.update(this.authorization);
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("userid: "
-                                + feedbackSubmissionSO.getUserId()
-                                + " | contentid: " + feedbackSubmissionSO.getContentId())));
+            }
+
+            @Override
+            protected void writeActivityMessage() {
+                ActivityMessage.write(
+                        SERVICE_ID,
+                        authorization,
+                        "userid: "
+                        + feedbackSubmissionSO.getUserId()
+                        + " | contentid: " + feedbackSubmissionSO.getContentId());
             }
 
         }.call();

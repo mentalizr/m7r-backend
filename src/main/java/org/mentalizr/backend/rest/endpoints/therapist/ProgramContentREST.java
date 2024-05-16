@@ -5,11 +5,10 @@ import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Therapist;
 import org.mentalizr.backend.applicationContext.ApplicationContext;
+import org.mentalizr.backend.rest.service.ActivityMessage;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -54,9 +53,8 @@ public class ProgramContentREST {
             }
 
             @Override
-            protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject("ContendId: " + contentId)));
+            protected void writeActivityMessage() {
+                ActivityMessage.write(SERVICE_ID, authorization, "contendId: " + contentId);
             }
 
             @Override

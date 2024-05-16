@@ -9,12 +9,11 @@ import org.mentalizr.backend.programSOCreator.FormDataFetcher;
 import org.mentalizr.backend.programSOCreator.FormDataFetcherMongo;
 import org.mentalizr.backend.programSOCreator.ProgramSOCreator;
 import org.mentalizr.backend.rest.RESTException;
+import org.mentalizr.backend.rest.service.ActivityMessage;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.fileHierarchy.exceptions.ProgramNotFoundException;
 import org.mentalizr.contentManager.programStructure.ProgramStructure;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.serviceObjects.frontend.program.ProgramSO;
 import org.slf4j.Logger;
@@ -68,9 +67,8 @@ public class ProgramREST {
             }
 
             @Override
-            protected void updateActivityStatus() {
-                ActivityStatusMessageMongoHandler.insertOne(ActivityStatusMessageConverter
-                        .convert(createMessageObject()));
+            protected void writeActivityMessage() {
+                ActivityMessage.write(SERVICE_ID, authorization);
             }
 
         }.call();

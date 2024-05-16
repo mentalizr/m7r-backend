@@ -58,11 +58,6 @@ public class RestoreFormDataREST {
                 return null;
             }
 
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }
