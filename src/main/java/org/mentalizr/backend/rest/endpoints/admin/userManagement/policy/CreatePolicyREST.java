@@ -8,8 +8,6 @@ import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertPolicy;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.userAdmin.Policy;
 import org.mentalizr.serviceObjects.userManagement.PolicySO;

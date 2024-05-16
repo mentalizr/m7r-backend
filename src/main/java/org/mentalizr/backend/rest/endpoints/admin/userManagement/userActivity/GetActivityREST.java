@@ -6,8 +6,8 @@ import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.exceptions.M7rIllegalServiceInputException;
 import org.mentalizr.backend.rest.service.Service;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityMessageMongoHandler;
 import org.mentalizr.serviceObjects.requestObjects.ActivityQuerySO;
 import org.mentalizr.serviceObjects.userManagement.ActivityStatusMessageCollectionSO;
 
@@ -52,9 +52,9 @@ public class GetActivityREST {
                     throw new M7rIllegalServiceInputException("From timestamp is less than until timestamp.");
                 }
 
-                return ActivityStatusMessageConverter
+                return ActivityMessageConverter
                         .convertDocumentListToCollection(
-                                ActivityStatusMessageMongoHandler.fetchAllOfUserIDBetween(
+                                ActivityMessageMongoHandler.fetchAllOfUserIDBetween(
                                         activityQuerySO.getUserId(),
                                         activityQuerySO.getFromTimestamp(),
                                         activityQuerySO.getUntilTimestamp()

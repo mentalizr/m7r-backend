@@ -10,9 +10,6 @@ import org.mentalizr.backend.rest.service.ActivityMessage;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.contentManager.ContentManager;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
-import org.mentalizr.persistence.mongo.patientStatus.PatientStatusDAO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -54,6 +51,13 @@ public class ProgramContentREST {
                 ContentManager contentManager = ApplicationContext.getContentManager();
                 java.nio.file.Path stepContentFile = contentManager.getContent(contentId);
                 return new FileInputStream(stepContentFile.toFile());
+            }
+
+            @Override
+            protected void updateActivityStatus() {
+                String userId = this.authorization.getUserId();
+                PatientStatus.update(userId, contentId);
+                PersistentUserActivity.update(this.authorization);
             }
 
             @Override

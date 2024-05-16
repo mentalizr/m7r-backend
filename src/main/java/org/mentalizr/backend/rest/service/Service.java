@@ -10,7 +10,6 @@ import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.persistence.mongo.DocumentNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
-import org.mentalizr.serviceObjects.userManagement.ActivityStatusMessageSO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

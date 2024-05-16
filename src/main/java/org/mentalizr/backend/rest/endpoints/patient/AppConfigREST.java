@@ -8,8 +8,6 @@ import org.mentalizr.backend.applicationContext.ApplicationContext;
 import org.mentalizr.backend.config.instance.InstanceConfiguration;
 import org.mentalizr.backend.rest.service.ActivityMessage;
 import org.mentalizr.backend.rest.service.Service;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.serviceObjects.frontend.patient.ApplicationConfigPatientSO;
 
 import javax.servlet.http.HttpServletRequest;

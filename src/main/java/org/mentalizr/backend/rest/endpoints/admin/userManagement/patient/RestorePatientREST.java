@@ -13,8 +13,6 @@ import org.mentalizr.backend.rest.service.assertPrecondition.AssertRoleTherapist
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertUser;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertUserLogin;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageConverter;
-import org.mentalizr.persistence.mongo.activityStatus.ActivityStatusMessageMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
