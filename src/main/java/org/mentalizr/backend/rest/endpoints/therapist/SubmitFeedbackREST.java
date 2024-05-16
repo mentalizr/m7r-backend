@@ -1,5 +1,7 @@
 package org.mentalizr.backend.rest.endpoints.therapist;
 
+import de.arthurpicht.utils.core.dates.ISODates;
+import de.arthurpicht.utils.core.strings.Timestamps;
 import de.arthurpicht.webAccessControl.auth.AccessControl;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
@@ -8,7 +10,6 @@ import org.mentalizr.backend.activity.PersistentUserActivity;
 import org.mentalizr.backend.rest.service.ActivityMessage;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
-import org.mentalizr.commons.Dates;
 import org.mentalizr.persistence.mongo.DocumentNotFoundException;
 import org.mentalizr.persistence.mongo.formData.FormDataDAO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FeedbackSO;
@@ -73,10 +74,10 @@ public class SubmitFeedbackREST {
                 String therapistId = this.authorization.getUserId();
                 FeedbackSO feedbackSO = new FeedbackSO();
                 feedbackSO.setText(feedbackSubmissionSO.getFeedback());
-                feedbackSO.setCreatedTimestamp(Dates.currentTimestampAsISO());
+                feedbackSO.setCreatedTimestamp(Timestamps.currentAsISO());
                 feedbackSO.setTherapistId(therapistId);
                 feedbackSO.setSeenByPatient(false);
-                feedbackSO.setSeenByPatientTimestamp(Dates.epochAsISO());
+                feedbackSO.setSeenByPatientTimestamp(ISODates.epochAsISO());
                 this.formDataSO.setFeedback(feedbackSO);
 
                 FormDataDAO.createOrUpdate(this.formDataSO);

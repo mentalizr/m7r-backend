@@ -1,5 +1,6 @@
 package org.mentalizr.backend.patientMessagesSOCreator;
 
+import de.arthurpicht.utils.core.dates.ISODates;
 import org.mentalizr.commons.Dates;
 import org.mentalizr.persistence.mongo.formData.FormDataDAO;
 import org.mentalizr.persistence.mongo.formData.FormDataTimestampUpdater;
@@ -50,10 +51,10 @@ public class PatientMessagesSOCreator {
 
         PatientMessageExerciseSO patientMessageExerciseSO = new PatientMessageExerciseSO();
         patientMessageExerciseSO.setMessageId(UUID.randomUUID().toString());
-        patientMessageExerciseSO.setTimestamp(Dates.toEpochMilli(isoDateExercise));
+        patientMessageExerciseSO.setTimestamp(ISODates.toEpochMilli(isoDateExercise));
         patientMessageExerciseSO.setSenderId(this.userIdPatient);
         patientMessageExerciseSO.setExerciseId(formDataSO.getContentId());
-        patientMessageExerciseSO.setDate(Dates.asGermanDateTime(isoDateExercise));
+        patientMessageExerciseSO.setDate(ISODates.asGermanDateTime(isoDateExercise));
         patientMessageExerciseSO.setNew(!formDataSO.getExercise().isSeenByTherapist());
         patientMessageExerciseSO.setHasFeedback(FormDataSOs.hasFeedback(formDataSO));
         PatientMessageSO patientMessageSO = new PatientMessageSO();
@@ -65,10 +66,10 @@ public class PatientMessagesSOCreator {
 
             PatientMessageFeedbackSO patientMessageFeedbackSO = new PatientMessageFeedbackSO();
             patientMessageFeedbackSO.setMessageId(UUID.randomUUID().toString());
-            patientMessageFeedbackSO.setTimestamp(Dates.toEpochMilli(isoDateFeedback));
+            patientMessageFeedbackSO.setTimestamp(ISODates.toEpochMilli(isoDateFeedback));
             patientMessageFeedbackSO.setSenderId(this.userIdTherapist);
             patientMessageFeedbackSO.setExerciseId(formDataSO.getContentId());
-            patientMessageFeedbackSO.setDate(Dates.asGermanDateTime(isoDateFeedback));
+            patientMessageFeedbackSO.setDate(ISODates.asGermanDateTime(isoDateFeedback));
             patientMessageFeedbackSO.setNew(false);
             patientMessageFeedbackSO.setText(formDataSO.getFeedback().getText());
             patientMessageFeedbackSO.setReadByReceiver(formDataSO.getFeedback().isSeenByPatient());

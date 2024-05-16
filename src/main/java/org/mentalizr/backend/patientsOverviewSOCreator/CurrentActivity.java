@@ -1,6 +1,6 @@
 package org.mentalizr.backend.patientsOverviewSOCreator;
 
-import org.mentalizr.commons.Dates;
+import de.arthurpicht.utils.core.dates.ISODates;
 import org.mentalizr.commons.StringHelper;
 import org.mentalizr.persistence.mongo.formData.FormDataDAO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
@@ -27,7 +27,7 @@ public class CurrentActivity {
         String timestampExercise = lastExercise.get().getExercise().getLastModifiedTimestamp();
         String timestampFeedback = lastFeedback.get().getFeedback().getCreatedTimestamp();
 
-        return Dates.isYoungerThan(timestampExercise, timestampFeedback) ? lastExercise.get() : lastFeedback.get();
+        return ISODates.isYoungerThan(timestampExercise, timestampFeedback) ? lastExercise.get() : lastFeedback.get();
     }
 
     public String getLastActiveAsGermanDateTime() {
@@ -42,7 +42,7 @@ public class CurrentActivity {
         } else {
             throw createInconsistencyException();
         }
-        return Dates.asGermanDateTime(isoDate);
+        return ISODates.asGermanDateTime(isoDate);
     }
 
     public String getOverviewMessage() {
