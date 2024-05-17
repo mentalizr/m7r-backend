@@ -1,7 +1,6 @@
 package org.mentalizr.backend.patientMessagesSOCreator;
 
 import de.arthurpicht.utils.core.dates.ISODates;
-import org.mentalizr.commons.Dates;
 import org.mentalizr.persistence.mongo.formData.FormDataDAO;
 import org.mentalizr.persistence.mongo.formData.FormDataTimestampUpdater;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;

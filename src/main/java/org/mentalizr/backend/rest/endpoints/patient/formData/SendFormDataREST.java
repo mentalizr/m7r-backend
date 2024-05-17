@@ -9,7 +9,6 @@ import org.mentalizr.backend.activity.PersistentUserActivity;
 import org.mentalizr.backend.rest.service.ActivityMessage;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
-import org.mentalizr.commons.Dates;
 import org.mentalizr.persistence.mongo.formData.FormDataConverter;
 import org.mentalizr.persistence.mongo.formData.FormDataMongoHandler;
 import org.mentalizr.serviceObjects.frontend.patient.formData.ExerciseSO;

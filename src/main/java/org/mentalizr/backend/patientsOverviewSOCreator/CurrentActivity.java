@@ -1,7 +1,7 @@
 package org.mentalizr.backend.patientsOverviewSOCreator;
 
 import de.arthurpicht.utils.core.dates.ISODates;
-import org.mentalizr.commons.StringHelper;
+import de.arthurpicht.utils.core.strings.Strings;
 import org.mentalizr.persistence.mongo.formData.FormDataDAO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSO;
 import org.mentalizr.serviceObjects.frontend.patient.formData.FormDataSOs;
@@ -49,7 +49,7 @@ public class CurrentActivity {
         if (notHasLastActiveFormData()) return "";
         if (hasFeedback()) {
             String feedback = this.lastActiveFormDataSO.getFeedback().getText();
-            return StringHelper.limit(feedback, 30);
+            return Strings.limit(feedback, 30);
         } else if (hasExercise()) {
             return "Übung abgeschlossen.";
         } else {
