@@ -5,11 +5,10 @@ import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.adapter.PatientRestoreSOAdapter;
-import org.mentalizr.backend.exceptions.*;
-import org.mentalizr.backend.rest.RESTException;
+import org.mentalizr.backend.rest.endpoints.patient.ProgramContentREST;
 import org.mentalizr.backend.rest.service.Service;
-import org.mentalizr.contentManager.exceptions.ContentManagerException;
-import org.mentalizr.persistence.mongo.DocumentNotFoundException;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityMessageConverter;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityMessageMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
@@ -23,27 +22,27 @@ import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
 import org.mentalizr.serviceObjects.userManagement.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Path("v1")
 public class StatisticActivityREST {
 
     private static final String SERVICE_ID = "admin/user/activity/stat";
 
-    @POST
+    @GET
     @Path(SERVICE_ID)
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response statistic(@Context HttpServletRequest httpServletRequest) {
+
         return new Service(httpServletRequest) {
+            @Override
             protected String getServiceId() {
                 return SERVICE_ID;
             }
@@ -54,63 +53,73 @@ public class StatisticActivityREST {
             }
 
             @Override
-            protected Object workLoad() throws RESTException, ContentManagerException, M7rInfrastructureException, IOException, DataSourceException, EntityNotFoundException, M7rIllegalServiceInputException, M7rUnknownEntityException, M7rBusinessConstraintException, M7rNoSuchResourceException, M7rBusinessConstraintException, DocumentNotFoundException {
+            protected Object workLoad() throws DataSourceException {
                 ProgramCollectionSO programCollectionSO = getAllPrograms();
-                PatientRestoreCollectionSO patientRestoreCollectionSO = getAllPatients();
+                PatientRestoreCollectionSO patientCollectionSO = getAllPatient();
                 ActivityStatisticCollectionSO activityStatisticCollectionSO = new ActivityStatisticCollectionSO();
 
                 programCollectionSO.getCollection().forEach(programSO -> {
-                    ProgramStatisticSO programStatistic = new ProgramStatisticSO();
-                    programStatistic.setProgramName(programSO.getProgramId());
-                    programStatistic.setUser(
-                            ((int) patientRestoreCollectionSO.getCollection().stream()
-                                    .filter(patientRestoreSO -> patientRestoreSO.getProgramId().equals(programSO.getProgramId()))
-                                    .count()));
+                    List<String> userIdsOfProgram =
+                            patientCollectionSO.getCollection().stream()
+                                    .filter(patientSO -> patientSO.getProgramId().equals(programSO.getProgramId()))
+                                    .map(patientRestoreSO -> patientRestoreSO.getUserId())
+                                    .toList();
 
-                    programStatistic.setInteractionAvg(0);
-                    programStatistic.setInteractionMax(0);
-                    programStatistic.setInteractionMin(0);
+                    List<String> restIds = new ArrayList<>();
+                    restIds.add("patient/programContent");
+                    restIds.add("patient/formData/save");
 
-                    activityStatisticCollectionSO.getCollection().add(programStatistic);
+                    Long fromTimeStamp = 0L;
+                    Long toTimeStamp = System.currentTimeMillis();
+
+                    ActivityStatusMessageCollectionSO messageCollectionSO = ActivityMessageConverter.convertDocumentListToCollection(
+                            ActivityMessageMongoHandler.fetchStatisticData(userIdsOfProgram, restIds, fromTimeStamp, toTimeStamp));
+
+                    activityStatisticCollectionSO.getCollection().add(new ProgramStatisticSO(programSO.getProgramId(), countActiveUser(messageCollectionSO), 0, 0, 0));
                 });
 
                 return activityStatisticCollectionSO;
             }
 
-            @Override
-            protected void updateActivityStatus() {}
+            private PatientRestoreCollectionSO getAllPatient() {
+                List<UserLoginCompositeVO> userLoginCompositeVOs = null;
+                try {
+                    userLoginCompositeVOs = UserLoginCompositeDAO.findAllPatients();
 
-            protected ProgramCollectionSO getAllPrograms() throws DataSourceException {
-                List<ProgramVO> programVOList = ProgramDAO.findAll();
+                    PatientRestoreCollectionSO patientRestoreCollectionSO = new PatientRestoreCollectionSO();
 
-                List<ProgramSO> collection = new ArrayList<>();
-                for (ProgramVO programVO : programVOList) {
-                    ProgramSO programSO = new ProgramSO();
-                    programSO.setProgramId(programVO.getId());
-
-                    collection.add(programSO);
+                    for (UserLoginCompositeVO userLoginCompositeVO : userLoginCompositeVOs) {
+                        PatientRestoreSO patientRestoreSO = createPatientRestoreSO(userLoginCompositeVO);
+                        patientRestoreCollectionSO.getCollection().add(patientRestoreSO);
+                    }
+                    return patientRestoreCollectionSO;
+                } catch (DataSourceException | EntityNotFoundException e) {
+                    throw new RuntimeException(e);
                 }
-
-                ProgramCollectionSO programCollectionSO = new ProgramCollectionSO();
-                programCollectionSO.setCollection(collection);
-
-                return programCollectionSO;
             }
 
-            protected PatientRestoreCollectionSO getAllPatients()
-                    throws DataSourceException, EntityNotFoundException {
-                List<UserLoginCompositeVO> userLoginCompositeVOs = UserLoginCompositeDAO.findAllPatients();
-                PatientRestoreCollectionSO patientRestoreCollectionSO = new PatientRestoreCollectionSO();
+            private ProgramCollectionSO getAllPrograms() {
+                List<ProgramVO> programVOList = null;
+                try {
+                    programVOList = ProgramDAO.findAll();
 
-                for (UserLoginCompositeVO userLoginCompositeVO : userLoginCompositeVOs) {
-                    PatientRestoreSO patientRestoreSO = createPatientRestoreSO(userLoginCompositeVO);
-                    patientRestoreCollectionSO.getCollection().add(patientRestoreSO);
+                    List<ProgramSO> collection = new ArrayList<>();
+                    for (ProgramVO programVO : programVOList) {
+                        ProgramSO programSO = new ProgramSO();
+                        programSO.setProgramId(programVO.getId());
+                        collection.add(programSO);
+                    }
+
+                    ProgramCollectionSO programCollectionSO = new ProgramCollectionSO();
+                    programCollectionSO.setCollection(collection);
+
+                    return programCollectionSO;
+                } catch (DataSourceException e) {
+                    throw new RuntimeException(e);
                 }
-                return patientRestoreCollectionSO;
             }
 
-            protected PatientRestoreSO createPatientRestoreSO(UserLoginCompositeVO userLoginCompositeVO)
-                    throws DataSourceException, EntityNotFoundException {
+            private PatientRestoreSO createPatientRestoreSO(UserLoginCompositeVO userLoginCompositeVO) throws DataSourceException, EntityNotFoundException {
                 String userId = userLoginCompositeVO.getUserId();
 
                 RolePatientVO rolePatientVO = RolePatientDAO.load(userId);
@@ -123,6 +132,10 @@ public class StatisticActivityREST {
                 patientRestoreSO.setTherapistId(rolePatientVO.getTherapistId());
 
                 return patientRestoreSO;
+            }
+
+            private int countActiveUser(ActivityStatusMessageCollectionSO messageCollectionSO) {
+                return messageCollectionSO.getCollection().stream().map(ActivityMessageSO::getUserId).collect(Collectors.toSet()).size();
             }
         }.call();
     }

@@ -62,9 +62,6 @@ public class GetActivityREST {
                         );
             }
 
-            @Override
-            protected void updateActivityStatus() {}
-
         }.call();
 
     }
