@@ -19,6 +19,7 @@ import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.ProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
+import org.mentalizr.serviceObjects.requestObjects.ActivityStatRequestSO;
 import org.mentalizr.serviceObjects.userManagement.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,11 +36,14 @@ public class StatisticActivityREST {
 
     private static final String SERVICE_ID = "admin/user/activity/stat";
 
-    @GET
+    @POST
     @Path(SERVICE_ID)
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response statistic(@Context HttpServletRequest httpServletRequest) {
+    public Response statistic(
+            ActivityStatRequestSO activityStatRequestSO,
+            @Context HttpServletRequest httpServletRequest
+    ) {
 
         return new Service(httpServletRequest) {
             @Override
