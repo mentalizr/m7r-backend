@@ -27,8 +27,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Path("v1")
@@ -59,47 +58,20 @@ public class StatisticActivityREST {
             @Override
             protected Object workLoad() throws DataSourceException {
                 ProgramCollectionSO programCollectionSO = getAllPrograms();
-                PatientRestoreCollectionSO patientCollectionSO = getAllPatient();
                 ActivityStatisticCollectionSO activityStatisticCollectionSO = new ActivityStatisticCollectionSO();
 
-                programCollectionSO.getCollection().forEach(programSO -> {
-                    List<String> userIdsOfProgram =
-                            patientCollectionSO.getCollection().stream()
-                                    .filter(patientSO -> patientSO.getProgramId().equals(programSO.getProgramId()))
-                                    .map(patientRestoreSO -> patientRestoreSO.getUserId())
-                                    .toList();
+                for (ProgramSO programSO: programCollectionSO.getCollection()) {
+                    ActivityStatusMessageCollectionSO messageCollectionSO = getActivityStatusMessageCollectionSO(programSO);
 
-                    List<String> restIds = new ArrayList<>();
-                    restIds.add("patient/programContent");
-                    restIds.add("patient/formData/save");
-
-                    Long fromTimeStamp = 0L;
-                    Long toTimeStamp = System.currentTimeMillis();
-
-                    ActivityStatusMessageCollectionSO messageCollectionSO = ActivityMessageConverter.convertDocumentListToCollection(
-                            ActivityMessageMongoHandler.fetchStatisticData(userIdsOfProgram, restIds, fromTimeStamp, toTimeStamp));
-
-                    activityStatisticCollectionSO.getCollection().add(new ProgramStatisticSO(programSO.getProgramId(), countActiveUser(messageCollectionSO), 0, 0, 0));
-                });
+                    activityStatisticCollectionSO.getCollection()
+                            .add(new ProgramStatisticSO(programSO.getProgramId(),
+                                    countActiveUser(messageCollectionSO),
+                                    calAvgInteraction(messageCollectionSO),
+                                    calMinInteraction(messageCollectionSO),
+                                    calMaxInteraction(messageCollectionSO)));
+                }
 
                 return activityStatisticCollectionSO;
-            }
-
-            private PatientRestoreCollectionSO getAllPatient() {
-                List<UserLoginCompositeVO> userLoginCompositeVOs = null;
-                try {
-                    userLoginCompositeVOs = UserLoginCompositeDAO.findAllPatients();
-
-                    PatientRestoreCollectionSO patientRestoreCollectionSO = new PatientRestoreCollectionSO();
-
-                    for (UserLoginCompositeVO userLoginCompositeVO : userLoginCompositeVOs) {
-                        PatientRestoreSO patientRestoreSO = createPatientRestoreSO(userLoginCompositeVO);
-                        patientRestoreCollectionSO.getCollection().add(patientRestoreSO);
-                    }
-                    return patientRestoreCollectionSO;
-                } catch (DataSourceException | EntityNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
             }
 
             private ProgramCollectionSO getAllPrograms() {
@@ -123,23 +95,73 @@ public class StatisticActivityREST {
                 }
             }
 
-            private PatientRestoreSO createPatientRestoreSO(UserLoginCompositeVO userLoginCompositeVO) throws DataSourceException, EntityNotFoundException {
-                String userId = userLoginCompositeVO.getUserId();
+            private ActivityStatusMessageCollectionSO getActivityStatusMessageCollectionSO(ProgramSO programSO) throws DataSourceException {
+                List<PatientProgramVO> userIdsOfProgram = PatientProgramDAO.findByFk_program_id(programSO.getProgramId());
 
-                RolePatientVO rolePatientVO = RolePatientDAO.load(userId);
-                PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userId);
+                List<String> restIds = new ArrayList<>();
+                restIds.add("patient/programContent");
+                restIds.add("patient/formData/save");
 
-                PatientRestoreSO patientRestoreSO = PatientRestoreSOAdapter.from(userLoginCompositeVO);
-
-                patientRestoreSO.setProgramId(patientProgramVO.getProgramId());
-                patientRestoreSO.setBlocking(patientProgramVO.getBlocking());
-                patientRestoreSO.setTherapistId(rolePatientVO.getTherapistId());
-
-                return patientRestoreSO;
+                return ActivityMessageConverter.convertDocumentListToCollection(
+                        ActivityMessageMongoHandler
+                                .fetchStatisticData(userIdsOfProgram.stream().map(PatientProgramVO::getUserId).toList(),
+                                        restIds,
+                                        activityStatRequestSO.getFromTimestamp(),
+                                        activityStatRequestSO.getUntilTimestamp()));
             }
 
             private int countActiveUser(ActivityStatusMessageCollectionSO messageCollectionSO) {
-                return messageCollectionSO.getCollection().stream().map(ActivityMessageSO::getUserId).collect(Collectors.toSet()).size();
+                return messageCollectionSO.getCollection().stream()
+                        .map(ActivityMessageSO::getUserId)
+                        .collect(Collectors.toSet())
+                        .size();
+            }
+
+            private int calAvgInteraction(ActivityStatusMessageCollectionSO messageCollectionSO) {
+                int activeUsers = countActiveUser(messageCollectionSO);
+
+                if(messageCollectionSO.getCollection().isEmpty() || activeUsers == 0)
+                    return 0;
+                return messageCollectionSO.getCollection().size() / countActiveUser(messageCollectionSO);
+            }
+
+            private int calMinInteraction(ActivityStatusMessageCollectionSO messageCollectionSO) {
+                int minInteractions = Integer.MAX_VALUE;
+
+                if(messageCollectionSO.getCollection().isEmpty()) {
+                    return 0;
+                }
+
+                Set<String> userIds = messageCollectionSO.getCollection()
+                        .stream()
+                        .map(activityMessageSO -> activityMessageSO.getUserId()).collect(Collectors.toSet());
+
+                for (String userId: userIds) {
+                    int cInteractions = (int) messageCollectionSO.getCollection().stream()
+                            .filter(activityMessageSO -> Objects.equals(activityMessageSO.getUserId(), userId)).count();
+
+                    if(cInteractions < minInteractions) {
+                        minInteractions = cInteractions;
+                    }
+                }
+                return minInteractions;
+            }
+
+            private int calMaxInteraction(ActivityStatusMessageCollectionSO messageCollectionSO) {
+                int maxInteractions = 0;
+                Set<String> userIds = messageCollectionSO.getCollection()
+                        .stream()
+                        .map(activityMessageSO -> activityMessageSO.getUserId()).collect(Collectors.toSet());
+
+                for (String userId: userIds) {
+                    int cInteractions = (int) messageCollectionSO.getCollection().stream()
+                            .filter(activityMessageSO -> Objects.equals(activityMessageSO.getUserId(), userId)).count();
+
+                    if(cInteractions > maxInteractions) {
+                        maxInteractions = cInteractions;
+                    }
+                }
+                return  maxInteractions;
             }
         }.call();
     }
