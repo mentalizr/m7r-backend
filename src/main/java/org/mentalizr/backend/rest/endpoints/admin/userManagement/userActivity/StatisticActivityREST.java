@@ -117,12 +117,12 @@ public class StatisticActivityREST {
                         .size();
             }
 
-            private int calAvgInteraction(ActivityStatusMessageCollectionSO messageCollectionSO) {
+            private double calAvgInteraction(ActivityStatusMessageCollectionSO messageCollectionSO) {
                 int activeUsers = countActiveUser(messageCollectionSO);
 
                 if(messageCollectionSO.getCollection().isEmpty() || activeUsers == 0)
                     return 0;
-                return messageCollectionSO.getCollection().size() / countActiveUser(messageCollectionSO);
+                return (double) messageCollectionSO.getCollection().size() / (double) countActiveUser(messageCollectionSO);
             }
 
             private int calMinInteraction(ActivityStatusMessageCollectionSO messageCollectionSO) {
