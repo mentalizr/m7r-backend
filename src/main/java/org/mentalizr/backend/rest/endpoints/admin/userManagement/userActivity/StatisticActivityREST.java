@@ -20,6 +20,7 @@ import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.ProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
 import org.mentalizr.serviceObjects.requestObjects.ActivityStatRequestSO;
+import org.mentalizr.serviceObjects.stateObjects.StatisticResults;
 import org.mentalizr.serviceObjects.userManagement.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,16 +62,16 @@ public class StatisticActivityREST {
                 ActivityStatisticCollectionSO activityStatisticCollectionSO = new ActivityStatisticCollectionSO();
 
                 for (ProgramSO programSO: programCollectionSO.getCollection()) {
-                    ActivityStatusMessageCollectionSO messageCollectionSO = getActivityStatusMessageCollectionSO(programSO);
+                    StatisticResults statisticResults =
+                            new StatisticResults(getActivityStatusMessageCollectionSO(programSO));
 
                     activityStatisticCollectionSO.getCollection()
                             .add(new ProgramStatisticSO(programSO.getProgramId(),
-                                    countActiveUser(messageCollectionSO),
-                                    calAvgInteraction(messageCollectionSO),
-                                    calMinInteraction(messageCollectionSO),
-                                    calMaxInteraction(messageCollectionSO)));
+                                    statisticResults.getActiveUserCount(),
+                                    statisticResults.calAvgInteraction(),
+                                    statisticResults.calMinInteraction(),
+                                    statisticResults.calMaxInteraction()));
                 }
-
                 return activityStatisticCollectionSO;
             }
 
@@ -95,8 +96,10 @@ public class StatisticActivityREST {
                 }
             }
 
-            private ActivityStatusMessageCollectionSO getActivityStatusMessageCollectionSO(ProgramSO programSO) throws DataSourceException {
-                List<PatientProgramVO> userIdsOfProgram = PatientProgramDAO.findByFk_program_id(programSO.getProgramId());
+            private ActivityStatusMessageCollectionSO getActivityStatusMessageCollectionSO(ProgramSO programSO)
+                    throws DataSourceException {
+                List<PatientProgramVO> userIdsOfProgram =
+                        PatientProgramDAO.findByFk_program_id(programSO.getProgramId());
 
                 List<String> restIds = new ArrayList<>();
                 restIds.add("patient/programContent");
@@ -108,60 +111,6 @@ public class StatisticActivityREST {
                                         restIds,
                                         activityStatRequestSO.getFromTimestamp(),
                                         activityStatRequestSO.getUntilTimestamp()));
-            }
-
-            private int countActiveUser(ActivityStatusMessageCollectionSO messageCollectionSO) {
-                return messageCollectionSO.getCollection().stream()
-                        .map(ActivityMessageSO::getUserId)
-                        .collect(Collectors.toSet())
-                        .size();
-            }
-
-            private double calAvgInteraction(ActivityStatusMessageCollectionSO messageCollectionSO) {
-                int activeUsers = countActiveUser(messageCollectionSO);
-
-                if(messageCollectionSO.getCollection().isEmpty() || activeUsers == 0)
-                    return 0;
-                return (double) messageCollectionSO.getCollection().size() / (double) countActiveUser(messageCollectionSO);
-            }
-
-            private int calMinInteraction(ActivityStatusMessageCollectionSO messageCollectionSO) {
-                int minInteractions = Integer.MAX_VALUE;
-
-                if(messageCollectionSO.getCollection().isEmpty()) {
-                    return 0;
-                }
-
-                Set<String> userIds = messageCollectionSO.getCollection()
-                        .stream()
-                        .map(activityMessageSO -> activityMessageSO.getUserId()).collect(Collectors.toSet());
-
-                for (String userId: userIds) {
-                    int cInteractions = (int) messageCollectionSO.getCollection().stream()
-                            .filter(activityMessageSO -> Objects.equals(activityMessageSO.getUserId(), userId)).count();
-
-                    if(cInteractions < minInteractions) {
-                        minInteractions = cInteractions;
-                    }
-                }
-                return minInteractions;
-            }
-
-            private int calMaxInteraction(ActivityStatusMessageCollectionSO messageCollectionSO) {
-                int maxInteractions = 0;
-                Set<String> userIds = messageCollectionSO.getCollection()
-                        .stream()
-                        .map(activityMessageSO -> activityMessageSO.getUserId()).collect(Collectors.toSet());
-
-                for (String userId: userIds) {
-                    int cInteractions = (int) messageCollectionSO.getCollection().stream()
-                            .filter(activityMessageSO -> Objects.equals(activityMessageSO.getUserId(), userId)).count();
-
-                    if(cInteractions > maxInteractions) {
-                        maxInteractions = cInteractions;
-                    }
-                }
-                return  maxInteractions;
             }
         }.call();
     }
