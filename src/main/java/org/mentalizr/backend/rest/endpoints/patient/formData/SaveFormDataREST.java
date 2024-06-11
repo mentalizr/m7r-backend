@@ -20,7 +20,7 @@ import javax.ws.rs.core.Response;
 @Path("v1")
 public class SaveFormDataREST {
 
-    private static final String SERVICE_ID = "patient/formData/save";
+    public static final String SERVICE_ID = "patient/formData/save";
 
     @POST
     @Path(SERVICE_ID)

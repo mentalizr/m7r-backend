@@ -7,7 +7,7 @@ import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityMessageConverter;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityMessageMongoHandler;
-import org.mentalizr.serviceObjects.userManagement.ActivityStatusMessageCollectionSO;
+import org.mentalizr.serviceObjects.userManagement.ActivityRecordCollectionSO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -28,7 +28,7 @@ public class RecoverActivitiesREST {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response add(
-            ActivityStatusMessageCollectionSO activityStatusMessageCollectionSO,
+            ActivityRecordCollectionSO activityRecordCollectionSO,
             @Context HttpServletRequest httpServletRequest
     ) {
         return new Service(httpServletRequest) {
@@ -47,7 +47,7 @@ public class RecoverActivitiesREST {
             protected Object workLoad() {
                 ActivityMessageMongoHandler.insertMany(
                         ActivityMessageConverter
-                                .convertActivityList(activityStatusMessageCollectionSO));
+                                .convertActivityList(activityRecordCollectionSO));
                 return null;
             }
 

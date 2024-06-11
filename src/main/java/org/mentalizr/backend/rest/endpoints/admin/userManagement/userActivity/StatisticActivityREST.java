@@ -3,24 +3,20 @@ package org.mentalizr.backend.rest.endpoints.admin.userManagement.userActivity;
 import de.arthurpicht.webAccessControl.auth.AccessControl;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
+import org.bson.Document;
 import org.mentalizr.backend.accessControl.roles.Admin;
-import org.mentalizr.backend.adapter.PatientRestoreSOAdapter;
 import org.mentalizr.backend.rest.endpoints.patient.ProgramContentREST;
+import org.mentalizr.backend.rest.endpoints.patient.formData.SaveFormDataREST;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityMessageConverter;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityMessageMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
-import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
 import org.mentalizr.persistence.rdbms.barnacle.dao.ProgramDAO;
-import org.mentalizr.persistence.rdbms.barnacle.dao.RolePatientDAO;
-import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserLoginCompositeDAO;
-import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.ProgramVO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
 import org.mentalizr.serviceObjects.requestObjects.ActivityStatRequestSO;
-import org.mentalizr.serviceObjects.stateObjects.StatisticResults;
+import org.mentalizr.backend.utils.ActivityStatisticsResult;
 import org.mentalizr.serviceObjects.userManagement.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +25,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Path("v1")
 public class StatisticActivityREST {
@@ -58,59 +53,44 @@ public class StatisticActivityREST {
 
             @Override
             protected Object workLoad() throws DataSourceException {
-                ProgramCollectionSO programCollectionSO = getAllPrograms();
+                List<String> programIds = getAllProgramIds();
                 ActivityStatisticCollectionSO activityStatisticCollectionSO = new ActivityStatisticCollectionSO();
 
-                for (ProgramSO programSO: programCollectionSO.getCollection()) {
-                    StatisticResults statisticResults =
-                            new StatisticResults(getActivityStatusMessageCollectionSO(programSO));
-
-                    activityStatisticCollectionSO.getCollection()
-                            .add(new ProgramStatisticSO(programSO.getProgramId(),
-                                    statisticResults.getActiveUserCount(),
-                                    statisticResults.calAvgInteraction(),
-                                    statisticResults.calMinInteraction(),
-                                    statisticResults.calMaxInteraction()));
+                for (String programId : programIds) {
+                    ActivityRecordCollectionSO activityRecordCollectionSO =
+                            getActivityStatusMessageCollectionSO(programId);
+                    ActivityStatisticsResult activityStatisticsResult =
+                            new ActivityStatisticsResult(programId, activityRecordCollectionSO);
+                    ProgramStatisticSO programStatisticSO = activityStatisticsResult.getProgramStatisticSO();
+                    activityStatisticCollectionSO.getCollection().add(programStatisticSO);
                 }
                 return activityStatisticCollectionSO;
             }
 
-            private ProgramCollectionSO getAllPrograms() {
-                List<ProgramVO> programVOList = null;
-                try {
-                    programVOList = ProgramDAO.findAll();
-
-                    List<ProgramSO> collection = new ArrayList<>();
-                    for (ProgramVO programVO : programVOList) {
-                        ProgramSO programSO = new ProgramSO();
-                        programSO.setProgramId(programVO.getId());
-                        collection.add(programSO);
-                    }
-
-                    ProgramCollectionSO programCollectionSO = new ProgramCollectionSO();
-                    programCollectionSO.setCollection(collection);
-
-                    return programCollectionSO;
-                } catch (DataSourceException e) {
-                    throw new RuntimeException(e);
-                }
+            private List<String> getAllProgramIds() throws DataSourceException {
+                List<ProgramVO> programVOList = ProgramDAO.findAll();
+                return programVOList.stream().map(ProgramVO::getId).toList();
             }
 
-            private ActivityStatusMessageCollectionSO getActivityStatusMessageCollectionSO(ProgramSO programSO)
+            private ActivityRecordCollectionSO getActivityStatusMessageCollectionSO(String programId)
                     throws DataSourceException {
-                List<PatientProgramVO> userIdsOfProgram =
-                        PatientProgramDAO.findByFk_program_id(programSO.getProgramId());
+
+                List<PatientProgramVO> patientProgramVOs =
+                        PatientProgramDAO.findByFk_program_id(programId);
+                List<String> patientProgramUserIds =
+                        patientProgramVOs.stream().map(PatientProgramVO::getUserId).toList();
 
                 List<String> restIds = new ArrayList<>();
-                restIds.add("patient/programContent");
-                restIds.add("patient/formData/save");
+                restIds.add(ProgramContentREST.SERVICE_ID);
+                restIds.add(SaveFormDataREST.SERVICE_ID);
 
-                return ActivityMessageConverter.convertDocumentListToCollection(
-                        ActivityMessageMongoHandler
-                                .fetchStatisticData(userIdsOfProgram.stream().map(PatientProgramVO::getUserId).toList(),
-                                        restIds,
-                                        activityStatRequestSO.getFromTimestamp(),
-                                        activityStatRequestSO.getUntilTimestamp()));
+                List<Document> statisticData = ActivityMessageMongoHandler.fetchStatisticData(
+                        patientProgramUserIds,
+                        restIds,
+                        activityStatRequestSO.getFromTimestamp(),
+                        activityStatRequestSO.getUntilTimestamp());
+
+                return ActivityMessageConverter.convertDocumentListToCollection(statisticData);
             }
         }.call();
     }
