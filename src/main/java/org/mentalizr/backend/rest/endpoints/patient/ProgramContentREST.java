@@ -25,7 +25,7 @@ import java.io.IOException;
 @Path("v1")
 public class ProgramContentREST {
 
-    private static final String SERVICE_ID = "patient/programContent";
+    public static final String SERVICE_ID = "patient/programContent";
 
     @GET
     @Path(SERVICE_ID + "/{contentId}")

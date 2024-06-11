@@ -9,7 +9,7 @@ import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityMessageConverter;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityMessageMongoHandler;
 import org.mentalizr.serviceObjects.requestObjects.ActivityQuerySO;
-import org.mentalizr.serviceObjects.userManagement.ActivityStatusMessageCollectionSO;
+import org.mentalizr.serviceObjects.userManagement.ActivityRecordCollectionSO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -45,7 +45,7 @@ public class GetActivityREST {
             }
 
             @Override
-            protected ActivityStatusMessageCollectionSO workLoad() throws M7rIllegalServiceInputException {
+            protected ActivityRecordCollectionSO workLoad() throws M7rIllegalServiceInputException {
                 if(activityQuerySO.getUserId() == null || activityQuerySO.getUserId().isEmpty()) {
                     throw new M7rIllegalServiceInputException("UserId not set.");
                 } else if (activityQuerySO.getUntilTimestamp() < activityQuerySO.getFromTimestamp()) {
@@ -61,9 +61,6 @@ public class GetActivityREST {
                                 )
                         );
             }
-
-            @Override
-            protected void updateActivityStatus() {}
 
         }.call();
 
