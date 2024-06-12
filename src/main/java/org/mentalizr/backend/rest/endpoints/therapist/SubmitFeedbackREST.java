@@ -1,7 +1,6 @@
 package org.mentalizr.backend.rest.endpoints.therapist;
 
 import de.arthurpicht.utils.core.dates.ISODates;
-import de.arthurpicht.utils.core.strings.Timestamps;
 import de.arthurpicht.webAccessControl.auth.AccessControl;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
@@ -74,7 +73,7 @@ public class SubmitFeedbackREST {
                 String therapistId = this.authorization.getUserId();
                 FeedbackSO feedbackSO = new FeedbackSO();
                 feedbackSO.setText(feedbackSubmissionSO.getFeedback());
-                feedbackSO.setCreatedTimestamp(Timestamps.currentAsISO());
+                feedbackSO.setCreatedTimestamp(ISODates.current());
                 feedbackSO.setTherapistId(therapistId);
                 feedbackSO.setSeenByPatient(false);
                 feedbackSO.setSeenByPatientTimestamp(ISODates.epochAsISO());

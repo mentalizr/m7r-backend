@@ -1,6 +1,6 @@
 package org.mentalizr.backend.rest.endpoints.patient.formData;
 
-import de.arthurpicht.utils.core.strings.Timestamps;
+import de.arthurpicht.utils.core.dates.ISODates;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.bson.Document;
@@ -65,7 +65,7 @@ public class SendFormDataREST {
 
                 ExerciseSO exerciseSO = formDataSO.getExercise();
                 exerciseSO.setSent(true);
-                exerciseSO.setLastModifiedTimestamp(Timestamps.currentAsISO());
+                exerciseSO.setLastModifiedTimestamp(ISODates.current());
 
                 Document document = FormDataConverter.convert(formDataSO);
                 FormDataMongoHandler.createOrUpdate(document);
