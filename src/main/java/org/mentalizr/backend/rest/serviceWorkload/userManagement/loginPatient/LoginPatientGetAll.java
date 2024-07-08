@@ -38,6 +38,7 @@ public class LoginPatientGetAll {
             patientRestoreSO.setProgramId(patientProgramVO.getProgramId());
             patientRestoreSO.setBlocking(patientProgramVO.getBlocking());
             patientRestoreSO.setTherapistId(rolePatientVO.getTherapistId());
+            patientRestoreSO.setProjectId(rolePatientVO.getProjectId());
 
             patientRestoreCollectionSO.getCollection().add(patientRestoreSO);
         }

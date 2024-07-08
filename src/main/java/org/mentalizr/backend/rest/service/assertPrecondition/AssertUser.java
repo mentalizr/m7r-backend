@@ -8,6 +8,16 @@ import org.mentalizr.persistence.rdbms.barnacle.dao.UserDAO;
 
 public class AssertUser {
 
+    public static void exists(String userId) throws M7rInfrastructureException, ServicePreconditionFailedException {
+        try {
+            UserDAO.load(userId);
+        } catch (DataSourceException e) {
+            throw new M7rInfrastructureException(e.getMessage(), e);
+        } catch (EntityNotFoundException e) {
+            throw new ServicePreconditionFailedException("User [" + userId + "] not found.");
+        }
+    }
+
     public static void existsNot(String userUUID) throws ServicePreconditionFailedException, M7rInfrastructureException {
         existsNot(userUUID, "User [%s] exists.");
     }

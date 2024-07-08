@@ -72,6 +72,7 @@ public class GetAllPatientsREST {
                 patientRestoreSO.setProgramId(patientProgramVO.getProgramId());
                 patientRestoreSO.setBlocking(patientProgramVO.getBlocking());
                 patientRestoreSO.setTherapistId(rolePatientVO.getTherapistId());
+                patientRestoreSO.setProjectId(rolePatientVO.getProjectId());
 
                 return patientRestoreSO;
             }
