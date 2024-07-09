@@ -8,6 +8,7 @@ import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertProgram;
+import org.mentalizr.backend.rest.service.assertPrecondition.AssertProject;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertRoleTherapist;
 import org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey.PatientAccessKeyCreate;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyCollectionSO;
@@ -56,6 +57,9 @@ public class CreateAccessKeyREST {
                         getAccessKeyCreateSO().getProgramId(),
                         "Referenced program [%s] does not exist."
                 );
+                if (getAccessKeyCreateSO() != null) {
+                    AssertProject.exists(getAccessKeyCreateSO().getProjectId());
+                }
             }
 
             @Override
@@ -68,6 +72,7 @@ public class CreateAccessKeyREST {
 
             }
 
+            // TODO überflüssiger Umweg
             private AccessKeyCreateSO getAccessKeyCreateSO() {
                 return (AccessKeyCreateSO) this.serviceObjectRequest;
             }

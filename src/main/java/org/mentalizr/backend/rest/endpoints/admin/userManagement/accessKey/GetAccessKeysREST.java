@@ -8,10 +8,12 @@ import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey.PatientAccessKeyGetAll;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
-import org.mentalizr.serviceObjects.userManagement.AccessKeyCollectionSO;
+import org.mentalizr.serviceObjects.userManagement.AccessKeyGetSO;
+import org.mentalizr.serviceObjects.userManagement.AccessKeyRestoreSO;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -19,14 +21,18 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("v1")
-public class GetAllAccessKeysREST {
+public class GetAccessKeysREST {
 
-    private static final String SERVICE_ID = "admin/user/accessKey/getAll";
+    private static final String SERVICE_ID = "admin/user/accessKey/get";
 
-    @GET
+    @POST
     @Path(SERVICE_ID)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAll(@Context HttpServletRequest httpServletRequest) {
+    public Response get(
+            AccessKeyGetSO accessKeyGetSO,
+            @Context HttpServletRequest httpServletRequest
+    ) {
 
         return new Service(httpServletRequest){
 
@@ -41,8 +47,8 @@ public class GetAllAccessKeysREST {
             }
 
             @Override
-            protected AccessKeyCollectionSO workLoad() throws DataSourceException, EntityNotFoundException {
-                return PatientAccessKeyGetAll.getAll();
+            protected AccessKeyRestoreSO workLoad() throws DataSourceException, EntityNotFoundException {
+                return PatientAccessKeyGetAll.get(accessKeyGetSO.getAccessKey());
             }
 
         }.call();

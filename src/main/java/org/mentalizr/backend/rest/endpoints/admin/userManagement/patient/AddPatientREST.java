@@ -9,6 +9,7 @@ import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertProgram;
+import org.mentalizr.backend.rest.service.assertPrecondition.AssertProject;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertRoleTherapist;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertUserLogin;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
@@ -65,6 +66,9 @@ public class AddPatientREST {
                 AssertProgram.exists(
                         patientAddSO.getProgramId(),
                         "Referenced program [%s] does not exits.");
+                if (patientAddSO.getProjectId() != null) {
+                    AssertProject.exists(patientAddSO.getProjectId());
+                }
             }
 
             @Override
@@ -86,6 +90,7 @@ public class AddPatientREST {
 
                 RolePatientVO rolePatientVO = new RolePatientVO(userId);
                 rolePatientVO.setTherapistId(patientAddSO.getTherapistId());
+                rolePatientVO.setProjectId(patientAddSO.getProjectId());
                 RolePatientDAO.create(rolePatientVO);
 
                 PatientProgramVO patientProgramVO =

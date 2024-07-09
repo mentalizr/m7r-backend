@@ -23,7 +23,8 @@ public class PatientAccessKeyRestore {
                     accessKeyRestoreSO.getLastActive(),
                     accessKeyRestoreSO.getAccessKey(),
                     accessKeyRestoreSO.getProgramId(),
-                    accessKeyRestoreSO.getTherapistId());
+                    accessKeyRestoreSO.getTherapistId(),
+                    accessKeyRestoreSO.getProjectId());
         } catch (DataSourceException e) {
             throw new M7rInfrastructureException(e.getMessage(), e);
         }
