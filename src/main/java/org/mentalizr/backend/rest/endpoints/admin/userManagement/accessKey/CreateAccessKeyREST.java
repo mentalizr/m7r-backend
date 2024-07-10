@@ -50,31 +50,21 @@ public class CreateAccessKeyREST {
             @Override
             protected void checkPreconditions() throws ServicePreconditionFailedException, M7rInfrastructureException {
                 AssertRoleTherapist.exists(
-                        getAccessKeyCreateSO().getTherapistId(),
+                        accessKeyCreateSO.getTherapistId(),
                         "Referenced therapist [%s] does not exist."
                 );
                 AssertProgram.exists(
-                        getAccessKeyCreateSO().getProgramId(),
+                        accessKeyCreateSO.getProgramId(),
                         "Referenced program [%s] does not exist."
                 );
-                if (getAccessKeyCreateSO() != null) {
-                    AssertProject.exists(getAccessKeyCreateSO().getProjectId());
+                if (accessKeyCreateSO.isAssignedToProject()) {
+                    AssertProject.exists(accessKeyCreateSO.getProjectId());
                 }
             }
 
             @Override
             protected AccessKeyCollectionSO workLoad() throws M7rInfrastructureException {
-                return PatientAccessKeyCreate.create(getAccessKeyCreateSO());
-            }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
-            // TODO überflüssiger Umweg
-            private AccessKeyCreateSO getAccessKeyCreateSO() {
-                return (AccessKeyCreateSO) this.serviceObjectRequest;
+                return PatientAccessKeyCreate.create(accessKeyCreateSO);
             }
 
         }.call();

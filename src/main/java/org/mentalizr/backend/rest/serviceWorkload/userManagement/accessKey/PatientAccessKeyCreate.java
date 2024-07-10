@@ -55,6 +55,7 @@ public class PatientAccessKeyCreate {
             AccessKeyRestoreSO accessKeyRestoreSO = new AccessKeyRestoreSO();
             accessKeyRestoreSO.setUserId(uuid);
             accessKeyRestoreSO.setActive(accessKeyCreateSO.isActive());
+            accessKeyRestoreSO.setCreation(creationTimestamp);
             accessKeyRestoreSO.setAccessKey(accessKey);
             accessKeyRestoreSO.setProgramId(accessKeyCreateSO.getProgramId());
             accessKeyRestoreSO.setTherapistId(accessKeyCreateSO.getTherapistId());
