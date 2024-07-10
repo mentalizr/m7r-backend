@@ -5,7 +5,7 @@ import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.rest.service.Service;
-import org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey.PatientAccessKeyGetAll;
+import org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey.PatientAccessKeyGet;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyGetSO;
@@ -48,7 +48,7 @@ public class GetAccessKeysREST {
 
             @Override
             protected AccessKeyRestoreSO workLoad() throws DataSourceException, EntityNotFoundException {
-                return PatientAccessKeyGetAll.get(accessKeyGetSO.getAccessKey());
+                return PatientAccessKeyGet.get(accessKeyGetSO.getAccessKey());
             }
 
         }.call();

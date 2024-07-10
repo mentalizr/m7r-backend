@@ -2,12 +2,8 @@ package org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey;
 
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
-import org.mentalizr.persistence.rdbms.barnacle.dao.RolePatientDAO;
-import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserAccessKeyCompositeDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserAccessKeyPatientCompositeDAO;
-import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyPatientCompositeVO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyCollectionSO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyRestoreSO;
 import org.slf4j.Logger;
@@ -15,9 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class PatientAccessKeyGetAll {
+public class PatientAccessKeyGet {
 
-    private static final Logger logger = LoggerFactory.getLogger(PatientAccessKeyGetAll.class);
+    private static final Logger logger = LoggerFactory.getLogger(PatientAccessKeyGet.class);
 
     public static AccessKeyCollectionSO getAll() throws DataSourceException, EntityNotFoundException {
         List<UserAccessKeyPatientCompositeVO> userAccessKeyPatientCompositeVOs = UserAccessKeyPatientCompositeDAO.findAll();
