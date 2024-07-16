@@ -43,11 +43,6 @@ public class DeletePatientStatusREST {
                 return null;
             }
 
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

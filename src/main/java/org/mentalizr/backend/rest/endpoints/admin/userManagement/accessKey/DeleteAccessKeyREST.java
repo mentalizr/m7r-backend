@@ -74,11 +74,6 @@ public class DeleteAccessKeyREST {
                 return null;
             }
 
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
             private AccessKeyDeleteSO getAccessKeyDeleteSO() {
                 return (AccessKeyDeleteSO) this.serviceObjectRequest;
             }

@@ -43,11 +43,6 @@ public class CleanFormDataREST {
                 return null;
             }
 
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

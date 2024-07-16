@@ -64,12 +64,6 @@ public class GetAllPolicyREST {
 
                 return policyCollectionSO;
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

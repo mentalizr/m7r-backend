@@ -55,12 +55,6 @@ public class CreatePolicyREST {
                 Policy.create(policySO.getUserId(), policySO.getVersion(), policySO.getConsent());
                 return null;
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

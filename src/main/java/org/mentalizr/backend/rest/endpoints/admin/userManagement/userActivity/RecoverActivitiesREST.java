@@ -51,9 +51,6 @@ public class RecoverActivitiesREST {
                 return null;
             }
 
-            @Override
-            protected void updateActivityStatus() {}
-
         }.call();
     }
 }

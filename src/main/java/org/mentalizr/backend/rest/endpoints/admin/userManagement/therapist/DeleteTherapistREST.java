@@ -65,12 +65,6 @@ public class DeleteTherapistREST {
 
                 return null;
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

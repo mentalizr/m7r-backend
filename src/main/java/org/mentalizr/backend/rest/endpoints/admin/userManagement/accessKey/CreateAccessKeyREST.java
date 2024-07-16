@@ -63,11 +63,6 @@ public class CreateAccessKeyREST {
                 return PatientAccessKeyCreate.create(getAccessKeyCreateSO());
             }
 
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
             private AccessKeyCreateSO getAccessKeyCreateSO() {
                 return (AccessKeyCreateSO) this.serviceObjectRequest;
             }

@@ -44,12 +44,6 @@ public class GetAllAccessKeysREST {
             protected AccessKeyCollectionSO workLoad() throws DataSourceException, EntityNotFoundException {
                 return PatientAccessKeyGetAll.getAll();
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

@@ -63,11 +63,6 @@ public class RestoreAccessKeyREST {
                 return null;
             }
 
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
             private AccessKeyRestoreSO getAccessKeyRestoreSO() {
                 return (AccessKeyRestoreSO) this.serviceObjectRequest;
             }

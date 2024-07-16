@@ -75,12 +75,6 @@ public class GetAllTherapistsREST {
 
                 return TherapistRestoreSOAdapter.from(userVO, userLoginVO, roleTherapistVO);
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

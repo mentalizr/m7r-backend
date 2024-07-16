@@ -58,11 +58,6 @@ public class GetAllUserIDREST {
 
                 return finalCollection;
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
         }.call();
     }
 }

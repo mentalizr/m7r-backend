@@ -42,10 +42,6 @@ public class CountActivitiesREST {
             protected Long workLoad() {
                 return ActivityMessageMongoHandler.count();
             }
-
-            @Override
-            protected void updateActivityStatus() {}
-
         }.call();
     }
 }

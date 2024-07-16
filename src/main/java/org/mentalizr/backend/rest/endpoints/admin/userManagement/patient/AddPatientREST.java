@@ -105,11 +105,6 @@ public class AddPatientREST {
                 return patientAddSO;
             }
 
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

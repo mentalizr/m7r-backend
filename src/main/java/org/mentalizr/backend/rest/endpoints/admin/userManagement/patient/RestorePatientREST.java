@@ -111,12 +111,6 @@ public class RestorePatientREST {
 
                 return null;
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }
