@@ -8,10 +8,7 @@ import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.rest.RESTException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
-import org.mentalizr.backend.rest.service.assertPrecondition.AssertProgram;
-import org.mentalizr.backend.rest.service.assertPrecondition.AssertRoleTherapist;
-import org.mentalizr.backend.rest.service.assertPrecondition.AssertUser;
-import org.mentalizr.backend.rest.service.assertPrecondition.AssertUserLogin;
+import org.mentalizr.backend.rest.service.assertPrecondition.*;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
@@ -76,6 +73,10 @@ public class RestorePatientREST {
                 AssertProgram.exists(
                         patientRestoreSO.getProgramId(),
                         "Referenced program [%s] does not exist.");
+
+                if (patientRestoreSO.getProjectId() != null) {
+                    AssertProject.exists(patientRestoreSO.getProjectId());
+                }
             }
 
             @Override
@@ -101,6 +102,7 @@ public class RestorePatientREST {
 
                 RolePatientVO rolePatientVO = new RolePatientVO(patientRestoreSO.getUserId());
                 rolePatientVO.setTherapistId(patientRestoreSO.getTherapistId());
+                rolePatientVO.setProjectId(patientRestoreSO.getProjectId());
                 RolePatientDAO.create(rolePatientVO);
 
                 PatientProgramPK patientProgramPK

@@ -8,6 +8,7 @@ import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertProgram;
+import org.mentalizr.backend.rest.service.assertPrecondition.AssertProject;
 import org.mentalizr.backend.rest.service.assertPrecondition.AssertRoleTherapist;
 import org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey.PatientAccessKeyCreate;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyCollectionSO;
@@ -49,27 +50,21 @@ public class CreateAccessKeyREST {
             @Override
             protected void checkPreconditions() throws ServicePreconditionFailedException, M7rInfrastructureException {
                 AssertRoleTherapist.exists(
-                        getAccessKeyCreateSO().getTherapistId(),
+                        accessKeyCreateSO.getTherapistId(),
                         "Referenced therapist [%s] does not exist."
                 );
                 AssertProgram.exists(
-                        getAccessKeyCreateSO().getProgramId(),
+                        accessKeyCreateSO.getProgramId(),
                         "Referenced program [%s] does not exist."
                 );
+                if (accessKeyCreateSO.isAssignedToProject()) {
+                    AssertProject.exists(accessKeyCreateSO.getProjectId());
+                }
             }
 
             @Override
             protected AccessKeyCollectionSO workLoad() throws M7rInfrastructureException {
-                return PatientAccessKeyCreate.create(getAccessKeyCreateSO());
-            }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
-            private AccessKeyCreateSO getAccessKeyCreateSO() {
-                return (AccessKeyCreateSO) this.serviceObjectRequest;
+                return PatientAccessKeyCreate.create(accessKeyCreateSO);
             }
 
         }.call();

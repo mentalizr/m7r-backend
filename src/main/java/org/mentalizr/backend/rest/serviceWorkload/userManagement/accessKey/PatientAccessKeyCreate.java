@@ -49,14 +49,17 @@ public class PatientAccessKeyCreate {
                     null,
                     accessKey,
                     accessKeyCreateSO.getProgramId(),
-                    accessKeyCreateSO.getTherapistId());
+                    accessKeyCreateSO.getTherapistId(),
+                    accessKeyCreateSO.getProjectId());
 
             AccessKeyRestoreSO accessKeyRestoreSO = new AccessKeyRestoreSO();
             accessKeyRestoreSO.setUserId(uuid);
             accessKeyRestoreSO.setActive(accessKeyCreateSO.isActive());
+            accessKeyRestoreSO.setCreation(creationTimestamp);
             accessKeyRestoreSO.setAccessKey(accessKey);
             accessKeyRestoreSO.setProgramId(accessKeyCreateSO.getProgramId());
             accessKeyRestoreSO.setTherapistId(accessKeyCreateSO.getTherapistId());
+            accessKeyRestoreSO.setProjectId(accessKeyCreateSO.getProjectId());
 
             accessKeyCollectionSO.getCollection().add(accessKeyRestoreSO);
         }
@@ -102,7 +105,8 @@ public class PatientAccessKeyCreate {
             Long lastActive,
             String accessKey,
             String programId,
-            String therapistId
+            String therapistId,
+            String projectId
     ) throws DataSourceException {
 
         UserVO userVO = new UserVO(userId);
@@ -116,6 +120,7 @@ public class PatientAccessKeyCreate {
 
         RolePatientVO rolePatientVO = new RolePatientVO(userId);
         rolePatientVO.setTherapistId(therapistId);
+        rolePatientVO.setProjectId(projectId);
 
         PatientProgramVO patientProgramVO = new PatientProgramVO(new PatientProgramPK(userId, programId));
 
