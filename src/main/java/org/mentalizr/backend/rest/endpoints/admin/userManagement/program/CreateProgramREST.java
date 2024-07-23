@@ -55,12 +55,6 @@ public class CreateProgramREST {
                 Program.add(programSO.getProgramId());
                 return null;
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

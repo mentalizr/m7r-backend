@@ -45,12 +45,6 @@ public class GetAllFormDataREST {
             protected FormDataCollectionSO workLoad() {
                 return FormDataDAO.fetchAll(userId);
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

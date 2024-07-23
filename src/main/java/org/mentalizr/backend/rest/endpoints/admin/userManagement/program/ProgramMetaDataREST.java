@@ -55,12 +55,6 @@ public class ProgramMetaDataREST {
                     throw new M7rUnknownEntityException(e.getMessage(), e);
                 }
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

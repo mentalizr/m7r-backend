@@ -64,12 +64,6 @@ public class GetPatientREST {
 
                 return patientRestoreSO;
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

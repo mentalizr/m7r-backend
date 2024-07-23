@@ -39,10 +39,6 @@ public class WipeActivitiesREST {
             protected Integer workLoad() {
                 return ActivityMessageMongoHandler.wipe();
             }
-
-            @Override
-            protected void updateActivityStatus() {}
-
         }.call();
     }
 }

@@ -79,12 +79,6 @@ public class RestoreTherapistREST {
                 RoleTherapistDAO.create(roleTherapistVO);
                 return null;
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

@@ -46,12 +46,6 @@ public class DeleteProgramREST {
                 ProgramDAO.delete(programId);
                 return null;
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

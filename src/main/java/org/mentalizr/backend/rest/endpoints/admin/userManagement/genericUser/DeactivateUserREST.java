@@ -49,12 +49,6 @@ public class DeactivateUserREST {
                 UserDAO.update(userVO);
                 return null;
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

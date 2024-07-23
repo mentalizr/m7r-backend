@@ -76,12 +76,6 @@ public class GetAllPatientsREST {
 
                 return patientRestoreSO;
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

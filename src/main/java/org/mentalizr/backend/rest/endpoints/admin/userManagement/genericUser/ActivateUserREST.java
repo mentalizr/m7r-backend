@@ -50,11 +50,6 @@ public class ActivateUserREST {
                 return null;
             }
 
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

@@ -42,10 +42,6 @@ public class DeleteActivitiesREST {
                 ActivityMessageMongoHandler.removeActivities(userId);
                 return null;
             }
-
-            @Override
-            protected void updateActivityStatus() {}
-
         }.call();
     }
 }

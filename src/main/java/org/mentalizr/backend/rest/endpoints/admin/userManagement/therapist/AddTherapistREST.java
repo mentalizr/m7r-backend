@@ -91,11 +91,6 @@ public class AddTherapistREST {
                 return therapistAddSO;
             }
 
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

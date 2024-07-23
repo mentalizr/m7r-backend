@@ -43,12 +43,6 @@ public class GetAllPatientStatusREST {
             protected PatientStatusCollectionSO workLoad() {
                 return PatientStatusDAO.fetchAll();
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

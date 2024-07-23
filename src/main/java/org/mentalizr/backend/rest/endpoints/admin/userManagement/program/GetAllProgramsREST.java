@@ -62,12 +62,6 @@ public class GetAllProgramsREST {
 
                 return programCollectionSO;
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }

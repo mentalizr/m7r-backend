@@ -50,12 +50,6 @@ public class DeletePolicyREST {
                 PolicyConsentDAO.delete(policyPK);
                 return null;
             }
-
-            @Override
-            protected void updateActivityStatus() {
-
-            }
-
         }.call();
 
     }
