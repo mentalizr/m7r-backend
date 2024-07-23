@@ -5,6 +5,7 @@ import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.bson.Document;
 import org.mentalizr.backend.accessControl.roles.Admin;
+import org.mentalizr.backend.exceptions.M7rIllegalServiceInputException;
 import org.mentalizr.backend.rest.endpoints.patient.ProgramContentREST;
 import org.mentalizr.backend.rest.endpoints.patient.formData.SaveFormDataREST;
 import org.mentalizr.backend.rest.service.Service;
@@ -52,8 +53,9 @@ public class StatisticActivityREST {
             }
 
             @Override
-            protected Object workLoad() throws DataSourceException {
-                List<String> programIds = getAllProgramIds();
+            protected Object workLoad() throws DataSourceException, M7rIllegalServiceInputException {
+//                List<String> programIds = getAllProgramIds();
+                List<String> programIds = obtainProgramIds(activityStatRequestSO);
                 ActivityStatisticCollectionSO activityStatisticCollectionSO = new ActivityStatisticCollectionSO();
 
                 for (String programId : programIds) {
@@ -67,9 +69,39 @@ public class StatisticActivityREST {
                 return activityStatisticCollectionSO;
             }
 
-            private List<String> getAllProgramIds() throws DataSourceException {
+//            private List<String> getAllProgramIds() throws DataSourceException {
+//                List<ProgramVO> programVOList = ProgramDAO.findAll();
+//                return programVOList.stream().map(ProgramVO::getId).toList();
+//            }
+
+            private List<String> obtainProgramIds(ActivityStatRequestSO activityStatRequestSO)
+                    throws DataSourceException, M7rIllegalServiceInputException {
+
                 List<ProgramVO> programVOList = ProgramDAO.findAll();
-                return programVOList.stream().map(ProgramVO::getId).toList();
+                List<String> allProgramIds = programVOList.stream()
+                        .map(ProgramVO::getId)
+                        .toList();
+
+                List<String> selectedProgramIds = new ArrayList<>();
+                if (activityStatRequestSO.isProgramsIncludeMode()) {
+                    for (String programId : activityStatRequestSO.getPrograms()) {
+                        if (allProgramIds.contains(programId)) {
+                            selectedProgramIds.add(programId);
+                        } else {
+                            throw new M7rIllegalServiceInputException("Program not found: [" + programId + "].");
+                        }
+                    }
+                } else {
+                    selectedProgramIds.addAll(allProgramIds);
+                    for (String programId : activityStatRequestSO.getPrograms()) {
+                        if (selectedProgramIds.contains(programId)) {
+                            selectedProgramIds.remove(programId);
+                        } else {
+                            throw new M7rIllegalServiceInputException("Program not found: [" + programId + "].");
+                        }
+                    }
+                }
+                return selectedProgramIds;
             }
 
             private ActivityRecordCollectionSO getActivityStatusMessageCollectionSO(String programId)
@@ -78,7 +110,9 @@ public class StatisticActivityREST {
                 List<PatientProgramVO> patientProgramVOs =
                         PatientProgramDAO.findByFk_program_id(programId);
                 List<String> patientProgramUserIds =
-                        patientProgramVOs.stream().map(PatientProgramVO::getUserId).toList();
+                        patientProgramVOs.stream()
+                                .map(PatientProgramVO::getUserId)
+                                .toList();
 
                 List<String> restIds = new ArrayList<>();
                 restIds.add(ProgramContentREST.SERVICE_ID);
