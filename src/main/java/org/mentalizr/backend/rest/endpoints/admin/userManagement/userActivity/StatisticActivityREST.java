@@ -12,10 +12,13 @@ import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityMessageConverter;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityMessageMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
-import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
+import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.ProgramDAO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
+import org.mentalizr.persistence.rdbms.barnacle.dao.ProjectDAO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.ProgramVO;
+import org.mentalizr.persistence.rdbms.barnacle.vo.ProjectVO;
+import org.mentalizr.persistence.rdbms.edao.PatientProgramEDAO;
+import org.mentalizr.persistence.rdbms.edao.RolePatientEDAO;
 import org.mentalizr.serviceObjects.requestObjects.ActivityStatRequestSO;
 import org.mentalizr.backend.utils.ActivityStatisticsResult;
 import org.mentalizr.serviceObjects.userManagement.*;
@@ -54,9 +57,11 @@ public class StatisticActivityREST {
 
             @Override
             protected Object workLoad() throws DataSourceException, M7rIllegalServiceInputException {
-//                List<String> programIds = getAllProgramIds();
                 List<String> programIds = obtainProgramIds(activityStatRequestSO);
+                List<String> projectLabels = obtainProjectLabels(activityStatRequestSO);
+
                 ActivityStatisticCollectionSO activityStatisticCollectionSO = new ActivityStatisticCollectionSO();
+                activityStatisticCollectionSO.setProjects(projectLabels);
 
                 for (String programId : programIds) {
                     ActivityRecordCollectionSO activityRecordCollectionSO =
@@ -68,11 +73,6 @@ public class StatisticActivityREST {
                 }
                 return activityStatisticCollectionSO;
             }
-
-//            private List<String> getAllProgramIds() throws DataSourceException {
-//                List<ProgramVO> programVOList = ProgramDAO.findAll();
-//                return programVOList.stream().map(ProgramVO::getId).toList();
-//            }
 
             private List<String> obtainProgramIds(ActivityStatRequestSO activityStatRequestSO)
                     throws DataSourceException, M7rIllegalServiceInputException {
@@ -107,25 +107,118 @@ public class StatisticActivityREST {
             private ActivityRecordCollectionSO getActivityStatusMessageCollectionSO(String programId)
                     throws DataSourceException {
 
-                List<PatientProgramVO> patientProgramVOs =
-                        PatientProgramDAO.findByFk_program_id(programId);
-                List<String> patientProgramUserIds =
-                        patientProgramVOs.stream()
-                                .map(PatientProgramVO::getUserId)
-                                .toList();
+//                List<PatientProgramVO> patientProgramVOs =
+//                        PatientProgramDAO.findByFk_program_id(programId);
+//                List<String> patientProgramUserIds =
+//                        patientProgramVOs.stream()
+//                                .map(PatientProgramVO::getUserId)
+//                                .toList();
 
-                List<String> restIds = new ArrayList<>();
+                Set<String> patientIds = obtainPatientIds(programId, activityStatRequestSO);
+
+                Set<String> restIds = new HashSet<>();
                 restIds.add(ProgramContentREST.SERVICE_ID);
                 restIds.add(SaveFormDataREST.SERVICE_ID);
 
                 List<Document> statisticData = ActivityMessageMongoHandler.fetchStatisticData(
-                        patientProgramUserIds,
+                        patientIds,
                         restIds,
                         activityStatRequestSO.getFromTimestamp(),
                         activityStatRequestSO.getUntilTimestamp());
 
                 return ActivityMessageConverter.convertDocumentListToCollection(statisticData);
             }
+
+            private List<String> obtainProjectLabels(ActivityStatRequestSO activityStatRequestSO)
+                    throws DataSourceException, M7rIllegalServiceInputException {
+
+                List<String> projectLabels = new ArrayList<>();
+                if (activityStatRequestSO.isProjectsIncludeMode()) {
+                    for (String projectId : activityStatRequestSO.getProjects()) {
+                        ProjectVO projectVO;
+                        try {
+                            projectVO = ProjectDAO.load(projectId);
+                        } catch (EntityNotFoundException e) {
+                            throw new M7rIllegalServiceInputException("Project [" + projectId + "] not found.");
+                        }
+                        projectLabels.add(projectVO.getLabel());
+                    }
+                } else if (activityStatRequestSO.getProjects().isEmpty()) {
+                    projectLabels.add("*");
+                } else {
+                    List<ProjectVO> projectVOList = ProjectDAO.findAll();
+                    List<String> projectIds = new ArrayList<>(projectVOList.stream()
+                            .map(ProjectVO::getId)
+                            .toList());
+                    for (String projectId : activityStatRequestSO.getProjects()) {
+                        projectIds.remove(projectId);
+                    }
+                    for (String projectId : projectIds) {
+                        ProjectVO projectVO = null;
+                        try {
+                            projectVO = ProjectDAO.load(projectId);
+                        } catch (EntityNotFoundException e) {
+                            throw new M7rIllegalServiceInputException("Project [" + projectId + "] not found.");
+                        }
+                        projectLabels.add(projectVO.getLabel());
+                    }
+                }
+                Collections.sort(projectLabels);
+                return projectLabels;
+            }
+
+            private Set<String> obtainPatientIds(String programId, ActivityStatRequestSO activityStatRequestSO)
+                    throws DataSourceException {
+
+                Set<String> patientIds = new HashSet<>();
+                if (activityStatRequestSO.isProjectsIncludeMode()) {
+                    for (String projectId : activityStatRequestSO.getProjects()) {
+                        List<String> patientIdsByProgramAndProject
+                                = RolePatientEDAO.findAllUserIdsForProgramAndProject(programId, projectId);
+                        patientIds.addAll(patientIdsByProgramAndProject);
+                    }
+                } else {
+                    List<String> allPatientIdsForProgram = PatientProgramEDAO.findUserIdsByFk_program_id(programId);
+                    patientIds.addAll(allPatientIdsForProgram);
+                    for (String projectId : activityStatRequestSO.getProjects()) {
+                        List<String> patientIdsByProjectAndProject
+                                = RolePatientEDAO.findAllUserIdsForProgramAndProject(programId, projectId);
+                        patientIdsByProjectAndProject.forEach(patientIds::remove);
+                    }
+                }
+
+                return patientIds;
+            }
+
+            private List<String> obtainProjectIds(ActivityStatRequestSO activityStatRequestSO) throws DataSourceException, M7rIllegalServiceInputException {
+
+                List<ProjectVO> projectVOList = ProjectDAO.findAll();
+                List<String> allProjectIds = projectVOList.stream()
+                        .map(ProjectVO::getId)
+                        .toList();
+
+                List<String> selectedProjectIds = new ArrayList<>();
+                if (activityStatRequestSO.isProjectsIncludeMode()) {
+                    for (String projectId : activityStatRequestSO.getProjects()) {
+                        if (allProjectIds.contains(projectId)) {
+                            selectedProjectIds.add(projectId);
+                        } else {
+                            throw new M7rIllegalServiceInputException("Project not found: [" + projectId + "].");
+                        }
+                    }
+                } else {
+                    selectedProjectIds.addAll(allProjectIds);
+                    for (String projectId : activityStatRequestSO.getProjects()) {
+                        if (allProjectIds.contains(projectId)) {
+                            selectedProjectIds.remove(projectId);
+                        } else {
+                            throw new M7rIllegalServiceInputException("Project not found: [" + projectId + "].");
+                        }
+                    }
+                }
+                return selectedProjectIds;
+            }
+
         }.call();
     }
 }

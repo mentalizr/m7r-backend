@@ -10,16 +10,16 @@ import java.util.stream.Collectors;
 public class ActivityStatisticsResult {
 
     private final String programId;
-    private final ActivityRecordCollectionSO messageCollectionSO;
+    private final ActivityRecordCollectionSO activityRecordCollectionSO;
     private final Set<String> activeUsers;
     private final double avgInteractions;
     private final int minInteractions;
     private final int maxInteractions;
     private final Map<String, Integer> userInteractions;
 
-    public ActivityStatisticsResult(String programId, ActivityRecordCollectionSO messageCollectionSO) {
+    public ActivityStatisticsResult(String programId, ActivityRecordCollectionSO activityRecordCollectionSO) {
         this.programId = programId;
-        this.messageCollectionSO = messageCollectionSO;
+        this.activityRecordCollectionSO = activityRecordCollectionSO;
         this.activeUsers = calcActiveUsers();
         this.userInteractions = calcUserInteractions();
         this.avgInteractions = calcAvgInteractions();
@@ -28,7 +28,7 @@ public class ActivityStatisticsResult {
     }
 
     private Set<String> calcActiveUsers() {
-        return this.messageCollectionSO.getCollection()
+        return this.activityRecordCollectionSO.getCollection()
                 .stream()
                 .map(ActivityRecordSO::getUserId)
                 .collect(Collectors.toSet());
@@ -37,17 +37,17 @@ public class ActivityStatisticsResult {
     private double calcAvgInteractions() {
         int activeUsers = this.activeUsers.size();
 
-        if (this.messageCollectionSO.getCollection().isEmpty()) {
+        if (this.activityRecordCollectionSO.getCollection().isEmpty()) {
             return 0;
         } else {
-            return (double) this.messageCollectionSO.getCollection().size() / (double) activeUsers;
+            return (double) this.activityRecordCollectionSO.getCollection().size() / (double) activeUsers;
         }
     }
 
     private Map<String, Integer> calcUserInteractions() {
         HashMap<String, Integer> userInteractions = new HashMap<>();
         for (String userId: this.activeUsers) {
-            int cInteractions = (int) this.messageCollectionSO.getCollection().stream()
+            int cInteractions = (int) this.activityRecordCollectionSO.getCollection().stream()
                     .filter(activityMessageSO -> Objects.equals(activityMessageSO.getUserId(), userId))
                     .count();
             userInteractions.put(userId, cInteractions);
@@ -58,7 +58,7 @@ public class ActivityStatisticsResult {
     private int calcMinInteractions() {
         int minInteractions = Integer.MAX_VALUE;
 
-        if (this.messageCollectionSO.getCollection().isEmpty()) {
+        if (this.activityRecordCollectionSO.getCollection().isEmpty()) {
             return 0;
         }
 
@@ -83,8 +83,8 @@ public class ActivityStatisticsResult {
         return  maxInteractions;
     }
 
-    public ActivityRecordCollectionSO getMessageCollectionSO() {
-        return this.messageCollectionSO;
+    public ActivityRecordCollectionSO getActivityRecordCollectionSO() {
+        return this.activityRecordCollectionSO;
     }
 
     public ProgramStatisticSO getProgramStatisticSO() {

@@ -94,7 +94,7 @@ public abstract  class Service {
         } catch (M7rIllegalServiceInputException e) {
             return handleIllegalServiceInput(e);
         } catch (RuntimeException e) {
-            logger.error("A RuntimeExceptioni occurred on executing method checkSecurityConstraints for service ["
+            logger.error("A RuntimeException occurred on executing method checkSecurityConstraints for service ["
                     + getServiceId() + "]: " + e.getMessage(), e);
             return ResponseFactory.internalServerError(e);
         }
