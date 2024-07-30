@@ -9,6 +9,7 @@ import org.mentalizr.backend.exceptions.M7rIllegalServiceInputException;
 import org.mentalizr.backend.rest.endpoints.patient.ProgramContentREST;
 import org.mentalizr.backend.rest.endpoints.patient.formData.SaveFormDataREST;
 import org.mentalizr.backend.rest.service.Service;
+import org.mentalizr.backend.utils.ActivityStatisticsResult;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityMessageConverter;
 import org.mentalizr.persistence.mongo.activityStatus.ActivityMessageMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
@@ -20,11 +21,15 @@ import org.mentalizr.persistence.rdbms.barnacle.vo.ProjectVO;
 import org.mentalizr.persistence.rdbms.edao.PatientProgramEDAO;
 import org.mentalizr.persistence.rdbms.edao.RolePatientEDAO;
 import org.mentalizr.serviceObjects.requestObjects.ActivityStatRequestSO;
-import org.mentalizr.backend.utils.ActivityStatisticsResult;
-import org.mentalizr.serviceObjects.userManagement.*;
+import org.mentalizr.serviceObjects.userManagement.ActivityRecordCollectionSO;
+import org.mentalizr.serviceObjects.userManagement.ActivityStatisticCollectionSO;
+import org.mentalizr.serviceObjects.userManagement.ProgramStatisticSO;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -107,13 +112,6 @@ public class StatisticActivityREST {
             private ActivityRecordCollectionSO getActivityStatusMessageCollectionSO(String programId)
                     throws DataSourceException {
 
-//                List<PatientProgramVO> patientProgramVOs =
-//                        PatientProgramDAO.findByFk_program_id(programId);
-//                List<String> patientProgramUserIds =
-//                        patientProgramVOs.stream()
-//                                .map(PatientProgramVO::getUserId)
-//                                .toList();
-
                 Set<String> patientIds = obtainPatientIds(programId, activityStatRequestSO);
 
                 Set<String> restIds = new HashSet<>();
@@ -187,38 +185,8 @@ public class StatisticActivityREST {
                         patientIdsByProjectAndProject.forEach(patientIds::remove);
                     }
                 }
-
                 return patientIds;
             }
-
-//            private List<String> obtainProjectIds(ActivityStatRequestSO activityStatRequestSO) throws DataSourceException, M7rIllegalServiceInputException {
-//
-//                List<ProjectVO> projectVOList = ProjectDAO.findAll();
-//                List<String> allProjectIds = projectVOList.stream()
-//                        .map(ProjectVO::getId)
-//                        .toList();
-//
-//                List<String> selectedProjectIds = new ArrayList<>();
-//                if (activityStatRequestSO.isProjectsIncludeMode()) {
-//                    for (String projectId : activityStatRequestSO.getProjects()) {
-//                        if (allProjectIds.contains(projectId)) {
-//                            selectedProjectIds.add(projectId);
-//                        } else {
-//                            throw new M7rIllegalServiceInputException("Project not found: [" + projectId + "].");
-//                        }
-//                    }
-//                } else {
-//                    selectedProjectIds.addAll(allProjectIds);
-//                    for (String projectId : activityStatRequestSO.getProjects()) {
-//                        if (allProjectIds.contains(projectId)) {
-//                            selectedProjectIds.remove(projectId);
-//                        } else {
-//                            throw new M7rIllegalServiceInputException("Project not found: [" + projectId + "].");
-//                        }
-//                    }
-//                }
-//                return selectedProjectIds;
-//            }
 
         }.call();
     }
