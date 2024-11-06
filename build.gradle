@@ -14,7 +14,7 @@ version '0.1-SNAPSHOT'
 
 repositories {
     mavenCentral()
-    maven { url "https://jitpack.io" }
+    maven { url "https://raw.githubusercontent.com/arthurpicht/mvn-repo/main/releases"}
 }
 
 dependencies {
@@ -30,7 +30,7 @@ dependencies {
 
     implementation libs.ap.utils.core
     implementation libs.ap.utils.io
-    implementation libs.ap.webAccessControl
+    implementation libs.ap.web.access.control
 
     implementation libs.jersey.server
     implementation libs.jersey.hk2

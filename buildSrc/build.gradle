@@ -3,11 +3,11 @@ plugins {
 }
 
 repositories {
-    maven { url "https://jitpack.io" }
+    maven { url "https://raw.githubusercontent.com/arthurpicht/mvn-repo/main/releases"}
     mavenCentral()
 }
 
 dependencies {
-    implementation 'com.github.arthurpicht:utils-io:0.0.17'
-    implementation 'com.github.arthurpicht:utils-core:1.13.0'
+    implementation libs.ap.utils.core
+    implementation libs.ap.utils.io
 }

@@ -50,7 +50,7 @@ public class PatientMessagesSOCreator {
 
         PatientMessageExerciseSO patientMessageExerciseSO = new PatientMessageExerciseSO();
         patientMessageExerciseSO.setMessageId(UUID.randomUUID().toString());
-        patientMessageExerciseSO.setTimestamp(ISODates.toEpochMilli(isoDateExercise));
+        patientMessageExerciseSO.setTimestamp(ISODates.toEpochMillis(isoDateExercise));
         patientMessageExerciseSO.setSenderId(this.userIdPatient);
         patientMessageExerciseSO.setExerciseId(formDataSO.getContentId());
         patientMessageExerciseSO.setDate(ISODates.asGermanDateTime(isoDateExercise));
@@ -65,7 +65,7 @@ public class PatientMessagesSOCreator {
 
             PatientMessageFeedbackSO patientMessageFeedbackSO = new PatientMessageFeedbackSO();
             patientMessageFeedbackSO.setMessageId(UUID.randomUUID().toString());
-            patientMessageFeedbackSO.setTimestamp(ISODates.toEpochMilli(isoDateFeedback));
+            patientMessageFeedbackSO.setTimestamp(ISODates.toEpochMillis(isoDateFeedback));
             patientMessageFeedbackSO.setSenderId(this.userIdTherapist);
             patientMessageFeedbackSO.setExerciseId(formDataSO.getContentId());
             patientMessageFeedbackSO.setDate(ISODates.asGermanDateTime(isoDateFeedback));
