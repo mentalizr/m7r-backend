@@ -1,6 +1,6 @@
 package org.mentalizr.backend.rest.endpoints;
 
-import de.arthurpicht.utils.io.InputStreams;
+import de.arthurpicht.utils.io.stream.InputStreams;
 import de.arthurpicht.webAccessControl.auth.AccessControl;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;

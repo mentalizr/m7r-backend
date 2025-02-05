@@ -62,6 +62,8 @@ public class StatisticActivityREST {
 
             @Override
             protected Object workLoad() throws DataSourceException, M7rIllegalServiceInputException {
+                logger.debug("ActivityStatRequestSO: {}", activityStatRequestSO);
+
                 List<String> programIds = obtainProgramIds(activityStatRequestSO);
                 List<String> projectLabels = obtainProjectLabels(activityStatRequestSO);
 
