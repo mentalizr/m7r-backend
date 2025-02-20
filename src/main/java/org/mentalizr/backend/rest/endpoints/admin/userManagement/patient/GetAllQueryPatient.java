@@ -41,7 +41,7 @@ public class GetAllQueryPatient {
 
             @Override
             protected String getServiceId() {
-                return "admin/user/patient/query/getAll";
+                return SERVICE_ID;
             }
 
             @Override
@@ -62,7 +62,8 @@ public class GetAllQueryPatient {
                 return patientRestoreCollectionSO;
             }
 
-            private PatientRestoreSO createPatientRestoreSO(UserLoginCompositeVO userLoginCompositeVO) throws DataSourceException, EntityNotFoundException {
+            private PatientRestoreSO createPatientRestoreSO(UserLoginCompositeVO userLoginCompositeVO)
+                    throws DataSourceException, EntityNotFoundException {
                 String userId = userLoginCompositeVO.getUserId();
 
                 RolePatientVO rolePatientVO = RolePatientDAO.load(userId);
