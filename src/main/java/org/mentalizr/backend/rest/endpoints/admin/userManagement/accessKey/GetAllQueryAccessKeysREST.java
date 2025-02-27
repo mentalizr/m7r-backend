@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
 
 @Path("v1")
 public class GetAllQueryAccessKeysREST {
-    private static final String SERVICE_ID = "admin/user/patient/query/getAll";
+    private static final String SERVICE_ID = "admin/user/accessKey/query/getAll";
 
     @POST
     @Path(SERVICE_ID)

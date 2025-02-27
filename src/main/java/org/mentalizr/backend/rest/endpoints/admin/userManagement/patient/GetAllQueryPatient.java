@@ -24,6 +24,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 
 @Path("v1")
@@ -51,7 +52,19 @@ public class GetAllQueryPatient {
 
             @Override
             protected Object workLoad() throws DataSourceException, EntityNotFoundException {
-                List<UserLoginCompositeVO> userLoginCompositeVOs = UserLoginCompositeDAO.findAllPatients();
+                List<UserLoginCompositeVO> userLoginCompositeVOs = new ArrayList<>();
+                if (!userListQuerySO.getProgramName().isEmpty() && userListQuerySO.getProjectName().isEmpty()) {
+                    userLoginCompositeVOs =
+                            UserLoginCompositeDAO.findAllPatientsByProgramId(userListQuerySO.getProgramName());
+                } else if (userListQuerySO.getProgramName().isEmpty() || !userListQuerySO.getProjectName().isEmpty()) {
+                    userLoginCompositeVOs =
+                            UserLoginCompositeDAO.findAllPatientsByProjectId(userListQuerySO.getProjectName());
+                } else if (!userListQuerySO.getProjectName().isEmpty() && !userListQuerySO.getProgramName().isEmpty()) {
+                    userLoginCompositeVOs =
+                            UserLoginCompositeDAO.findAllPatientsByProgramIdAndProjectId(
+                                    userListQuerySO.getProgramName(),
+                                    userListQuerySO.getProjectName());
+                }
                 PatientRestoreCollectionSO patientRestoreCollectionSO = new PatientRestoreCollectionSO();
 
                 for (UserLoginCompositeVO userLoginCompositeVO : userLoginCompositeVOs) {
