@@ -5,7 +5,6 @@ import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.adapter.PatientRestoreSOAdapter;
-import org.mentalizr.backend.exceptions.*;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
@@ -28,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Path("v1")
-public class GetAllQueryPatient {
+public class GetAllQueryPatientREST {
     private static final String SERVICE_ID = "admin/user/patient/query/getAll";
 
     @POST

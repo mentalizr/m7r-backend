@@ -12,7 +12,9 @@ import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceExce
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
 import org.mentalizr.persistence.rdbms.barnacle.dao.RolePatientDAO;
+import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserAccessKeyCompositeDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserLoginCompositeDAO;
+import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
@@ -41,7 +43,8 @@ public class GetAllQueryAccessKeysREST {
     @Path(SERVICE_ID)
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAll(UserListQuerySO userListQuerySO, @Context HttpServletRequest httpServletRequest) {
+    public Response getAll(UserListQuerySO userListQuerySO,
+                           @Context HttpServletRequest httpServletRequest) {
 
         return new Service(httpServletRequest){
 
@@ -57,37 +60,37 @@ public class GetAllQueryAccessKeysREST {
 
             @Override
             protected AccessKeyCollectionSO workLoad() throws DataSourceException, EntityNotFoundException {
-                List<UserLoginCompositeVO> userLoginCompositeVOs = new ArrayList<>();
+                List<UserAccessKeyCompositeVO> userAccessKeyCompositeDAOs = new ArrayList<>();
                 if (!userListQuerySO.getProgramName().isEmpty() && userListQuerySO.getProjectName().isEmpty()) {
-                    userLoginCompositeVOs =
-                            UserLoginCompositeDAO.findAllPatientsByProgramId(userListQuerySO.getProgramName());
+                    userAccessKeyCompositeDAOs =
+                            UserAccessKeyCompositeDAO.findAllByProgram(userListQuerySO.getProgramName());
                 } else if (userListQuerySO.getProgramName().isEmpty() || !userListQuerySO.getProjectName().isEmpty()) {
-                    userLoginCompositeVOs =
-                            UserLoginCompositeDAO.findAllPatientsByProjectId(userListQuerySO.getProjectName());
+                    userAccessKeyCompositeDAOs =
+                            UserAccessKeyCompositeDAO.findAllByProjectId(userListQuerySO.getProjectName());
                 } else if (!userListQuerySO.getProjectName().isEmpty() && !userListQuerySO.getProgramName().isEmpty()) {
-                    userLoginCompositeVOs =
-                            UserLoginCompositeDAO.findAllPatientsByProgramIdAndProjectId(
+                    userAccessKeyCompositeDAOs =
+                            UserAccessKeyCompositeDAO.findAllByProgramAndProject(
                                     userListQuerySO.getProgramName(),
                                     userListQuerySO.getProjectName());
                 }
                 AccessKeyCollectionSO accessKeyCollectionSO = new AccessKeyCollectionSO();
 
-                for (UserLoginCompositeVO userLoginCompositeVO : userLoginCompositeVOs) {
-                    AccessKeyRestoreSO accessKeyRestoreSO = createAccessKeyRestoreSO(userLoginCompositeVO);
+                for (UserAccessKeyCompositeVO userAccessKeyCompositeVO : userAccessKeyCompositeDAOs) {
+                    AccessKeyRestoreSO accessKeyRestoreSO = createAccessKeyRestoreSO(userAccessKeyCompositeVO);
                     accessKeyCollectionSO.getCollection().add(accessKeyRestoreSO);
                 }
 
                 return accessKeyCollectionSO;
             }
 
-            private AccessKeyRestoreSO createAccessKeyRestoreSO(UserLoginCompositeVO userLoginCompositeVO)
+            private AccessKeyRestoreSO createAccessKeyRestoreSO(UserAccessKeyCompositeVO userAccessKeyCompositeVO)
                     throws DataSourceException, EntityNotFoundException {
-                String userId = userLoginCompositeVO.getUserId();
+                String userId = userAccessKeyCompositeVO.getUserId();
 
                 RolePatientVO rolePatientVO = RolePatientDAO.load(userId);
                 PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userId);
 
-                AccessKeyRestoreSO accessKeyRestoreSO = AccessKeyRestoreSOAdapter.from(userLoginCompositeVO);
+                AccessKeyRestoreSO accessKeyRestoreSO = AccessKeyRestoreSOAdapter.from(userAccessKeyCompositeVO);
 
                 accessKeyRestoreSO.setProgramId(patientProgramVO.getProgramId());
                 accessKeyRestoreSO.setTherapistId(rolePatientVO.getTherapistId());

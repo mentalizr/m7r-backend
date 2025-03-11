@@ -1,17 +1,17 @@
 package org.mentalizr.backend.adapter;
 
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
-import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
+import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserVO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyRestoreSO;
 
 public class AccessKeyRestoreSOAdapter {
 
-    public static AccessKeyRestoreSO from(UserLoginCompositeVO userLoginCompositeVO)
+    public static AccessKeyRestoreSO from(UserAccessKeyCompositeVO userAccessKeyCompositeVO)
             throws DataSourceException {
         AccessKeyRestoreSO accessKeyRestoreSO = new AccessKeyRestoreSO();
 
-        UserVO userVO = userLoginCompositeVO.getUserVO();
+        UserVO userVO = userAccessKeyCompositeVO.getUserVO();
         accessKeyRestoreSO.setUserId(userVO.getId());
         accessKeyRestoreSO.setActive(userVO.getActive());
         accessKeyRestoreSO.setCreation(userVO.getCreation());
