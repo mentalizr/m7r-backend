@@ -1,5 +1,6 @@
 package org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey;
 
+import org.mentalizr.backend.adapter.AccessKeyRestoreSOAdapter;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserAccessKeyPatientCompositeDAO;
@@ -20,7 +21,8 @@ public class PatientAccessKeyGet {
         AccessKeyCollectionSO accessKeyCollectionSO = new AccessKeyCollectionSO();
 
         for (UserAccessKeyPatientCompositeVO userAccessKeyPatientCompositeVO : userAccessKeyPatientCompositeVOs) {
-            AccessKeyRestoreSO accessKeyRestoreSO = create(userAccessKeyPatientCompositeVO);
+            AccessKeyRestoreSO accessKeyRestoreSO =
+                    AccessKeyRestoreSOAdapter.from(userAccessKeyPatientCompositeVO);
             accessKeyCollectionSO.getCollection().add(accessKeyRestoreSO);
         }
 
@@ -29,21 +31,7 @@ public class PatientAccessKeyGet {
 
     public static AccessKeyRestoreSO get(String accessKey) throws DataSourceException, EntityNotFoundException {
         UserAccessKeyPatientCompositeVO userAccessKeyPatientCompositeVO = UserAccessKeyPatientCompositeDAO.findByAccessKey(accessKey);
-        return create(userAccessKeyPatientCompositeVO);
-    }
-
-    private static AccessKeyRestoreSO create(UserAccessKeyPatientCompositeVO userAccessKeyPatientCompositeVO) {
-        AccessKeyRestoreSO accessKeyRestoreSO = new AccessKeyRestoreSO();
-        accessKeyRestoreSO.setUserId(userAccessKeyPatientCompositeVO.getUserId());
-        accessKeyRestoreSO.setActive(userAccessKeyPatientCompositeVO.isActive());
-        accessKeyRestoreSO.setCreation(userAccessKeyPatientCompositeVO.getCreation());
-        accessKeyRestoreSO.setFirstActive(userAccessKeyPatientCompositeVO.getFirstActive());
-        accessKeyRestoreSO.setLastActive(userAccessKeyPatientCompositeVO.getLastActive());
-        accessKeyRestoreSO.setAccessKey(userAccessKeyPatientCompositeVO.getAccessKey());
-        accessKeyRestoreSO.setProgramId(userAccessKeyPatientCompositeVO.getProgramId());
-        accessKeyRestoreSO.setTherapistId(userAccessKeyPatientCompositeVO.getTherapistId());
-        accessKeyRestoreSO.setProjectId(userAccessKeyPatientCompositeVO.getProjectId());
-        return accessKeyRestoreSO;
+        return AccessKeyRestoreSOAdapter.from(userAccessKeyPatientCompositeVO);
     }
 
 }

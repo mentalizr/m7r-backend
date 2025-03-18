@@ -14,9 +14,11 @@ import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
 import org.mentalizr.persistence.rdbms.barnacle.dao.RolePatientDAO;
 import org.mentalizr.persistence.rdbms.barnacle.dao.UserAccessKeyDAO;
 import org.mentalizr.persistence.rdbms.barnacle.dao.UserDAO;
+import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyPatientCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserAccessKeyVO;
 import org.mentalizr.persistence.rdbms.edao.PolicyConsentEDAO;
+import org.mentalizr.persistence.rdbms.edao.UserAccessKeyEDAO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyDeleteSO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyGetExpiredUnusedSO;
 
@@ -28,6 +30,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Path("v1")
 public class GetAccessKeysExpiredUnusedREST {
@@ -43,7 +46,7 @@ public class GetAccessKeysExpiredUnusedREST {
             @Context HttpServletRequest httpServletRequest
     ) {
 
-        return new Service(httpServletRequest, accessKeyGetExpiredUnusedSO){
+        return new Service(httpServletRequest, accessKeyGetExpiredUnusedSO) {
 
             @Override
             protected String getServiceId() {
@@ -62,6 +65,12 @@ public class GetAccessKeysExpiredUnusedREST {
 
             @Override
             protected Object workLoad() throws DataSourceException, EntityNotFoundException {
+
+                List<UserAccessKeyPatientCompositeVO> userAccessKeyPatientCompositeVOs
+                        = UserAccessKeyEDAO.getUnusedAccessKeysOlderThan(accessKeyGetExpiredUnusedSO.getCreatedBefore());
+
+
+
 //                String accessKey = accessKeyGetExpiredUnusedSO.getAccessKey();
 //                UserAccessKeyVO userAccessKeyVO = UserAccessKeyDAO.findByUk_accessKey(accessKey);
 //                PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userAccessKeyVO.getUserId());
