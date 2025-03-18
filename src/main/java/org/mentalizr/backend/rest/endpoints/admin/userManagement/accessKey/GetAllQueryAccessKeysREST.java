@@ -26,9 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Path("v1")
 public class GetAllQueryAccessKeysREST {
@@ -55,23 +53,8 @@ public class GetAllQueryAccessKeysREST {
 
             @Override
             protected AccessKeyCollectionSO workLoad() throws DataSourceException, EntityNotFoundException {
-                List<UserAccessKeyCompositeVO> userAccessKeyCompositeDAOs = new ArrayList<>();
-                logger.info("Reached Service: " + SERVICE_ID + " workload.");
-                if (!userListQuerySO.getProgramName().isEmpty() && userListQuerySO.getProjectName().isEmpty()) {
-                    logger.info("I landed in Program");
-                    userAccessKeyCompositeDAOs =
-                            UserAccessKeyCompositeDAO.findAllByProgram(userListQuerySO.getProgramName());
-                } else if (userListQuerySO.getProgramName().isEmpty() && !userListQuerySO.getProjectName().isEmpty()) {
-                    logger.info("I landed in Project");
-                    userAccessKeyCompositeDAOs =
-                            UserAccessKeyCompositeDAO.findAllByProjectId(userListQuerySO.getProjectName());
-                } else if (!userListQuerySO.getProjectName().isEmpty() && !userListQuerySO.getProgramName().isEmpty()) {
-                    logger.info("I landed in Program and Project");
-                    userAccessKeyCompositeDAOs =
-                            UserAccessKeyCompositeDAO.findAllByProgramAndProject(
-                                    userListQuerySO.getProgramName(),
-                                    userListQuerySO.getProjectName());
-                }
+                List<UserAccessKeyCompositeVO> userAccessKeyCompositeDAOs =
+                        UserAccessKeyCompositeDAO.findAllBy(userListQuerySO);
                 AccessKeyCollectionSO accessKeyCollectionSO = new AccessKeyCollectionSO();
 
                 for (UserAccessKeyCompositeVO userAccessKeyCompositeVO : userAccessKeyCompositeDAOs) {
