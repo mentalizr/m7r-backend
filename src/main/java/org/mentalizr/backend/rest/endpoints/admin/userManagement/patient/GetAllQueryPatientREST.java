@@ -19,11 +19,13 @@ import org.mentalizr.serviceObjects.userManagement.PatientRestoreCollectionSO;
 import org.mentalizr.serviceObjects.userManagement.PatientRestoreSO;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.List;
 
 @Path("v1")
@@ -51,19 +53,9 @@ public class GetAllQueryPatientREST {
 
             @Override
             protected Object workLoad() throws DataSourceException, EntityNotFoundException {
-                List<UserLoginCompositeVO> userLoginCompositeVOs = new ArrayList<>();
-                if (!userListQuerySO.getProgramName().isEmpty() && userListQuerySO.getProjectName().isEmpty()) {
-                    userLoginCompositeVOs =
-                            UserLoginCompositeDAO.findAllPatientsByProgramId(userListQuerySO.getProgramName());
-                } else if (userListQuerySO.getProgramName().isEmpty() || !userListQuerySO.getProjectName().isEmpty()) {
-                    userLoginCompositeVOs =
-                            UserLoginCompositeDAO.findAllPatientsByProjectId(userListQuerySO.getProjectName());
-                } else if (!userListQuerySO.getProjectName().isEmpty() && !userListQuerySO.getProgramName().isEmpty()) {
-                    userLoginCompositeVOs =
-                            UserLoginCompositeDAO.findAllPatientsByProgramIdAndProjectId(
-                                    userListQuerySO.getProgramName(),
-                                    userListQuerySO.getProjectName());
-                }
+                List<UserLoginCompositeVO> userLoginCompositeVOs =
+                        UserLoginCompositeDAO.findAllPatientsBy(userListQuerySO);
+
                 PatientRestoreCollectionSO patientRestoreCollectionSO = new PatientRestoreCollectionSO();
 
                 for (UserLoginCompositeVO userLoginCompositeVO : userLoginCompositeVOs) {

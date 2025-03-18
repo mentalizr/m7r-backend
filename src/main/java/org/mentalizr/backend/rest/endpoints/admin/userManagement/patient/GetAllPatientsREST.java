@@ -61,7 +61,8 @@ public class GetAllPatientsREST {
                 return patientRestoreCollectionSO;
             }
 
-            private PatientRestoreSO createPatientRestoreSO(UserLoginCompositeVO userLoginCompositeVO) throws DataSourceException, EntityNotFoundException {
+            private PatientRestoreSO createPatientRestoreSO(UserLoginCompositeVO userLoginCompositeVO)
+                    throws DataSourceException, EntityNotFoundException {
                 String userId = userLoginCompositeVO.getUserId();
 
                 RolePatientVO rolePatientVO = RolePatientDAO.load(userId);
