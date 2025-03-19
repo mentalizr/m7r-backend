@@ -4,6 +4,7 @@ import de.arthurpicht.webAccessControl.auth.AccessControl;
 import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
+import org.mentalizr.backend.adapter.AccessKeyRestoreSOAdapter;
 import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.service.ServicePreconditionFailedException;
@@ -19,8 +20,10 @@ import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.UserAccessKeyVO;
 import org.mentalizr.persistence.rdbms.edao.PolicyConsentEDAO;
 import org.mentalizr.persistence.rdbms.edao.UserAccessKeyEDAO;
+import org.mentalizr.serviceObjects.userManagement.AccessKeyCollectionSO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyDeleteSO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyGetExpiredUnusedSO;
+import org.mentalizr.serviceObjects.userManagement.AccessKeyRestoreSO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -64,29 +67,23 @@ public class GetAccessKeysExpiredUnusedREST {
 //            }
 
             @Override
-            protected Object workLoad() throws DataSourceException, EntityNotFoundException {
+            protected AccessKeyCollectionSO workLoad() throws DataSourceException, EntityNotFoundException {
 
                 List<UserAccessKeyPatientCompositeVO> userAccessKeyPatientCompositeVOs
                         = UserAccessKeyEDAO.getUnusedAccessKeysOlderThan(accessKeyGetExpiredUnusedSO.getCreatedBefore());
 
+                List<AccessKeyRestoreSO> accessKeyRestoreSOs
+                        = AccessKeyRestoreSOAdapter.from(userAccessKeyPatientCompositeVOs);
 
+                AccessKeyCollectionSO accessKeyCollectionSO = new AccessKeyCollectionSO();
+                accessKeyCollectionSO.setCollection(accessKeyRestoreSOs);
 
-//                String accessKey = accessKeyGetExpiredUnusedSO.getAccessKey();
-//                UserAccessKeyVO userAccessKeyVO = UserAccessKeyDAO.findByUk_accessKey(accessKey);
-//                PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userAccessKeyVO.getUserId());
-//
-//                PatientProgramDAO.delete(patientProgramVO.getPK());
-//                RolePatientDAO.delete(userAccessKeyVO.getUserId());
-//                UserAccessKeyDAO.delete(userAccessKeyVO.getUserId());
-//                PolicyConsentEDAO.deleteAllForUser(userAccessKeyVO.getUserId());
-//                UserDAO.delete(userAccessKeyVO.getUserId());
-
-                return null;
+                return accessKeyCollectionSO;
             }
 
-            private AccessKeyDeleteSO getAccessKeyDeleteSO() {
-                return (AccessKeyDeleteSO) this.serviceObjectRequest;
-            }
+//            private AccessKeyDeleteSO getAccessKeyDeleteSO() {
+//                return (AccessKeyDeleteSO) this.serviceObjectRequest;
+//            }
 
         }.call();
 

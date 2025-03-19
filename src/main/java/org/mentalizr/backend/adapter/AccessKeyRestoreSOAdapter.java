@@ -3,6 +3,10 @@ package org.mentalizr.backend.adapter;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyPatientCompositeVO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyRestoreSO;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class AccessKeyRestoreSOAdapter {
 
     public static AccessKeyRestoreSO from(UserAccessKeyPatientCompositeVO userAccessKeyPatientCompositeVO) {
@@ -17,6 +21,12 @@ public class AccessKeyRestoreSOAdapter {
         accessKeyRestoreSO.setTherapistId(userAccessKeyPatientCompositeVO.getTherapistId());
         accessKeyRestoreSO.setProjectId(userAccessKeyPatientCompositeVO.getProjectId());
         return accessKeyRestoreSO;
+    }
+
+    public static List<AccessKeyRestoreSO> from(List<UserAccessKeyPatientCompositeVO> userAccessKeyPatientCompositeVOs) {
+        return userAccessKeyPatientCompositeVOs.stream()
+                .map(AccessKeyRestoreSOAdapter::from)
+                .collect(Collectors.toList());
     }
 
 }
