@@ -11,7 +11,9 @@ import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFound
 import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
 import org.mentalizr.persistence.rdbms.barnacle.dao.RolePatientDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserLoginCompositeDAO;
+import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserLoginPatientCompositeDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
+import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginPatientCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
 import org.mentalizr.serviceObjects.requestObjects.UserListQuerySO;
@@ -26,6 +28,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 
 @Path("v1")
@@ -52,35 +55,14 @@ public class GetAllQueryPatientREST {
             }
 
             @Override
-            protected Object workLoad() throws DataSourceException, EntityNotFoundException {
-                List<UserLoginCompositeVO> userLoginCompositeVOs =
-                        UserLoginCompositeDAO.findAllPatientsBy(userListQuerySO);
+            protected Object workLoad() throws DataSourceException {
+                List<UserLoginPatientCompositeVO> userLoginPatientCompositeVOS =
+                        UserLoginPatientCompositeDAO.findAllUserBy(userListQuerySO);
 
+                List<PatientRestoreSO> patientRestoreSOS = PatientRestoreSOAdapter.from(userLoginPatientCompositeVOS);
                 PatientRestoreCollectionSO patientRestoreCollectionSO = new PatientRestoreCollectionSO();
-
-                for (UserLoginCompositeVO userLoginCompositeVO : userLoginCompositeVOs) {
-                    PatientRestoreSO patientRestoreSO = createPatientRestoreSO(userLoginCompositeVO);
-                    patientRestoreCollectionSO.getCollection().add(patientRestoreSO);
-                }
-
+                patientRestoreCollectionSO.setCollection(patientRestoreSOS);
                 return patientRestoreCollectionSO;
-            }
-
-            private PatientRestoreSO createPatientRestoreSO(UserLoginCompositeVO userLoginCompositeVO)
-                    throws DataSourceException, EntityNotFoundException {
-                String userId = userLoginCompositeVO.getUserId();
-
-                RolePatientVO rolePatientVO = RolePatientDAO.load(userId);
-                PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userId);
-
-                PatientRestoreSO patientRestoreSO = PatientRestoreSOAdapter.from(userLoginCompositeVO);
-
-                patientRestoreSO.setProgramId(patientProgramVO.getProgramId());
-                patientRestoreSO.setBlocking(patientProgramVO.getBlocking());
-                patientRestoreSO.setTherapistId(rolePatientVO.getTherapistId());
-                patientRestoreSO.setProjectId(rolePatientVO.getProjectId());
-
-                return patientRestoreSO;
             }
         }.call();
     }
