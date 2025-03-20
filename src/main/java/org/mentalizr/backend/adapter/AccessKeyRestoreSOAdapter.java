@@ -3,7 +3,6 @@ package org.mentalizr.backend.adapter;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyPatientCompositeVO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyRestoreSO;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
