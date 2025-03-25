@@ -53,7 +53,7 @@ public class GetAccessKeysExpiredUnusedREST {
             protected AccessKeyCollectionSO workLoad() throws DataSourceException {
 
                 List<UserAccessKeyPatientCompositeVO> userAccessKeyPatientCompositeVOs
-                        = UserAccessKeyEDAO.getUnusedAccessKeysOlderThan(accessKeyGetExpiredUnusedSO.getCreatedBefore());
+                        = UserAccessKeyEDAO.getExpired(accessKeyGetExpiredUnusedSO.getCreatedBefore());
 
                 List<AccessKeyRestoreSO> accessKeyRestoreSOs
                         = AccessKeyRestoreSOAdapter.from(userAccessKeyPatientCompositeVOs);

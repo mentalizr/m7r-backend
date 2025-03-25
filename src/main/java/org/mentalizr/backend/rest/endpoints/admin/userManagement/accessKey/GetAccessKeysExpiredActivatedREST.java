@@ -11,7 +11,6 @@ import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyPatientCo
 import org.mentalizr.persistence.rdbms.edao.UserAccessKeyEDAO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyCollectionSO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyGetExpiredActivatedSO;
-import org.mentalizr.serviceObjects.userManagement.AccessKeyGetExpiredUnusedSO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyRestoreSO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,7 +53,7 @@ public class GetAccessKeysExpiredActivatedREST {
             protected AccessKeyCollectionSO workLoad() throws DataSourceException {
 
                 List<UserAccessKeyPatientCompositeVO> userAccessKeyPatientCompositeVOs
-                        = UserAccessKeyEDAO.getActivatedLastUsedBefore(accessKeyGetExpiredActivatedSO.getLastUsedBefore());
+                        = UserAccessKeyEDAO.getLastUsedBefore(accessKeyGetExpiredActivatedSO.getLastUsedBefore());
 
                 List<AccessKeyRestoreSO> accessKeyRestoreSOs
                         = AccessKeyRestoreSOAdapter.from(userAccessKeyPatientCompositeVOs);
