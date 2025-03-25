@@ -4,7 +4,7 @@ import org.mentalizr.backend.exceptions.M7rInfrastructureException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.UserAccessKeyDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserAccessKeyPatientCompositeDAO;
-import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyPatientCompositeVO;
+import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginAccessKeyCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.*;
 import org.mentalizr.persistence.rdbms.utils.PasswordGenerator;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyCollectionSO;
@@ -124,9 +124,9 @@ public class PatientAccessKeyCreate {
 
         PatientProgramVO patientProgramVO = new PatientProgramVO(new PatientProgramPK(userId, programId));
 
-        UserAccessKeyPatientCompositeVO userAccessKeyPatientCompositeVO =
-                new UserAccessKeyPatientCompositeVO(userVO, userAccessKeyVO, rolePatientVO, patientProgramVO);
-        UserAccessKeyPatientCompositeDAO.create(userAccessKeyPatientCompositeVO);
+        UserLoginAccessKeyCompositeVO userLoginAccessKeyCompositeVO =
+                new UserLoginAccessKeyCompositeVO(userVO, userAccessKeyVO, rolePatientVO, patientProgramVO);
+        UserAccessKeyPatientCompositeDAO.create(userLoginAccessKeyCompositeVO);
     }
 
 }

@@ -45,6 +45,7 @@ public class PatientRestoreSOAdapter {
         patientRestoreSO.setCreation(userLoginPatientCompositeVO.getCreation());
         patientRestoreSO.setFirstActive(userLoginPatientCompositeVO.getFirstActive());
         patientRestoreSO.setLastActive(userLoginPatientCompositeVO.getLastActive());
+        patientRestoreSO.setProjectId(userLoginPatientCompositeVO.getProjectId());
 
         patientRestoreSO.setUsername(userLoginPatientCompositeVO.getUsername());
         patientRestoreSO.setPasswordHash(userLoginPatientCompositeVO.getPasswordHash());

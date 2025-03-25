@@ -8,12 +8,9 @@ import org.mentalizr.backend.adapter.AccessKeyRestoreSOAdapter;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
-import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
-import org.mentalizr.persistence.rdbms.barnacle.dao.RolePatientDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserAccessKeyCompositeDAO;
-import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyCompositeVO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
-import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
+import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserLoginAccessKeyCompositeDAO;
+import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginAccessKeyCompositeVO;
 import org.mentalizr.serviceObjects.requestObjects.UserListQuerySO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyCollectionSO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyRestoreSO;
@@ -53,33 +50,16 @@ public class GetAllQueryAccessKeysREST {
 
             @Override
             protected AccessKeyCollectionSO workLoad() throws DataSourceException, EntityNotFoundException {
-                List<UserAccessKeyCompositeVO> userAccessKeyCompositeDAOs =
-                        UserAccessKeyCompositeDAO.findAllBy(userListQuerySO);
-                AccessKeyCollectionSO accessKeyCollectionSO = new AccessKeyCollectionSO();
+                List<UserLoginAccessKeyCompositeVO> userAccessKeyCompositeVOs =
+                        UserLoginAccessKeyCompositeDAO.findAllUserBy(userListQuerySO);
 
-                for (UserAccessKeyCompositeVO userAccessKeyCompositeVO : userAccessKeyCompositeDAOs) {
-                    AccessKeyRestoreSO accessKeyRestoreSO = createAccessKeyRestoreSO(userAccessKeyCompositeVO);
-                    accessKeyCollectionSO.getCollection().add(accessKeyRestoreSO);
-                }
+                List<AccessKeyRestoreSO> accessKeyRestoreSOS = AccessKeyRestoreSOAdapter.from(userAccessKeyCompositeVOs);
+                AccessKeyCollectionSO accessKeyCollectionSO = new AccessKeyCollectionSO();
+                accessKeyCollectionSO.setCollection(accessKeyRestoreSOS);
 
                 return accessKeyCollectionSO;
             }
 
-            private AccessKeyRestoreSO createAccessKeyRestoreSO(UserAccessKeyCompositeVO userAccessKeyCompositeVO)
-                    throws DataSourceException, EntityNotFoundException {
-                String userId = userAccessKeyCompositeVO.getUserId();
-
-                RolePatientVO rolePatientVO = RolePatientDAO.load(userId);
-                PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userId);
-
-                AccessKeyRestoreSO accessKeyRestoreSO = AccessKeyRestoreSOAdapter.from(userAccessKeyCompositeVO);
-
-                accessKeyRestoreSO.setProgramId(patientProgramVO.getProgramId());
-                accessKeyRestoreSO.setTherapistId(rolePatientVO.getTherapistId());
-                accessKeyRestoreSO.setProjectId(rolePatientVO.getProjectId());
-
-                return accessKeyRestoreSO;
-            }
         }.call();
     }
 }
