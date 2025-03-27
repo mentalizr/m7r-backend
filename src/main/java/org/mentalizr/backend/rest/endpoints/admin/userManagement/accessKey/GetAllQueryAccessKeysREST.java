@@ -8,7 +8,6 @@ import org.mentalizr.backend.adapter.AccessKeyRestoreSOAdapter;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
-import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserAccessKeyCompositeDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserLoginAccessKeyCompositeDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginAccessKeyCompositeVO;
 import org.mentalizr.serviceObjects.requestObjects.UserListQuerySO;
