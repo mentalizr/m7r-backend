@@ -34,4 +34,9 @@ public class PatientAccessKeyGet {
         return AccessKeyRestoreSOAdapter.from(userAccessKeyPatientCompositeVO);
     }
 
+    public static AccessKeyRestoreSO getById(String id) throws DataSourceException, EntityNotFoundException {
+        UserAccessKeyPatientCompositeVO userAccessKeyPatientCompositeVO = UserAccessKeyPatientCompositeDAO.load(id);
+        return AccessKeyRestoreSOAdapter.from(userAccessKeyPatientCompositeVO);
+    }
+
 }
