@@ -164,7 +164,7 @@ public abstract  class Service {
     }
 
     private Response handleIllegalServiceInput(M7rIllegalServiceInputException e) {
-        logger.error("A " + e.getClass().getSimpleName() + " occurred on executing method workload for service ["
+        logger.error("A " + e.getClass().getSimpleName() + " occurred on violating securtiy contraints for service ["
                 + getServiceId() + "]: " + e.getMessage());
         return ResponseFactory.badRequestError(e);
     }
