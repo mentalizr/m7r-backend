@@ -10,8 +10,6 @@ import org.mentalizr.persistence.rdbms.utils.PasswordGenerator;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyCollectionSO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyCreateSO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyRestoreSO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.List;
@@ -19,8 +17,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public class PatientAccessKeyCreate {
-
-    private static final Logger logger = LoggerFactory.getLogger(PatientAccessKeyCreate.class);
 
     private static final int ACCESS_KEY_LENGTH = 12;
 

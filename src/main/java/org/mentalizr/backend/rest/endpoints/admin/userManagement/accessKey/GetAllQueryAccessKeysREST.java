@@ -48,7 +48,7 @@ public class GetAllQueryAccessKeysREST {
             }
 
             @Override
-            protected AccessKeyCollectionSO workLoad() throws DataSourceException, EntityNotFoundException {
+            protected AccessKeyCollectionSO workLoad() throws DataSourceException {
                 List<UserLoginAccessKeyCompositeVO> userAccessKeyCompositeVOs =
                         UserLoginAccessKeyCompositeDAO.findAllUserBy(userListQuerySO);
 

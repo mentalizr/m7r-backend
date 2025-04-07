@@ -20,8 +20,6 @@ public class AccessKeyRestoreSOAdapter {
         accessKeyRestoreSO.setFirstActive(userVO.getFirstActive());
         accessKeyRestoreSO.setLastActive(userVO.getLastActive());
 
-
-
         return accessKeyRestoreSO;
     }
 
@@ -43,12 +41,10 @@ public class AccessKeyRestoreSOAdapter {
 
     public static List<AccessKeyRestoreSO> from(List<UserLoginAccessKeyCompositeVO> userLoginAccessKeyCompositeVOs) {
         List<AccessKeyRestoreSO> accessKeyRestoreSOs = new ArrayList<>();
-
         for (UserLoginAccessKeyCompositeVO userLoginAccessKeyCompositeVO : userLoginAccessKeyCompositeVOs) {
             AccessKeyRestoreSO accessKeyRestoreSO = from(userLoginAccessKeyCompositeVO);
             accessKeyRestoreSOs.add(accessKeyRestoreSO);
         }
-
         return accessKeyRestoreSOs;
     }
 }

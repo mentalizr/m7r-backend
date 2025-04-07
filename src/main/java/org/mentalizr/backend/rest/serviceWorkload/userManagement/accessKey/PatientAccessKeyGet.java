@@ -6,14 +6,10 @@ import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserAccessKeyPatientC
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginAccessKeyCompositeVO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyCollectionSO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyRestoreSO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class PatientAccessKeyGet {
-
-    private static final Logger logger = LoggerFactory.getLogger(PatientAccessKeyGet.class);
 
     public static AccessKeyCollectionSO getAll() throws DataSourceException, EntityNotFoundException {
         List<UserLoginAccessKeyCompositeVO> userLoginAccessKeyCompositeVOS = UserAccessKeyPatientCompositeDAO.findAll();
