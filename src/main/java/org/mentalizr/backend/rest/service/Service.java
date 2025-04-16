@@ -119,7 +119,7 @@ public abstract  class Service {
             responseSO = workLoad();
         } catch (RESTException | ContentManagerException | IOException | M7rInfrastructureException |
                  DataSourceException | RuntimeException e) {
-            logger.error(getWorkloadExceptionMessage(e));
+            logger.error(getWorkloadExceptionMessage(e), e);
             return ResponseFactory.internalServerError(e);
         } catch (EntityNotFoundException | M7rUnknownEntityException e) {
             logger.error(getWorkloadExceptionMessage(e));

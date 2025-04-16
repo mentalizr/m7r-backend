@@ -1,22 +1,28 @@
 package org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey;
 
+import org.mentalizr.backend.adapter.AccessKeyRestoreSOAdapter;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserAccessKeyPatientCompositeDAO;
-import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginAccessKeyCompositeVO;
+import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserAccessKeyPatientCompositeVO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyCollectionSO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyRestoreSO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class PatientAccessKeyGet {
 
+    private static final Logger logger = LoggerFactory.getLogger(PatientAccessKeyGet.class);
+
     public static AccessKeyCollectionSO getAll() throws DataSourceException, EntityNotFoundException {
-        List<UserLoginAccessKeyCompositeVO> userLoginAccessKeyCompositeVOS = UserAccessKeyPatientCompositeDAO.findAll();
+        List<UserAccessKeyPatientCompositeVO> userAccessKeyPatientCompositeVOs = UserAccessKeyPatientCompositeDAO.findAll();
         AccessKeyCollectionSO accessKeyCollectionSO = new AccessKeyCollectionSO();
 
-        for (UserLoginAccessKeyCompositeVO userLoginAccessKeyCompositeVO : userLoginAccessKeyCompositeVOS) {
-            AccessKeyRestoreSO accessKeyRestoreSO = create(userLoginAccessKeyCompositeVO);
+        for (UserAccessKeyPatientCompositeVO userAccessKeyPatientCompositeVO : userAccessKeyPatientCompositeVOs) {
+            AccessKeyRestoreSO accessKeyRestoreSO =
+                    AccessKeyRestoreSOAdapter.from(userAccessKeyPatientCompositeVO);
             accessKeyCollectionSO.getCollection().add(accessKeyRestoreSO);
         }
 
@@ -24,22 +30,13 @@ public class PatientAccessKeyGet {
     }
 
     public static AccessKeyRestoreSO get(String accessKey) throws DataSourceException, EntityNotFoundException {
-        UserLoginAccessKeyCompositeVO userLoginAccessKeyCompositeVO = UserAccessKeyPatientCompositeDAO.findByAccessKey(accessKey);
-        return create(userLoginAccessKeyCompositeVO);
+        UserAccessKeyPatientCompositeVO userAccessKeyPatientCompositeVO = UserAccessKeyPatientCompositeDAO.findByAccessKey(accessKey);
+        return AccessKeyRestoreSOAdapter.from(userAccessKeyPatientCompositeVO);
     }
 
-    private static AccessKeyRestoreSO create(UserLoginAccessKeyCompositeVO userLoginAccessKeyCompositeVO) {
-        AccessKeyRestoreSO accessKeyRestoreSO = new AccessKeyRestoreSO();
-        accessKeyRestoreSO.setUserId(userLoginAccessKeyCompositeVO.getUserId());
-        accessKeyRestoreSO.setActive(userLoginAccessKeyCompositeVO.isActive());
-        accessKeyRestoreSO.setCreation(userLoginAccessKeyCompositeVO.getCreation());
-        accessKeyRestoreSO.setFirstActive(userLoginAccessKeyCompositeVO.getFirstActive());
-        accessKeyRestoreSO.setLastActive(userLoginAccessKeyCompositeVO.getLastActive());
-        accessKeyRestoreSO.setAccessKey(userLoginAccessKeyCompositeVO.getAccessKey());
-        accessKeyRestoreSO.setProgramId(userLoginAccessKeyCompositeVO.getProgramId());
-        accessKeyRestoreSO.setTherapistId(userLoginAccessKeyCompositeVO.getTherapistId());
-        accessKeyRestoreSO.setProjectId(userLoginAccessKeyCompositeVO.getProjectId());
-        return accessKeyRestoreSO;
+    public static AccessKeyRestoreSO getById(String id) throws DataSourceException, EntityNotFoundException {
+        UserAccessKeyPatientCompositeVO userAccessKeyPatientCompositeVO = UserAccessKeyPatientCompositeDAO.load(id);
+        return AccessKeyRestoreSOAdapter.from(userAccessKeyPatientCompositeVO);
     }
 
 }

@@ -21,7 +21,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("v1")
-public class GetAccessKeysREST {
+public class GetAccessKeyREST {
 
     private static final String SERVICE_ID = "admin/user/accessKey/get";
 
