@@ -61,6 +61,7 @@ public class PatientRestoreSOAdapter {
 
         patientRestoreSO.setProgramId(userLoginPatientCompositeVO.getProgramId());
         patientRestoreSO.setBlocking(userLoginPatientCompositeVO.getBlocking());
+        patientRestoreSO.setTherapistId(userLoginPatientCompositeVO.getTherapistId());
 
         return patientRestoreSO;
     }
