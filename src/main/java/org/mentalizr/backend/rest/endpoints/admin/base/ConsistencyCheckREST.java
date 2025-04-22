@@ -6,7 +6,6 @@ import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.serviceWorkload.base.ConsistencyCheck;
-import org.mentalizr.persistence.mongo.formData.FormDataMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.serviceObjects.base.ConsistencyCheckResultSO;
 import org.slf4j.Logger;
@@ -15,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -47,7 +45,7 @@ public class ConsistencyCheckREST {
 
             @Override
             protected ConsistencyCheckResultSO workLoad() throws DataSourceException {
-                log.info("Checking consistency");
+                log.info("consistency check requested");
                 ConsistencyCheck consistencyCheck = new ConsistencyCheck();
                 return consistencyCheck.getConsistencyCheckResultSO();
             }

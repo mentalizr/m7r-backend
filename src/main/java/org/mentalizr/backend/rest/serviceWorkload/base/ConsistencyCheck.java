@@ -2,8 +2,7 @@ package org.mentalizr.backend.rest.serviceWorkload.base;
 
 import de.arthurpicht.utils.core.strings.Strings;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
-import org.mentalizr.persistence.rdbms.barnacle.dao.*;
-import org.mentalizr.persistence.rdbms.barnacle.vo.*;
+import org.mentalizr.persistence.rdbms.edao.*;
 import org.mentalizr.serviceObjects.base.ConsistencyCheckResultSO;
 
 import java.util.ArrayList;
@@ -11,21 +10,23 @@ import java.util.List;
 
 public class ConsistencyCheck {
 
-    private final List<UserVO> userVOList;
-    private final List<UserLoginVO> userLoginVOList;
-    private final List<UserAccessKeyVO> userAccessKeyVOList;
-    private final List<RoleAdminVO> roleAdminVOList;
-    private final List<RolePatientVO> rolePatientVOList;
-    private final List<RoleTherapistVO> roleTherapistVOList;
+    private final List<String> userIdList;
+    private final List<String> userLoginList;
+    private final List<String> userAccessKeyList;
+    private final List<String> roleAdminList;
+    private final List<String> rolePatientList;
+    private final List<String> roleTherapistList;
+
     private final ConsistencyCheckResultSO consistencyCheckResultSO;
 
     public ConsistencyCheck() throws DataSourceException {
-        this.userVOList = UserDAO.findAll();
-        this.userLoginVOList = UserLoginDAO.findAll();
-        this.userAccessKeyVOList = UserAccessKeyDAO.findAll();
-        this.roleAdminVOList = RoleAdminDAO.findAll();
-        this.rolePatientVOList = RolePatientDAO.findAll();
-        this.roleTherapistVOList = RoleTherapistDAO.findAll();
+        this.userIdList = UserEDAO.findAllIds();
+        this.userLoginList = UserLoginEDAO.findAllIds();
+        this.userAccessKeyList = UserAccessKeyEDAO.findAllIds();
+        this.roleAdminList = RoleAdminEDAO.findAllIds();
+        this.rolePatientList = RolePatientEDAO.findAllIds();
+        this.roleTherapistList = RoleTherapistEDAO.findAllIds();
+
         this.consistencyCheckResultSO = new ConsistencyCheckResultSO();
 
         performChecks();
@@ -39,9 +40,7 @@ public class ConsistencyCheck {
     private void performChecks() {
         this.consistencyCheckResultSO.setConsistent(true);
 
-        for (UserVO userVO : this.userVOList) {
-            String userId = userVO.getId();
-
+        for (String userId : this.userIdList) {
             checkRoleConsistency(userId);
             checkPatientConsistency(userId);
             checkPatientConsistencyReverse(userId);
@@ -49,12 +48,12 @@ public class ConsistencyCheck {
     }
 
     private void setCounts() {
-        this.consistencyCheckResultSO.setNrOfUsers(this.userVOList.size());
-        this.consistencyCheckResultSO.setNrOfRolePatients(this.rolePatientVOList.size());
-        this.consistencyCheckResultSO.setNrOfUserLogin(this.userLoginVOList.size());
-        this.consistencyCheckResultSO.setNrOfUserAccessKeys(this.userAccessKeyVOList.size());
-        this.consistencyCheckResultSO.setNrOfRoleAdmins(this.roleAdminVOList.size());
-        this.consistencyCheckResultSO.setNrOfRoleTherapists(this.roleTherapistVOList.size());
+        this.consistencyCheckResultSO.setNrOfUsers(this.userIdList.size());
+        this.consistencyCheckResultSO.setNrOfRolePatients(this.rolePatientList.size());
+        this.consistencyCheckResultSO.setNrOfUserLogin(this.userLoginList.size());
+        this.consistencyCheckResultSO.setNrOfUserAccessKeys(this.userAccessKeyList.size());
+        this.consistencyCheckResultSO.setNrOfRoleAdmins(this.roleAdminList.size());
+        this.consistencyCheckResultSO.setNrOfRoleTherapists(this.roleTherapistList.size());
     }
 
     private void checkRoleConsistency(String userId) {
@@ -118,41 +117,39 @@ public class ConsistencyCheck {
     private void checkPatientConsistencyReverse(String userId) {
         boolean userLogin = isUserLogin(userId);
         boolean userAccessKey = isAccessKey(userId);
+        boolean isRoleAdmin = isRoleAdmin(userId);
+        boolean isRolePatient = isRolePatient(userId);
+        boolean isRoleTherapist = isRoleTherapist(userId);
 
-        if (userLogin || userAccessKey) {
-            // TODO userLogin kann auch admin oder therapist sein ...
-            if (!isRolePatient(userId)) {
-                this.consistencyCheckResultSO.setConsistent(false);
+        if (userAccessKey && !isRolePatient) {
+            this.consistencyCheckResultSO.setConsistent(false);
+            this.consistencyCheckResultSO.addMessage("[" + userId + "] is accessKey but has no role patient.");
+        }
 
-                String userType = userLogin ? "UserLogin" : "AccessKey";
-                this.consistencyCheckResultSO.addMessage("[" + userId + "] is " + userType + " but has no role patient.");
-            }
+        if (userLogin && !isRoleAdmin && !isRolePatient && !isRoleTherapist) {
+            this.consistencyCheckResultSO.setConsistent(false);
+            this.consistencyCheckResultSO.addMessage("[" + userId + "] is UserLogin but has no role.");
         }
     }
 
     private boolean isUserLogin(String userId) {
-        return this.userLoginVOList.stream()
-                .anyMatch(userLoginVO -> userLoginVO.getUserId().equals(userId));
+        return this.userLoginList.contains(userId);
     }
 
     private boolean isAccessKey(String userId) {
-        return this.userAccessKeyVOList.stream()
-                .anyMatch(userAccessKeyVO -> userAccessKeyVO.getUserId().equals(userId));
+        return this.userAccessKeyList.contains(userId);
     }
 
     private boolean isRoleAdmin(String userId) {
-        return this.roleAdminVOList.stream()
-                .anyMatch(roleAdminVO -> roleAdminVO.getUserId().equals(userId));
+        return this.roleAdminList.contains(userId);
     }
 
     private boolean isRolePatient(String userId) {
-        return this.rolePatientVOList.stream()
-                .anyMatch(rolePatientVO -> rolePatientVO.getUserId().equals(userId));
+        return this.rolePatientList.contains(userId);
     }
 
     private boolean isRoleTherapist(String userId) {
-        return this.roleTherapistVOList.stream()
-                .anyMatch(roleTherapistVO -> roleTherapistVO.getUserId().equals(userId));
+        return this.roleTherapistList.contains(userId);
     }
 
     private static boolean isExactlyOneTrue(boolean... values) {
