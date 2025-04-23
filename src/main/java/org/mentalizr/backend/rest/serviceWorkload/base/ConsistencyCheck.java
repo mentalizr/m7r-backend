@@ -1,5 +1,6 @@
 package org.mentalizr.backend.rest.serviceWorkload.base;
 
+import de.arthurpicht.utils.core.math.Booleans;
 import de.arthurpicht.utils.core.strings.Strings;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.edao.*;
@@ -41,9 +42,9 @@ public class ConsistencyCheck {
         this.consistencyCheckResultSO.setConsistent(true);
 
         for (String userId : this.userIdList) {
-            checkRoleConsistency(userId);
-            checkPatientConsistency(userId);
-            checkPatientConsistencyReverse(userId);
+            checkForExactlyOneLoginType(userId);
+            checkForExactlyOneRole(userId);
+            checkForAccessKeyMatchingPatientRole(userId);
         }
     }
 
@@ -56,12 +57,36 @@ public class ConsistencyCheck {
         this.consistencyCheckResultSO.setNrOfRoleTherapists(this.roleTherapistList.size());
     }
 
-    private void checkRoleConsistency(String userId) {
+    private void checkForExactlyOneLoginType(String userId) {
+        boolean userLogin = isUserLogin(userId);
+        boolean userAccessKey = isAccessKey(userId);
+
+        if (Booleans.isExactlyOneTrue(
+                userLogin,
+                userAccessKey
+        )) return;
+
+        this.consistencyCheckResultSO.setConsistent(false);
+
+        if (Booleans.isAllFalse(
+                userLogin,
+                userAccessKey
+        )) {
+            this.consistencyCheckResultSO.addMessage(
+                    "[" + userId + "] is neither UserLogin nor AccessKey.");
+        } else {
+            this.consistencyCheckResultSO.addMessage(
+                    "[" + userId + "] is both UserLogin and AccessKey."
+            );
+        }
+    }
+
+    private void checkForExactlyOneRole(String userId) {
         boolean rolePatient = isRolePatient(userId);
         boolean roleAdmin = isRoleAdmin(userId);
         boolean roleTherapist = isRoleTherapist(userId);
 
-        if (isExactlyOneTrue(
+        if (Booleans.isExactlyOneTrue(
                 rolePatient,
                 roleAdmin,
                 roleTherapist
@@ -69,7 +94,7 @@ public class ConsistencyCheck {
 
         this.consistencyCheckResultSO.setConsistent(false);
 
-        if (isAllFalse(
+        if (Booleans.isAllFalse(
                 rolePatient,
                 roleAdmin,
                 roleTherapist
@@ -86,36 +111,7 @@ public class ConsistencyCheck {
         }
     }
 
-    private void checkPatientConsistency(String userId) {
-        if (!isRolePatient(userId)) return;
-
-        boolean userLogin = isUserLogin(userId);
-        boolean userAccessKey = isAccessKey(userId);
-
-        if (isExactlyOneTrue(
-                userLogin,
-                userAccessKey
-        )) return;
-
-        this.consistencyCheckResultSO.setConsistent(false);
-
-        if (isAllFalse(
-                userLogin,
-                userAccessKey
-        )) {
-            this.consistencyCheckResultSO.addMessage("[" + userId + "] is in role [Patient] but in nor UserLogin nor AccessKey.");
-        } else {
-            List<String> patientType = new ArrayList<>();
-            if (userLogin) patientType.add("UserLogin");
-            if (userAccessKey) patientType.add("AccessKey");
-
-            this.consistencyCheckResultSO.addMessage("[" + userId + "] has multiple patient types: "
-                    + Strings.listing(patientType, ",", "", "", "[", "]"));
-        }
-    }
-
-    private void checkPatientConsistencyReverse(String userId) {
-        boolean userLogin = isUserLogin(userId);
+    private void checkForAccessKeyMatchingPatientRole(String userId) {
         boolean userAccessKey = isAccessKey(userId);
         boolean isRoleAdmin = isRoleAdmin(userId);
         boolean isRolePatient = isRolePatient(userId);
@@ -123,12 +119,9 @@ public class ConsistencyCheck {
 
         if (userAccessKey && !isRolePatient) {
             this.consistencyCheckResultSO.setConsistent(false);
-            this.consistencyCheckResultSO.addMessage("[" + userId + "] is accessKey but has no role patient.");
-        }
-
-        if (userLogin && !isRoleAdmin && !isRolePatient && !isRoleTherapist) {
-            this.consistencyCheckResultSO.setConsistent(false);
-            this.consistencyCheckResultSO.addMessage("[" + userId + "] is UserLogin but has no role.");
+            this.consistencyCheckResultSO.addMessage(
+                    "[" + userId + "] is accessKey but has no role patient but " + (isRoleAdmin ? "admin" : "")
+                            + (isRoleTherapist ? "Therapist" : "") + ".");
         }
     }
 
@@ -150,24 +143,6 @@ public class ConsistencyCheck {
 
     private boolean isRoleTherapist(String userId) {
         return this.roleTherapistList.contains(userId);
-    }
-
-    private static boolean isExactlyOneTrue(boolean... values) {
-        int count = 0;
-        for (boolean value : values) {
-            if (value) {
-                count++;
-                if (count > 1) return false;
-            }
-        }
-        return count == 1;
-    }
-
-    private static boolean isAllFalse(boolean... values) {
-        for (boolean value : values) {
-            if (value) return false;
-        }
-        return true;
     }
 
 }
