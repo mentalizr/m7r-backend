@@ -7,14 +7,17 @@ import org.mentalizr.backend.config.instance.InstanceConfigurationFactory;
 import org.mentalizr.backend.htmlChunks.HtmlChunkCache;
 import org.mentalizr.backend.htmlChunks.reader.ProductionHtmlChunkReader;
 import org.mentalizr.commons.paths.container.TomcatContainerContentDir;
+import org.mentalizr.commons.paths.container.TomcatContainerContentTestDir;
 import org.mentalizr.commons.paths.host.hostDir.M7rInstanceConfigFile;
 import org.mentalizr.contentManager.ContentManager;
+import org.mentalizr.contentManager.ProgramRootDirectories;
 import org.mentalizr.contentManager.exceptions.ContentManagerException;
 import org.mentalizr.persistence.mongo.PersistenceMongoContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
+import java.io.IOException;
 import java.nio.file.Path;
 
 public class ApplicationContext {
@@ -65,16 +68,34 @@ public class ApplicationContext {
         M7rInstanceConfigFile m7rInstanceConfigFile = new M7rInstanceConfigFile();
         if (!m7rInstanceConfigFile.exists())
             throw new InitializationException(
-                "Config file [" + m7rInstanceConfigFile.getFileName() + "] not found. " +
-                        "[" + m7rInstanceConfigFile.toAbsolutePathString() + "].");
+                    "Config file [" + m7rInstanceConfigFile.getFileName() + "] not found. " +
+                            "[" + m7rInstanceConfigFile.toAbsolutePathString() + "].");
         return InstanceConfigurationFactory.createProjectConfigurationByPath(m7rInstanceConfigFile.asPath());
     }
 
     private static ContentManager initContentManager() {
+        ProgramRootDirectories programRootDirectories = new ProgramRootDirectories();
+
         Path contentRoot = new TomcatContainerContentDir().asPath();
+        addContentRoot(programRootDirectories, contentRoot);
+
+        TomcatContainerContentTestDir contentTestDir = new TomcatContainerContentTestDir();
+        if (contentTestDir.exists()) {
+            addContentRoot(programRootDirectories, contentTestDir.asPath());
+        }
+
         try {
-            return ContentManager.getInstanceForContentRoot(contentRoot);
+            return new ContentManager(programRootDirectories.getProgramRootDirectories());
         } catch (ContentManagerException e) {
+            throw new InitializationException("Initialization of ContentManager failed. Cause: " + e.getMessage(), e);
+        }
+
+    }
+
+    private static void addContentRoot(ProgramRootDirectories programRootDirectories, Path contentRoot) {
+        try {
+            programRootDirectories.addContentRoot(contentRoot);
+        } catch (IOException e) {
             throw new InitializationException("Initialization of ContentManager failed. Cause: " + e.getMessage(), e);
         }
     }
