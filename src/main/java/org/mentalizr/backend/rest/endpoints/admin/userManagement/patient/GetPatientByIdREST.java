@@ -27,6 +27,7 @@ import javax.ws.rs.core.Response;
 @Path("v1")
 public class GetPatientByIdREST {
 
+    // TODO CR: SERVICE_ID identisch mit GetPatientREST
     private static final String SERVICE_ID = "admin/user/patient/get/";
 
     @POST
@@ -51,11 +52,13 @@ public class GetPatientByIdREST {
 
             @Override
             protected PatientRestoreSO workLoad() throws DataSourceException, EntityNotFoundException {
+                // TODO CR: Vergl. GetAccessKeyByIdREST
                 String userId = userGetByIdSO.getId();
                 UserLoginCompositeVO userLoginCompositeVO = UserLoginCompositeDAO.findByUK_userid(userId);
                 RolePatientVO rolePatientVO = RolePatientDAO.load(userId);
                 PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userId);
 
+                // TODO CR: ???
                 PatientRestoreSO patientRestoreSO = new PatientRestoreSOAdapter().from(userLoginCompositeVO);
 
                 patientRestoreSO.setProgramId(patientProgramVO.getProgramId());
