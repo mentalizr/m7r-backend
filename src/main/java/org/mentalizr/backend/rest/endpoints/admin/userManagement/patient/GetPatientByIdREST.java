@@ -58,8 +58,7 @@ public class GetPatientByIdREST {
                 RolePatientVO rolePatientVO = RolePatientDAO.load(userId);
                 PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userId);
 
-                // TODO CR: ???
-                PatientRestoreSO patientRestoreSO = new PatientRestoreSOAdapter().from(userLoginCompositeVO);
+                PatientRestoreSO patientRestoreSO = PatientRestoreSOAdapter.from(userLoginCompositeVO);
 
                 patientRestoreSO.setProgramId(patientProgramVO.getProgramId());
                 patientRestoreSO.setBlocking(patientProgramVO.getBlocking());
