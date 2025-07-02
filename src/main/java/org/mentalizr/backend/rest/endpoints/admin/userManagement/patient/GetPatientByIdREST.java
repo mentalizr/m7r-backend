@@ -12,7 +12,6 @@ import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
 import org.mentalizr.persistence.rdbms.barnacle.dao.RolePatientDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.dao.UserLoginCompositeDAO;
 import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginCompositeVO;
-import org.mentalizr.persistence.rdbms.barnacle.manual.vo.UserLoginPatientCompositeVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.PatientProgramVO;
 import org.mentalizr.persistence.rdbms.barnacle.vo.RolePatientVO;
 import org.mentalizr.serviceObjects.userManagement.PatientRestoreSO;
@@ -28,7 +27,7 @@ import javax.ws.rs.core.Response;
 public class GetPatientByIdREST {
 
     // TODO CR: SERVICE_ID identisch mit GetPatientREST
-    private static final String SERVICE_ID = "admin/user/patient/get/";
+    private static final String SERVICE_ID = "admin/user/patient/getById";
 
     @POST
     @Path(SERVICE_ID)
