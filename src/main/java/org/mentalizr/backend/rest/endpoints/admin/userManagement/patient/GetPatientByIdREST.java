@@ -50,9 +50,8 @@ public class GetPatientByIdREST {
 
             @Override
             protected PatientRestoreSO workLoad() throws DataSourceException, EntityNotFoundException {
-                // TODO CR: Vergl. GetAccessKeyByIdREST
                 String userId = userGetByIdSO.getId();
-                UserLoginCompositeVO userLoginCompositeVO = UserLoginCompositeDAO.findByUK_userid(userId);
+                UserLoginCompositeVO userLoginCompositeVO = UserLoginCompositeDAO.load(userId);
                 RolePatientVO rolePatientVO = RolePatientDAO.load(userId);
                 PatientProgramVO patientProgramVO = PatientProgramDAO.findByUk_user_id(userId);
 
