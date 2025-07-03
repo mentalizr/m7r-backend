@@ -26,7 +26,6 @@ import javax.ws.rs.core.Response;
 @Path("v1")
 public class GetPatientByIdREST {
 
-    // TODO CR: SERVICE_ID identisch mit GetPatientREST
     private static final String SERVICE_ID = "admin/user/patient/getById";
 
     @POST
