@@ -2,12 +2,16 @@ package org.mentalizr.backend.rest.serviceWorkload.base;
 
 import de.arthurpicht.utils.core.math.Booleans;
 import de.arthurpicht.utils.core.strings.Strings;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityMessageMongoHandler;
+import org.mentalizr.persistence.mongo.formData.FormDataMongoHandler;
+import org.mentalizr.persistence.mongo.patientStatus.PatientStatusMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.edao.*;
 import org.mentalizr.serviceObjects.base.ConsistencyCheckResultSO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class ConsistencyCheck {
 
@@ -17,6 +21,9 @@ public class ConsistencyCheck {
     private final List<String> roleAdminList;
     private final List<String> rolePatientList;
     private final List<String> roleTherapistList;
+    private final Set<String> distinctActivityList;
+    private final Set<String> distinctFormDataList;
+    private final Set<String> distinctPatientStatusList;
 
     private final ConsistencyCheckResultSO consistencyCheckResultSO;
 
@@ -27,10 +34,15 @@ public class ConsistencyCheck {
         this.roleAdminList = RoleAdminEDAO.findAllIds();
         this.rolePatientList = RolePatientEDAO.findAllIds();
         this.roleTherapistList = RoleTherapistEDAO.findAllIds();
+        this.distinctActivityList = ActivityMessageMongoHandler.getDistinctUserIds();
+        this.distinctFormDataList = FormDataMongoHandler.getDistinctUserIds();
+        this.distinctPatientStatusList = PatientStatusMongoHandler.getDistinctUserIds();
 
         this.consistencyCheckResultSO = new ConsistencyCheckResultSO();
 
+        this.consistencyCheckResultSO.setConsistent(true);
         performChecks();
+        performChecksMongo();
         setCounts();
     }
 
@@ -39,13 +51,51 @@ public class ConsistencyCheck {
     }
 
     private void performChecks() {
-        this.consistencyCheckResultSO.setConsistent(true);
-
         for (String userId : this.userIdList) {
             checkForExactlyOneLoginType(userId);
             checkForExactlyOneRole(userId);
             checkForAccessKeyMatchingPatientRole(userId);
         }
+    }
+
+    private void performChecksMongo() {
+
+        for (String userId : this.distinctActivityList) {
+            if (!userIdList.contains(userId)) {
+                this.consistencyCheckResultSO.setConsistent(false);
+                this.consistencyCheckResultSO.addMessage(
+                        "Found orphaned activity record related to non existing user [" + userId + "]."
+                );
+            }
+        }
+
+        for (String userId : this.distinctFormDataList) {
+            if (!userIdList.contains(userId)) {
+                this.consistencyCheckResultSO.setConsistent(false);
+                this.consistencyCheckResultSO.addMessage(
+                        "Found orphaned form data document related to non existing user [" + userId + "]."
+                );
+            }
+        }
+
+        for (String userId : this.distinctPatientStatusList) {
+            if (!userIdList.contains(userId)) {
+                this.consistencyCheckResultSO.setConsistent(false);
+                this.consistencyCheckResultSO.addMessage(
+                        "Found orphaned patient status document related to non existing user [" + userId + "]."
+                );
+            }
+        }
+
+        Set<String> patientStatusListDuplicates = PatientStatusMongoHandler.getDuplicates();
+        if (!patientStatusListDuplicates.isEmpty()) {
+            this.consistencyCheckResultSO.setConsistent(false);
+            for (String patientId : patientStatusListDuplicates) {
+                this.consistencyCheckResultSO.addMessage(
+                        "Found duplicate patient status documents for user [" + patientId + "].");
+            }
+        }
+
     }
 
     private void setCounts() {
@@ -55,6 +105,12 @@ public class ConsistencyCheck {
         this.consistencyCheckResultSO.setNrOfUserAccessKeys(this.userAccessKeyList.size());
         this.consistencyCheckResultSO.setNrOfRoleAdmins(this.roleAdminList.size());
         this.consistencyCheckResultSO.setNrOfRoleTherapists(this.roleTherapistList.size());
+        this.consistencyCheckResultSO.setNrOfUsersWithActivityRecords(this.distinctActivityList.size());
+        this.consistencyCheckResultSO.setNrOfUsersWithFormDataDocuments(this.distinctFormDataList.size());
+        this.consistencyCheckResultSO.setNrOfUsersWithPatientStatusDocuments(this.distinctPatientStatusList.size());
+        this.consistencyCheckResultSO.setNrOfActivityRecords(ActivityMessageMongoHandler.getNrOfDocuments());
+        this.consistencyCheckResultSO.setNrOfFormDataDocuments(FormDataMongoHandler.getNrOfDocuments());
+        this.consistencyCheckResultSO.setNrOfPatientStatusDocuments(PatientStatusMongoHandler.getNrOfDocuments());
     }
 
     private void checkForExactlyOneLoginType(String userId) {

@@ -5,6 +5,9 @@ import de.arthurpicht.webAccessControl.auth.Authorization;
 import de.arthurpicht.webAccessControl.auth.UnauthorizedException;
 import org.mentalizr.backend.accessControl.roles.Admin;
 import org.mentalizr.backend.rest.service.Service;
+import org.mentalizr.persistence.mongo.activityStatus.ActivityMessageMongoHandler;
+import org.mentalizr.persistence.mongo.formData.FormDataMongoHandler;
+import org.mentalizr.persistence.mongo.patientStatus.PatientStatusMongoHandler;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
 import org.mentalizr.persistence.rdbms.barnacle.dao.PatientProgramDAO;
@@ -57,6 +60,10 @@ public class DeletePatientREST {
                 UserLoginDAO.delete(userLoginVO.getUserId());
                 PolicyConsentEDAO.deleteAllForUser(userLoginVO.getUserId());
                 UserDAO.delete(userLoginVO.getUserId());
+
+                PatientStatusMongoHandler.delete(userLoginVO.getUserId());
+                FormDataMongoHandler.clean(userLoginVO.getUserId());
+                ActivityMessageMongoHandler.removeActivities(userLoginVO.getUserId());
 
                 return null;
             }
