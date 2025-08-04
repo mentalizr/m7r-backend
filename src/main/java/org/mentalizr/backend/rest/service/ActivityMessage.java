@@ -6,15 +6,13 @@ import org.mentalizr.persistence.mongo.activityStatus.ActivityDAO;
 public class ActivityMessage {
 
     public static void write(String serviceId, Authorization authorization) {
-        String userId = authorization != null ? authorization.getUserId() : "";
-        String roleName = authorization != null ? authorization.getRoleName() : "";
-        ActivityDAO.createMessage(serviceId, userId, roleName);
+        if (authorization == null) return;
+        ActivityDAO.createMessage(serviceId, authorization.getUserId(), authorization.getRoleName());
     }
 
     public static void write(String serviceId, Authorization authorization, String message) {
-        String userId = authorization != null ? authorization.getUserId() : "";
-        String roleName = authorization != null ? authorization.getRoleName() : "";
-        ActivityDAO.createMessage(serviceId, userId, roleName, message);
+        if (authorization == null) return;
+        ActivityDAO.createMessage(serviceId, authorization.getUserId(), authorization.getRoleName(), message);
     }
 
 }

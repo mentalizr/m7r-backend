@@ -16,6 +16,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 @Path("v1")
@@ -45,7 +46,7 @@ public class GetUserActivityREST {
             protected UserIDCollectionSO workLoad() {
                 Set<String> distinctUserIds = ActivityMessageMongoHandler.getDistinctUserIds();
                 UserIDCollectionSO userIDCollection = new UserIDCollectionSO();
-                userIDCollection.setCollection(new ArrayList<>(distinctUserIds));
+                userIDCollection.setCollection(new HashSet<>(distinctUserIds));
                 return userIDCollection;
             }
 
