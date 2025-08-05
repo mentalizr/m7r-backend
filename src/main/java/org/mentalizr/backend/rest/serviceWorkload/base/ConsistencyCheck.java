@@ -41,16 +41,15 @@ public class ConsistencyCheck {
         this.consistencyCheckResultSO = new ConsistencyCheckResultSO();
 
         this.consistencyCheckResultSO.setConsistent(true);
-        performChecks();
+        performChecksRdbms();
         performChecksMongo();
-        setCounts();
     }
 
     public ConsistencyCheckResultSO getConsistencyCheckResultSO() {
         return this.consistencyCheckResultSO;
     }
 
-    private void performChecks() {
+    private void performChecksRdbms() {
         for (String userId : this.userIdList) {
             checkForExactlyOneLoginType(userId);
             checkForExactlyOneRole(userId);
@@ -96,21 +95,6 @@ public class ConsistencyCheck {
             }
         }
 
-    }
-
-    private void setCounts() {
-        this.consistencyCheckResultSO.setNrOfUsers(this.userIdList.size());
-        this.consistencyCheckResultSO.setNrOfRolePatients(this.rolePatientList.size());
-        this.consistencyCheckResultSO.setNrOfUserLogin(this.userLoginList.size());
-        this.consistencyCheckResultSO.setNrOfUserAccessKeys(this.userAccessKeyList.size());
-        this.consistencyCheckResultSO.setNrOfRoleAdmins(this.roleAdminList.size());
-        this.consistencyCheckResultSO.setNrOfRoleTherapists(this.roleTherapistList.size());
-        this.consistencyCheckResultSO.setNrOfUsersWithActivityRecords(this.distinctActivityList.size());
-        this.consistencyCheckResultSO.setNrOfUsersWithFormDataDocuments(this.distinctFormDataList.size());
-        this.consistencyCheckResultSO.setNrOfUsersWithPatientStatusDocuments(this.distinctPatientStatusList.size());
-        this.consistencyCheckResultSO.setNrOfActivityRecords(ActivityMessageMongoHandler.getNrOfDocuments());
-        this.consistencyCheckResultSO.setNrOfFormDataDocuments(FormDataMongoHandler.getNrOfDocuments());
-        this.consistencyCheckResultSO.setNrOfPatientStatusDocuments(PatientStatusMongoHandler.getNrOfDocuments());
     }
 
     private void checkForExactlyOneLoginType(String userId) {
