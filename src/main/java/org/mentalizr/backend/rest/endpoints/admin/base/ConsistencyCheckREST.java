@@ -45,7 +45,6 @@ public class ConsistencyCheckREST {
 
             @Override
             protected ConsistencyCheckResultSO workLoad() throws DataSourceException {
-                log.info("consistency check requested");
                 ConsistencyCheck consistencyCheck = new ConsistencyCheck();
                 return consistencyCheck.getConsistencyCheckResultSO();
             }

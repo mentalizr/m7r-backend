@@ -46,7 +46,6 @@ public class EmptyREST {
             @Override
             protected BooleanSO workLoad() throws DataSourceException {
                 Stat stat = new Stat();
-                log.info("is DB empty? " + stat.isEmptyExceptAdmins());
                 return new BooleanSO(stat.isEmptyExceptAdmins());
             }
 
