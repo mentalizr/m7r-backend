@@ -3,7 +3,7 @@ plugins {
 }
 
 repositories {
-    maven { url "https://raw.githubusercontent.com/arthurpicht/mvn-repo/main/releases"}
+    maven { url = "https://raw.githubusercontent.com/arthurpicht/mvn-repo/main/releases"}
     mavenCentral()
 }
 

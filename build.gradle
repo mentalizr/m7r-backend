@@ -9,12 +9,12 @@ plugins {
     id 'war'
 }
 
-group 'org.mentalizr'
-version '0.1-SNAPSHOT'
+group = 'org.mentalizr'
+version = '0.1-SNAPSHOT'
 
 repositories {
     mavenCentral()
-    maven { url "https://raw.githubusercontent.com/arthurpicht/mvn-repo/main/releases"}
+    maven { url = "https://raw.githubusercontent.com/arthurpicht/mvn-repo/main/releases"}
 }
 
 dependencies {
