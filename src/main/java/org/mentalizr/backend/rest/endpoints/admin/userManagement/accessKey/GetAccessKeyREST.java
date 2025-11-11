@@ -8,8 +8,8 @@ import org.mentalizr.backend.rest.service.Service;
 import org.mentalizr.backend.rest.serviceWorkload.userManagement.accessKey.PatientAccessKeyGet;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.DataSourceException;
 import org.mentalizr.persistence.rdbms.barnacle.connectionManager.EntityNotFoundException;
-import org.mentalizr.serviceObjects.userManagement.AccessKeyGetSO;
 import org.mentalizr.serviceObjects.userManagement.AccessKeyRestoreSO;
+import org.mentalizr.serviceObjects.userManagement.AccessKeySO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -30,7 +30,7 @@ public class GetAccessKeyREST {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response get(
-            AccessKeyGetSO accessKeyGetSO,
+            AccessKeySO accessKeySO,
             @Context HttpServletRequest httpServletRequest
     ) {
 
@@ -48,7 +48,7 @@ public class GetAccessKeyREST {
 
             @Override
             protected AccessKeyRestoreSO workLoad() throws DataSourceException, EntityNotFoundException {
-                return PatientAccessKeyGet.get(accessKeyGetSO.getAccessKey());
+                return PatientAccessKeyGet.get(accessKeySO.getAccessKey());
             }
 
         }.call();
